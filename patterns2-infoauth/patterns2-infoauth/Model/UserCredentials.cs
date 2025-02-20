@@ -13,6 +13,6 @@ namespace patterns2_infoauth.Model
         public string Password { get; set; }
         public string Name { get; set; }
         public bool IsBlocked { get; set; } = false;
-        public List<UserRole> UserRoles { get; set; }
+        public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }

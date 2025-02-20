@@ -1,4 +1,5 @@
-﻿using patterns2_infoauth.Data;
+﻿using patterns2_infoauth.Common;
+using patterns2_infoauth.Data;
 using patterns2_infoauth.Model;
 
 namespace patterns2_infoauth.Services
@@ -35,7 +36,7 @@ namespace patterns2_infoauth.Services
                 Id = Guid.NewGuid(),
                 Name = model.Name,
                 Phone = model.Phone,
-                Password = AuthService.ComputeSha256Hash(model.Password)
+                Password = CryptoCommon.ComputeSha256Hash(model.Password)
             };
 
             try

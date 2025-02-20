@@ -1,3 +1,5 @@
+using EasyNetQ;
+using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using patterns2_infoauth.Data;
 
@@ -11,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddSingleton<IBus>(RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("BusConnection")));
 
 var app = builder.Build();
 

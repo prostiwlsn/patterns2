@@ -1,6 +1,7 @@
 ﻿using EasyNetQ;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
+using patterns2_infoauth.Common;
 using patterns2_infoauth.Data;
 using patterns2_infoauth.Migrations;
 using patterns2_infoauth.Model;
@@ -37,12 +38,25 @@ namespace patterns2_infoauth.Services
                     Id = id,
                     Name = model.Name,
                     Phone = model.Phone,
-                    Password = ComputeSha256Hash(model.Password),
+                    Password = CryptoCommon.ComputeSha256Hash(model.Password),
                 });
 
                 _dbContext.SaveChanges();
 
-                return await GenerateAccessToken(id);
+                try
+                {
+                    string key = _config.GetSection("Jwt:Key").Value;
+                    string issuer = _config.GetSection("Jwt:Issuer").Value;
+                    string audience = _config.GetSection("Jwt:Audience").Value;
+
+                    var crypto = new CryptoCommon(key, issuer, audience);
+
+                    return await crypto.GenerateAccessToken(id);
+                }
+                catch
+                {
+                    throw;
+                }
             }
             catch (Exception ex)
             {
@@ -52,57 +66,20 @@ namespace patterns2_infoauth.Services
 
         public async Task<string> Login(LoginDto model)
         {
-            var user = _dbContext.UserCredentials.FirstOrDefault(creds => creds.Phone == model.Phone && creds.Password == ComputeSha256Hash(model.Password));
+            var user = _dbContext.UserCredentials.FirstOrDefault(creds => creds.Phone == model.Phone && creds.Password == CryptoCommon.ComputeSha256Hash(model.Password));
             if (user == null) throw new ArgumentException();
 
-            return await GenerateAccessToken(user.Id);
-        }
-
-        public static string ComputeSha256Hash(string rawData)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-
-                StringBuilder builder = new StringBuilder();
-                foreach (byte b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
-        }
-
-        private async Task<string> GenerateAccessToken(Guid id)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim("id", id.ToString()),
-            };
-
-            return await GenerateToken(claims, DateTime.Now.AddMonths(1));
-        }
-
-        private async Task<string> GenerateToken(List<Claim> claims, DateTime expires)
-        {
             try
             {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("Jwt:Key").Value));
+                string key = _config.GetSection("Jwt:Key").Value;
+                string issuer = _config.GetSection("Jwt:Issuer").Value;
+                string audience = _config.GetSection("Jwt:Audience").Value;
 
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
+                var crypto = new CryptoCommon(key, issuer, audience);
 
-                var securityToken = new JwtSecurityToken(
-                    claims: claims,
-                    expires: expires,
-                    signingCredentials: credentials,
-                    issuer: _config.GetSection("Jwt:Issuer").Value,
-                    audience: _config.GetSection("Jwt:Audience").Value
-                );
-
-                var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
-                return token;
+                return await crypto.GenerateAccessToken(user.Id);
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
