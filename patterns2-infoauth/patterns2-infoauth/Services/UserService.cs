@@ -12,7 +12,8 @@ namespace patterns2_infoauth.Services
         }
         public async Task<List<UserInfoDto>> GetUsers(string name = "", string phone = "")
         {
-            var users = _dbContext.UserCredentials.Where(user => user.Name.Contains(name) && user.Phone.Contains(phone)).Select(user => new UserInfoDto { Phone = user.Phone, Name = user.Name, Id = user.Id }).ToList();
+            var users = _dbContext.UserCredentials.Where(user => user.Name.Contains(name) && user.Phone.Contains(phone)).Select(user => new UserInfoDto 
+                { Phone = user.Phone, Name = user.Name, Id = user.Id, IsBlocked = user.IsBlocked, Roles = user.UserRoles.Select(role => role.Role).ToArray() }).ToList();
 
             return users;
         }
@@ -22,7 +23,7 @@ namespace patterns2_infoauth.Services
             var user = _dbContext.UserCredentials.Find(id);
             if (user == null) throw new ArgumentException();
 
-            return new UserInfoDto { Phone = user.Phone, Name = user.Name, Id = user.Id };
+            return new UserInfoDto { Phone = user.Phone, Name = user.Name, Id = user.Id, IsBlocked = user.IsBlocked, Roles = user.UserRoles.Select(role => role.Role).ToArray() };
         }
 
 
@@ -47,6 +48,17 @@ namespace patterns2_infoauth.Services
                 throw;
             }
 
+        }
+
+        public async Task EditUser(UserEditDto model, Guid id)
+        {
+            var user = _dbContext.UserCredentials.Find(id);
+            if (user == null) throw new ArgumentException();
+
+            user.Name = model.Name;
+            user.Phone = model.Phone;
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task BlockUser(Guid id)

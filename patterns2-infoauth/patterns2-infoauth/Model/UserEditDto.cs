@@ -2,12 +2,10 @@
 
 namespace patterns2_infoauth.Model
 {
-    public class UserInfoDto
+    public class UserEditDto
     {
-        public Guid Id { get; set; }
+        [Phone]
         public string Phone { get; set; }
         public string Name { get; set; }
-        public bool IsBlocked { get; set; }
-        public RoleType[] Roles { get; set; } 
     }
 }
