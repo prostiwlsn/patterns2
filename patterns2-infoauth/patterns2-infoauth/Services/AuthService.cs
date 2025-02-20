@@ -52,7 +52,10 @@ namespace patterns2_infoauth.Services
 
         public async Task<string> Login(LoginDto model)
         {
-            var user = _dbContext.UserCredentials.First(creds => creds.Phone == model.Phone && creds.Password == ComputeSha256Hash(model.Password));
+            var user = _dbContext.UserCredentials.FirstOrDefault(creds => creds.Phone == model.Phone && creds.Password == ComputeSha256Hash(model.Password));
+            if (user == null) throw new ArgumentException();
+
+            return await GenerateAccessToken(user.Id);
         }
 
         public static string ComputeSha256Hash(string rawData)

@@ -12,5 +12,6 @@ namespace patterns2_infoauth.Model
         [Length(8,32)]
         public string Password { get; set; }
         public string Name { get; set; }
+        public bool IsBlocked { get; set; } = false;
     }
 }
