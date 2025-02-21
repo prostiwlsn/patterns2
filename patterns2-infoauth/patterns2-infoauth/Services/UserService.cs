@@ -1,10 +1,11 @@
 ﻿using patterns2_infoauth.Common;
 using patterns2_infoauth.Data;
+using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
 
 namespace patterns2_infoauth.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private AuthDbContext _dbContext;
         public UserService(AuthDbContext dbContext)
@@ -44,7 +45,7 @@ namespace patterns2_infoauth.Services
                 _dbContext.UserCredentials.Add(user);
                 await _dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

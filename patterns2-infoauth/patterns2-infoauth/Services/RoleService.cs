@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using patterns2_infoauth.Data;
+using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
 
 namespace patterns2_infoauth.Services
 {
-    public class RoleService
+    public class RoleService : IRoleService
     {
         private AuthDbContext _dbContext;
         public RoleService(AuthDbContext dbContext)

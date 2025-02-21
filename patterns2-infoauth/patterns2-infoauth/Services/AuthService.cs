@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
 using patterns2_infoauth.Common;
 using patterns2_infoauth.Data;
+using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Migrations;
 using patterns2_infoauth.Model;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,7 +13,7 @@ using System.Text;
 
 namespace patterns2_infoauth.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private AuthDbContext _dbContext;
         private IConfiguration _config;
@@ -41,24 +42,19 @@ namespace patterns2_infoauth.Services
                     Password = CryptoCommon.ComputeSha256Hash(model.Password),
                 });
 
-                _dbContext.SaveChanges();
+                var saveTask = _dbContext.SaveChangesAsync();
 
-                try
-                {
-                    string key = _config.GetSection("Jwt:Key").Value;
-                    string issuer = _config.GetSection("Jwt:Issuer").Value;
-                    string audience = _config.GetSection("Jwt:Audience").Value;
+                string key = _config.GetSection("Jwt:Key").Value;
+                string issuer = _config.GetSection("Jwt:Issuer").Value;
+                string audience = _config.GetSection("Jwt:Audience").Value;
 
-                    var crypto = new CryptoCommon(key, issuer, audience);
+                var crypto = new CryptoCommon(key, issuer, audience);
 
-                    return await crypto.GenerateAccessToken(id);
-                }
-                catch
-                {
-                    throw;
-                }
+                await saveTask;
+
+                return await crypto.GenerateAccessToken(id);
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

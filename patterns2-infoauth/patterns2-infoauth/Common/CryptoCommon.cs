@@ -33,7 +33,7 @@ namespace patterns2_infoauth.Common
         {
             var claims = new List<Claim>
             {
-                new Claim("id", id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, id.ToString()),
             };
 
             return await GenerateToken(claims, DateTime.Now.AddMonths(1));
