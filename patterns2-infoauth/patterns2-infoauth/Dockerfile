@@ -17,6 +17,8 @@ RUN dotnet restore "./patterns2-infoauth/patterns2-infoauth.csproj"
 COPY . .
 WORKDIR "/src/patterns2-infoauth"
 RUN ls
+RUN pwd
+RUN ls obj
 RUN dotnet build "./patterns2-infoauth.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
