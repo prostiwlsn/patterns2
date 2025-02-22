@@ -16,15 +16,18 @@ COPY ["./patterns2-infoauth.csproj", "patterns2-infoauth/"]
 RUN dotnet restore "./patterns2-infoauth/patterns2-infoauth.csproj"
 COPY . .
 WORKDIR "/src/patterns2-infoauth"
-RUN ls
-RUN pwd
-RUN ls obj
-RUN dotnet build "./patterns2-infoauth.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./patterns2-infoauth.csproj" -c $BUILD_CONFIGURATION -o /app/build \
+    -p:TargetFramework=net9.0 \
+    -p:RuntimeIdentifier=linux-x64 \
+    -p:SelfContained=false
 
-# Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./patterns2-infoauth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./patterns2-infoauth.csproj" -c $BUILD_CONFIGURATION -o /app/publish \
+    /p:TargetFramework=net9.0 \
+    /p:RuntimeIdentifier=linux-x64 \
+    /p:SelfContained=false \
+    /p:UseAppHost=true
 
 # Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
