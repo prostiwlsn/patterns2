@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["patterns2-infoauth/patterns2-infoauth.csproj", "patterns2-infoauth/"]
+COPY ["./patterns2-infoauth.csproj", "patterns2-infoauth/"]
 RUN dotnet restore "./patterns2-infoauth/patterns2-infoauth.csproj"
 COPY . .
 WORKDIR "/src/patterns2-infoauth"
