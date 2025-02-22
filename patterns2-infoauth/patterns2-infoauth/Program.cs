@@ -79,7 +79,7 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-await app.Services.GetService<IBus>().SetupListeners(app);
+//await app.Services.GetService<IBus>().SetupListeners(app);
 
 using (var serviceScope = app.Services.CreateScope())
 {
