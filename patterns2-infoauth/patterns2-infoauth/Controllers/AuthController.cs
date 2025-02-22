@@ -16,7 +16,7 @@ namespace patterns2_infoauth.Controllers
         }
 
         [HttpPost("/register")]
-        public async Task<IActionResult> Register([FromBody] UserCredentialsDto model)
+        public async Task<IActionResult> Register(UserCredentialsDto model)
         {
             try
             {
@@ -25,12 +25,13 @@ namespace patterns2_infoauth.Controllers
             }
             catch (ArgumentException argEx)
             {
+                Console.WriteLine(argEx.Message);
                 return BadRequest("This user already exists");
             }
         }
 
         [HttpPost("/login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto model)
+        public async Task<IActionResult> Login(LoginDto model)
         {
             try
             {

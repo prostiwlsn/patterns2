@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
 using patterns2_infoauth.Services;
@@ -26,7 +27,11 @@ namespace patterns2_infoauth.Controllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound();
+                return NotFound("User not found");
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest("This role already exists");
             }
         }
         [HttpDelete("/role/{userId}/{role}")]
@@ -39,7 +44,7 @@ namespace patterns2_infoauth.Controllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound();
+                return NotFound("User not found");
             }
         }
     }

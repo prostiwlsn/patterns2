@@ -31,6 +31,7 @@ namespace patterns2_infoauth.Services
 
                 if (_dbContext.UserCredentials.Any(creds => creds.Phone == model.Phone))
                 {
+                    Console.WriteLine("this user exists");
                     throw new ArgumentException();
                 }
 

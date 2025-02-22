@@ -5,11 +5,11 @@ using patterns2_infoauth.Services;
 
 namespace patterns2_infoauth.Handlers
 {
-    public class ProfileMessageHandler
+    public class AuthMessageHandler
     {
         private readonly IUserService _userService;
 
-        public ProfileMessageHandler(IUserService authenticationService)
+        public AuthMessageHandler(IUserService authenticationService)
         {
             _userService = authenticationService;
         }
@@ -39,7 +39,7 @@ namespace patterns2_infoauth.Handlers
             //app.Services.CreateScope().ServiceProviderс
             using (var scope = app.Services.CreateScope())
             {
-                return await scope.ServiceProvider.GetRequiredService<ProfileMessageHandler>().HandleGetUser(request);
+                return await scope.ServiceProvider.GetRequiredService<AuthMessageHandler>().HandleGetUser(request);
             }
         }
     }
@@ -48,7 +48,7 @@ namespace patterns2_infoauth.Handlers
     {
         public static async Task SetupListeners(this IBus bus, WebApplication app)
         {
-            await bus.Rpc.RespondAsync<GetUserRequest, GetUserResponse>(async request => await ProfileMessageHandler.GetRpcResponse(app, request));
+            await bus.Rpc.RespondAsync<GetUserRequest, GetUserResponse>(async request => await AuthMessageHandler.GetRpcResponse(app, request));
         }
     }
 }

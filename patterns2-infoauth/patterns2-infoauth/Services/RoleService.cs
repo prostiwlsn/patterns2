@@ -31,7 +31,7 @@ namespace patterns2_infoauth.Services
 
                 await _dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -45,14 +45,14 @@ namespace patterns2_infoauth.Services
 
             try
             {
-                var userRole = _dbContext.UserRole.Find(userId, role);
+                var userRole = _dbContext.UserRole.Find(role, userId);
                 if (userRole == null) throw new ArgumentException();
 
                 _dbContext.UserRole.Remove(userRole);   
 
                 await _dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

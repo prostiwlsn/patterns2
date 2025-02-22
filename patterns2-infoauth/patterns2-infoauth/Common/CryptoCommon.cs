@@ -8,7 +8,12 @@ namespace patterns2_infoauth.Common
 {
     public class CryptoCommon
     {
-        public CryptoCommon(string key, string issuer, string audience) { }
+        public CryptoCommon(string key, string issuer, string audience) 
+        {
+            Key = key;
+            Issuer = issuer;
+            Audience = audience;
+        }
 
         public string Key { get; set; }
         public string Issuer { get; set; }

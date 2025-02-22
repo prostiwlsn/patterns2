@@ -48,14 +48,14 @@ namespace patterns2_infoauth.Controllers
         }
 
         [HttpPost("/users")]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreationDto model)
+        public async Task<IActionResult> CreateUser(UserCreationDto model)
         {
             await _userService.CreateUser(model);
             return Ok();
         }
 
         [HttpPut("/users/{id}")]
-        public async Task<IActionResult> EditUser(Guid id, [FromBody] UserEditDto model)
+        public async Task<IActionResult> EditUser(Guid id,UserEditDto model)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace patterns2_infoauth.Controllers
         }
         [HttpPut("/profile")]
         [Authorize]
-        public async Task<IActionResult> EditProfile([FromBody] UserEditDto model)
+        public async Task<IActionResult> EditProfile(UserEditDto model)
         {
             string id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             try
