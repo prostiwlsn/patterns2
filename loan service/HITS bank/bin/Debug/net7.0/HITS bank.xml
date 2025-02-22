@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HITS bank</name>
+    </assembly>
+    <members>
+        <member name="T:HITS_bank.Controllers.Dto.TariffDto">
+            <summary>
+            Тариф кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Controllers.LoanController">
+            <summary>
+            Кредиты
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Controllers.LoanController.#ctor(HITS_bank.Services.ILoanService)">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Controllers.LoanController.CreateLoanTariff(HITS_bank.Controllers.Dto.TariffDto)">
+            <summary>
+            Создание тарифа для кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Data.Entities.TariffEntity">
+            <summary>
+            Сущность тарифа кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.AddTariff(HITS_bank.Controllers.Dto.TariffDto)">
+            <summary>
+            Создание тарифа кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Services.ILoanService">
+            <summary>
+            Сервис кредитов
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Services.LoanService">
+            <summary>
+            Сервис кредитов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.LoanService.CreateTariff(HITS_bank.Controllers.Dto.TariffDto)">
+            <summary>
+            Создание тарифа кредита
+            </summary>
+        </member>
+    </members>
+</doc>
