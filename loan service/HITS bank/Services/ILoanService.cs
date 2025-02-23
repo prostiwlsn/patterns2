@@ -40,4 +40,9 @@ public interface ILoanService
     /// Получение списко кредитов пользователя
     /// </summary>
     Task<IResult> GetUserLoansList(Guid userId, int pageNumber, int pageSize);
+
+    /// <summary>
+    /// Оплатить кредит
+    /// </summary>
+    Task<IResult> PayForLoan(Guid loanId, PaymentLoanRequestDto paymentInfo);
 }

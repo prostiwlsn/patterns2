@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-namespace HITS_bank.Controllers.Dto.Common;
+namespace HITS_bank.Controllers.Dto.Request;
 
 /// <summary>
 /// Пагинация в запросе

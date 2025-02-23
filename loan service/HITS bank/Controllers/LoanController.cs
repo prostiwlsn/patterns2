@@ -89,12 +89,24 @@ public class LoanController : ControllerBase
     /// Получение кредитов пользователя
     /// </summary>
     [HttpGet]
-    [Route("list/{userId}")]
+    [Route("{userId}/list")]
     public async Task<IActionResult> GetUsersLoansList(Guid userId, int pageNumber = 1, int pageSize = 10)
     {
         var response = await _loanService.GetUserLoansList(userId, pageNumber, pageSize);
         
         return GetResponseResult<LoansListResponseDto>(response);
+    }
+
+    /// <summary>
+    /// Оплата кредита
+    /// </summary>
+    [HttpPatch]
+    [Route("{loanId}/payment")]
+    public async Task<IActionResult> PayForLoan(Guid loanId, PaymentLoanRequestDto paymentInfo)
+    {
+        var response = await _loanService.PayForLoan(loanId, paymentInfo);
+        
+        return GetResponseResult<PaymentLoanRequestDto>(response);
     }
     
     /// <summary>

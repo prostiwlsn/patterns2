@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-namespace HITS_bank.Controllers.Dto;
+namespace HITS_bank.Controllers.Dto.Request;
 
 /// <summary>
 /// Создание таарифа кредита

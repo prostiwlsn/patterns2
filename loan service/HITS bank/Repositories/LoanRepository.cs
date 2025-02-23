@@ -93,4 +93,28 @@ public class LoanRepository : ILoanRepository
     {
         return await _context.Loans.Where(x => x.UserId == userId).Skip(offset).Take(limit).ToListAsync();
     }
+
+    /// <summary>
+    /// Получение кредита
+    /// </summary>
+    public async Task<LoanEntity?> GetLoan(Guid loanId)
+    {
+        return await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanId);
+    }
+
+    /// <summary>
+    /// Обновление кредита
+    /// </summary>
+    public async Task<IResult> UpdateLoan(LoanEntity updatedLoanEntity)
+    {
+        var loan = await _context.Loans.FirstOrDefaultAsync(x => x.Id == updatedLoanEntity.Id);
+
+        if (loan == null)
+            return new Error(StatusCodes.Status404NotFound, "Loan not found");
+
+        _context.Entry(loan).CurrentValues.SetValues(updatedLoanEntity);
+        await _context.SaveChangesAsync();
+
+        return new Success();
+    }
 }

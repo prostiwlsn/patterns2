@@ -1,4 +1,5 @@
-﻿using HITS_bank.Data.Entities;
+﻿using HITS_bank.Controllers.Dto.Request;
+using HITS_bank.Data.Entities;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
@@ -40,4 +41,14 @@ public interface ILoanRepository
     /// Получение списка кредитов пользователя
     /// </summary>
     Task<List<LoanEntity>> GetUserLoansList(Guid userId, int offset = 0, int limit = 20);
+    
+    /// <summary>
+    /// Получение кредита
+    /// </summary>
+    Task<LoanEntity?> GetLoan(Guid loanId);
+    
+    /// <summary>
+    /// Обновление кредита
+    /// </summary>
+    Task<Utils.IResult> UpdateLoan(LoanEntity updatedLoanEntity);
 }

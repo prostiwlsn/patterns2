@@ -6,6 +6,7 @@ using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
 using HITS_bank.Utils;
+using Microsoft.Extensions.Logging.Abstractions;
 using IResult = HITS_bank.Utils.IResult;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -138,6 +139,29 @@ public class LoanService : ILoanService
         
         return new Success<LoansListResponseDto>(response);
     }
+
+    /// <summary>
+    /// Оплатить кредит
+    /// </summary>
+    public async Task<IResult> PayForLoan(Guid loanId, PaymentLoanRequestDto paymentInfo)
+    {
+        // Валидация
+        var validationResult = ValidateAccountNumber(paymentInfo.AccountNumber);
+        
+        if (validationResult != null)
+            return validationResult;
+        
+        // Получение кредита
+        var loan = await _loanRepository.GetLoan(loanId);
+        
+        if (loan == null)
+            return new Error(StatusCodes.Status404NotFound, "Loan not found");
+        
+        // Оплата кредита
+        loan.Debt -= Math.Min(paymentInfo.Amount, loan.Debt);
+
+        return await _loanRepository.UpdateLoan(loan);
+    }
     
     /// <summary>
     /// Валидация пагинации
@@ -150,6 +174,20 @@ public class LoanService : ILoanService
         if (pageSize < 0)
             return new Error(StatusCodes.Status400BadRequest, "Page size cannot be less than 0");
         
+        return null;
+    }
+    
+    /// <summary>
+    /// Валидация номера счета
+    /// </summary>
+    private static IResult? ValidateAccountNumber(string accountNumber)
+    {
+        if (accountNumber.Length != 20)
+            return new Error(StatusCodes.Status400BadRequest, "Account number must be 20 characters long");
+        
+        if (accountNumber.Any(x => !char.IsDigit(x)))
+            return new Error(StatusCodes.Status400BadRequest, "Account number must contain only digits");
+
         return null;
     }
 }

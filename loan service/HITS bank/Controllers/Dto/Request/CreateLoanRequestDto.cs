@@ -15,6 +15,6 @@ public class CreateLoanRequestDto
     [Range(1, 5)]
     public int DurationInYears { get; set; }
     
-    [Range(1, int.MaxValue)]
+    [Range(1, 10_000_000)]
     public int Amount { get; set; }
 }

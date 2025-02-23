@@ -18,7 +18,7 @@ public class LoanEntity
     
     public int Amount { get; init; }
     
-    public int Debt { get; init; }
+    public int Debt { get; set; }
     
     public double RatePercent { get; set; }
     
