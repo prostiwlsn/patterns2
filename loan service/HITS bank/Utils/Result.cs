@@ -8,7 +8,7 @@ public interface IResult
 { }
 
 /// <summary>
-/// Успешный результат выполнения запроса
+/// Успешный результат выполнения запроса с возвращаемым ответом
 /// </summary>
 public class Success<T> : IResult
 {
@@ -19,6 +19,11 @@ public class Success<T> : IResult
     
     public T? Data { get; }
 }
+
+/// <summary>
+/// Успешный результат выполнения запроса
+/// </summary>
+public class Success : IResult { }
 
 /// <summary>
 /// Неуспешный результат выполнения запроса

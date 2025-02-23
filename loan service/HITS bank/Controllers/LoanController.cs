@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Services;
 using HITS_bank.Utils;
@@ -43,12 +44,11 @@ public class LoanController : ControllerBase
     [HttpGet]
     [Route("tariff")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TariffsListResponseDto))]
-    public async Task<IActionResult> GetLoanTariffsList(
-        [FromQuery][Required]int pageNumber, [FromQuery][Required]int pageSize) 
+    public async Task<IActionResult> GetLoanTariffsList([Required]int pageNumber, [Required]int pageSize) 
     {
         var tariffsList = await _loanService.GetTariffs(pageNumber, pageSize);
 
-        return GetResponseResult<TariffDto>(tariffsList);
+        return GetResponseResult<TariffsListResponseDto>(tariffsList);
     }
 
     /// <summary>
@@ -56,11 +56,23 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpDelete]
     [Route("tariff")]
-    public async Task<IActionResult> DeleteLoanTariff(Guid tariffId)
+    public async Task<IActionResult> DeleteLoanTariff([Required]Guid tariffId)
     {
         var deletionResult = await _loanService.DeleteTariff(tariffId);
 
         return GetResponseResult<TariffsListResponseDto>(deletionResult);
+    }
+
+    /// <summary>
+    /// Обновление тарифа
+    /// </summary>
+    [HttpPut]
+    [Route("tariff")]
+    public async Task<IActionResult> UpdateLoanTariff(UpdateTariffRequestDto updatedTariff, [Required]Guid tariffId)
+    {
+        var response = await _loanService.UpdateTariff(updatedTariff, tariffId);
+        
+        return GetResponseResult<TariffDto>(response);
     }
 
     /// <summary>
@@ -70,10 +82,13 @@ public class LoanController : ControllerBase
     {
         if (result is Success<T> response)
             return Ok(response.Data);
+
+        if (result is Success)
+            return Ok();
         
         if (result is Error error)
             return StatusCode(error.StatusCode, error.Message);
 
-        return Ok();
+        return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
     }
 }

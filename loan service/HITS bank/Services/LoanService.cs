@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
@@ -39,16 +40,18 @@ public class LoanService : ILoanService
     /// </summary>
     public async Task<IResult> DeleteTariff(Guid tariffId)
     {
-        // Получение тарифа
-        var tariff = await _loanRepository.GetTariff(tariffId);
-        
-        if (tariff == null) 
-            return new Error(StatusCodes.Status404NotFound, "Tariff not found");
-        
-        // Удаление тарифа
-        await _loanRepository.DeleteTariff(tariff);
+        return await _loanRepository.DeleteTariff(tariffId);
+    }
 
-        return new Success<TariffDto>(null);
+    /// <summary>
+    /// Обновление тарифа
+    /// </summary>
+    public async Task<IResult> UpdateTariff(UpdateTariffRequestDto updatedTariff, Guid tariffId)
+    {
+        var updatedTariffEntity = _mapper.Map<TariffEntity>(updatedTariff);
+        updatedTariffEntity.Id = tariffId;
+        
+        return await _loanRepository.UpdateTariff(updatedTariffEntity, tariffId);
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -18,5 +19,7 @@ public class LoanMapper : Profile
         CreateMap<PaginationRequestDto, PaginationResponseDto>();
         
         CreateMap<PaginationResponseDto, TariffsListResponseDto>();
+        
+        CreateMap<UpdateTariffRequestDto, TariffEntity>();
     }
 }

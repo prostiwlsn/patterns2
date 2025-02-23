@@ -1,5 +1,6 @@
 ﻿using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using IResult = HITS_bank.Utils.IResult;
 
@@ -21,6 +22,8 @@ public interface ILoanService
     /// Удаление тарифа кредита
     /// </summary>
     Task<IResult> DeleteTariff(Guid tariffId);
+    
+    Task<IResult> UpdateTariff(UpdateTariffRequestDto updatedTariff, Guid tariffId);
     
     /// <summary>
     /// Получение списка кредитов
