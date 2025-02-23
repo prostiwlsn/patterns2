@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "NV72sxlnIqFX6O5DYm/tC0Rv1wfOuTuMggu2DmUGVnaK92iEUgASlIc2AB6mOuSmZVj7ZMnYHF9/OH4J1E7cQA==",
+  "dgSpecHash": "goUsRLCkVNg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Aleksei\\RiderProjects\\HITS bank\\HITS bank\\HITS bank.csproj",
+  "projectFilePath": "C:\\Users\\Aleksei\\RiderProjects\\patterns2\\loan service\\HITS bank\\HITS bank.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Aleksei\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\Aleksei\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

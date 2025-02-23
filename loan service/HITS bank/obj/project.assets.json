@@ -2542,11 +2542,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Aleksei\\RiderProjects\\HITS bank\\HITS bank\\HITS bank.csproj",
+      "projectUniqueName": "C:\\Users\\Aleksei\\RiderProjects\\patterns2\\loan service\\HITS bank\\HITS bank.csproj",
       "projectName": "HITS bank",
-      "projectPath": "C:\\Users\\Aleksei\\RiderProjects\\HITS bank\\HITS bank\\HITS bank.csproj",
+      "projectPath": "C:\\Users\\Aleksei\\RiderProjects\\patterns2\\loan service\\HITS bank\\HITS bank.csproj",
       "packagesPath": "C:\\Users\\Aleksei\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Aleksei\\RiderProjects\\HITS bank\\HITS bank\\obj\\",
+      "outputPath": "C:\\Users\\Aleksei\\RiderProjects\\patterns2\\loan service\\HITS bank\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,4 +1,8 @@
 ﻿using HITS_bank.Controllers.Dto;
+using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Response;
+using IResult = HITS_bank.Utils.IResult;
+
 #pragma warning disable 1591
 
 namespace HITS_bank.Services;
@@ -8,5 +12,13 @@ namespace HITS_bank.Services;
 /// </summary>
 public interface ILoanService
 {
-    Task CreateTariff(TariffDto tariff);
+    /// <summary>
+    /// Создание тарифа кредита
+    /// </summary>
+    Task CreateTariff(CreateTariffRequestDto createTariffRequest);
+    
+    /// <summary>
+    /// Получение списка кредитов
+    /// </summary>
+    Task<IResult> GetTariffs(int pageNumber, int pageSize);
 }

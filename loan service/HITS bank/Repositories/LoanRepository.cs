@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using HITS_bank.Controllers.Dto;
-using HITS_bank.Data;
+﻿using HITS_bank.Data;
 using HITS_bank.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace HITS_bank.Repositories;
@@ -9,27 +9,26 @@ namespace HITS_bank.Repositories;
 public class LoanRepository : ILoanRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public LoanRepository(ApplicationDbContext context, IMapper mapper)
+    public LoanRepository(ApplicationDbContext context)
     {
-        _context = context; _mapper = mapper;
+        _context = context;
     }
     
     /// <summary>
-    /// Создание тарифа кредита
+    /// Добавление тарифа кредита
     /// </summary>
-    public async Task AddTariff(TariffDto tariff)
+    public async Task AddTariff(TariffEntity createTariffRequest)
     { 
-        //  var tariffEntity = _mapper.Map<TariffEntity>(tariff);
-        TariffEntity tariffEntity = new TariffEntity
-      {
-          Name = tariff.Name,
-          RatePercent = tariff.RatePercent,
-          Description = tariff.Description,
-      }; 
-        
-      _context.Tariffs.Add(tariffEntity);
+      _context.Tariffs.Add(createTariffRequest);
       await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Получение списка тарифов
+    /// </summary>
+    public async Task<List<TariffEntity>> GetTariffs(int offset = 0, int limit = 20)
+    {
+        return await _context.Tariffs.Skip(offset).Take(limit).ToListAsync();
     }
 }

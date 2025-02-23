@@ -4,9 +4,9 @@
 namespace HITS_bank.Controllers.Dto;
 
 /// <summary>
-/// Тариф кредита
+/// Создание таарифа кредита
 /// </summary>
-public class TariffDto
+public class CreateTariffRequestDto
 {
     [Required]
     [MaxLength(100)]
