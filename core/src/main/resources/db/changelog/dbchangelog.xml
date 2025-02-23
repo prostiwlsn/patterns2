@@ -3,4 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <include file="/db/changelog/changesets/2502221230_create_account_table.xml"/>
+    <include file="/db/changelog/changesets/2502221240_create_operation_table.xml"/>
+
 </databaseChangeLog>
