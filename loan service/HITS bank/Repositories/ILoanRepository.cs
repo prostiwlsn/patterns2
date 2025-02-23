@@ -12,6 +12,16 @@ public interface ILoanRepository
     Task AddTariff(TariffEntity createTariffRequest);
     
     /// <summary>
+    /// Получение тарифа
+    /// </summary>
+    Task<TariffEntity?> GetTariff(Guid tariffId);
+    
+    /// <summary>
+    /// Удаление тарифа
+    /// </summary>
+    Task DeleteTariff(TariffEntity tariff);
+    
+    /// <summary>
     /// Получение списка тарифов
     /// </summary>
     Task<List<TariffEntity>> GetTariffs(int offset = 0, int limit = 20);

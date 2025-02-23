@@ -25,6 +25,23 @@ public class LoanRepository : ILoanRepository
     }
 
     /// <summary>
+    /// Получение тарифа
+    /// </summary>
+    public async Task<TariffEntity?> GetTariff(Guid tariffId)
+    {
+        return await _context.Tariffs.FirstOrDefaultAsync(x => x.Id == tariffId);
+    }
+    
+    /// <summary>
+    /// Удаление тарифа
+    /// </summary>
+    public async Task DeleteTariff(TariffEntity tariff)
+    {
+        _context.Tariffs.Remove(tariff);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
     /// Получение списка тарифов
     /// </summary>
     public async Task<List<TariffEntity>> GetTariffs(int offset = 0, int limit = 20)

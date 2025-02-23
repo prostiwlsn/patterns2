@@ -12,12 +12,12 @@ public interface IResult
 /// </summary>
 public class Success<T> : IResult
 {
-    public Success(T data)
+    public Success(T? data)
     {
         Data = data;
     }
     
-    public T Data { get; }
+    public T? Data { get; }
 }
 
 /// <summary>

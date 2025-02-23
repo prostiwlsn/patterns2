@@ -35,6 +35,23 @@ public class LoanService : ILoanService
     }
 
     /// <summary>
+    /// Удаление тарифа кредита
+    /// </summary>
+    public async Task<IResult> DeleteTariff(Guid tariffId)
+    {
+        // Получение тарифа
+        var tariff = await _loanRepository.GetTariff(tariffId);
+        
+        if (tariff == null) 
+            return new Error(StatusCodes.Status404NotFound, "Tariff not found");
+        
+        // Удаление тарифа
+        await _loanRepository.DeleteTariff(tariff);
+
+        return new Success<TariffDto>(null);
+    }
+
+    /// <summary>
     /// Получение списка тарифов
     /// </summary>
     public async Task<IResult> GetTariffs(int pageNumber, int pageSize)

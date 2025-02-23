@@ -18,6 +18,11 @@ public interface ILoanService
     Task CreateTariff(CreateTariffRequestDto createTariffRequest);
     
     /// <summary>
+    /// Удаление тарифа кредита
+    /// </summary>
+    Task<IResult> DeleteTariff(Guid tariffId);
+    
+    /// <summary>
     /// Получение списка кредитов
     /// </summary>
     Task<IResult> GetTariffs(int pageNumber, int pageSize);

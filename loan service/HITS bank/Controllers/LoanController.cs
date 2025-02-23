@@ -48,23 +48,32 @@ public class LoanController : ControllerBase
     {
         var tariffsList = await _loanService.GetTariffs(pageNumber, pageSize);
 
-        return GetResponseResult(tariffsList);
+        return GetResponseResult<TariffDto>(tariffsList);
+    }
+
+    /// <summary>
+    /// Удаление тарифа кредита
+    /// </summary>
+    [HttpDelete]
+    [Route("tariff")]
+    public async Task<IActionResult> DeleteLoanTariff(Guid tariffId)
+    {
+        var deletionResult = await _loanService.DeleteTariff(tariffId);
+
+        return GetResponseResult<TariffsListResponseDto>(deletionResult);
     }
 
     /// <summary>
     /// Формирование ответа
     /// </summary>
-    private IActionResult GetResponseResult(IResult result)
+    private IActionResult GetResponseResult<T>(IResult result)
     {
-        if (result is Success<TariffsListResponseDto> response)
-        {
+        if (result is Success<T> response)
             return Ok(response.Data);
-        }
+        
         if (result is Error error)
-        {
             return StatusCode(error.StatusCode, error.Message);
-        }
 
-        return StatusCode(500, "Internal server error");
+        return Ok();
     }
 }

@@ -44,7 +44,12 @@
             Получение списка тарифов
             </summary>
         </member>
-        <member name="M:HITS_bank.Controllers.LoanController.GetResponseResult(HITS_bank.Utils.IResult)">
+        <member name="M:HITS_bank.Controllers.LoanController.DeleteLoanTariff(System.Guid)">
+            <summary>
+            Удаление тарифа кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Controllers.LoanController.GetResponseResult``1(HITS_bank.Utils.IResult)">
             <summary>
             Формирование ответа
             </summary>
@@ -59,6 +64,16 @@
             Добавление тарифа кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.GetTariff(System.Guid)">
+            <summary>
+            Получение тарифа
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.DeleteTariff(HITS_bank.Data.Entities.TariffEntity)">
+            <summary>
+            Удаление тарифа
+            </summary>
+        </member>
         <member name="M:HITS_bank.Repositories.ILoanRepository.GetTariffs(System.Int32,System.Int32)">
             <summary>
             Получение списка тарифов
@@ -67,6 +82,16 @@
         <member name="M:HITS_bank.Repositories.LoanRepository.AddTariff(HITS_bank.Data.Entities.TariffEntity)">
             <summary>
             Добавление тарифа кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.GetTariff(System.Guid)">
+            <summary>
+            Получение тарифа
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.DeleteTariff(HITS_bank.Data.Entities.TariffEntity)">
+            <summary>
+            Удаление тарифа
             </summary>
         </member>
         <member name="M:HITS_bank.Repositories.LoanRepository.GetTariffs(System.Int32,System.Int32)">
@@ -84,6 +109,11 @@
             Создание тарифа кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Services.ILoanService.DeleteTariff(System.Guid)">
+            <summary>
+            Удаление тарифа кредита
+            </summary>
+        </member>
         <member name="M:HITS_bank.Services.ILoanService.GetTariffs(System.Int32,System.Int32)">
             <summary>
             Получение списка кредитов
@@ -97,6 +127,11 @@
         <member name="M:HITS_bank.Services.LoanService.CreateTariff(HITS_bank.Controllers.Dto.CreateTariffRequestDto)">
             <summary>
             Создание тарифа кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.LoanService.DeleteTariff(System.Guid)">
+            <summary>
+            Удаление тарифа кредита
             </summary>
         </member>
         <member name="M:HITS_bank.Services.LoanService.GetTariffs(System.Int32,System.Int32)">
