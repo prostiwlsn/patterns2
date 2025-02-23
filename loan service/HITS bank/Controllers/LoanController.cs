@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using HITS_bank.Controllers.Dto;
-using HITS_bank.Controllers.Dto.Common;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Services;
@@ -76,6 +75,17 @@ public class LoanController : ControllerBase
     }
 
     /// <summary>
+    /// Взятие кредита
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> CreateLoan(CreateLoanRequestDto loanRequest)
+    {
+        var response = await _loanService.CreateLoan(loanRequest);
+        
+        return GetResponseResult<CreateLoanRequestDto>(response);
+    }
+    
+    /// <summary>
     /// Формирование ответа
     /// </summary>
     private IActionResult GetResponseResult<T>(IResult result)
@@ -91,4 +101,32 @@ public class LoanController : ControllerBase
 
         return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
     }
+    
+    /*var factory = new ConnectionFactory{ HostName = "194.59.186.122" };
+
+        // Создание очереди сообщений
+        using (var connection = factory.CreateConnection())
+        using (var channel = connection.CreateModel())
+        {
+            channel.ExchangeDeclare(exchange: "easy_net_q_rpc",
+                type: ExchangeType.Direct,
+                durable: true);
+
+            // Отправка сообщения
+            var message = JsonSerializer.Serialize(
+                new Message
+                {
+                    Id = userId
+                }
+                );
+            var body = Encoding.UTF8.GetBytes(message);
+
+            var properties = channel.CreateBasicProperties();
+            properties.Persistent = true;
+
+            channel.BasicPublish(exchange: "easy_net_q_rpc",
+                routingKey: "patterns2_infoauth.Model.GetUserRequest, patterns2-infoauth",
+                basicProperties: properties,
+                body: body);
+        }*/
 }

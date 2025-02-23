@@ -1,5 +1,4 @@
-﻿using HITS_bank.Controllers.Dto.Response;
-using HITS_bank.Data;
+﻿using HITS_bank.Data;
 using HITS_bank.Data.Entities;
 using HITS_bank.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +26,14 @@ public class LoanRepository : ILoanRepository
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Получение тарифа
+    /// </summary>
+    public async Task<TariffEntity?> GetTariff(Guid tariffId)
+    {
+        return await _context.Tariffs.FirstOrDefaultAsync(x => x.Id == tariffId);
+    }
+    
     /// <summary>
     /// Удаление тарифа
     /// </summary>
@@ -65,5 +72,17 @@ public class LoanRepository : ILoanRepository
     public async Task<List<TariffEntity>> GetTariffs(int offset = 0, int limit = 20)
     {
         return await _context.Tariffs.Skip(offset).Take(limit).ToListAsync();
+    }
+
+    /// <summary>
+    /// Добавление кредита
+    /// </summary>
+    public async Task AddLoan(LoanEntity loanEntity)
+    {
+        loanEntity.DocumentNumber = _context.Loans.Count() + 1;
+        
+        _context.Loans.Add(loanEntity);
+        
+        await _context.SaveChangesAsync();
     }
 }

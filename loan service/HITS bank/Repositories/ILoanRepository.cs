@@ -12,6 +12,11 @@ public interface ILoanRepository
     Task AddTariff(TariffEntity createTariffRequest);
     
     /// <summary>
+    /// Получение тарифа
+    /// </summary>
+    Task<TariffEntity?> GetTariff(Guid tariffId);
+    
+    /// <summary>
     /// Обновление тарифа
     /// </summary>
     Task<Utils.IResult> UpdateTariff(TariffEntity updateTariffRequest, Guid tariffId);
@@ -25,4 +30,9 @@ public interface ILoanRepository
     /// Получение списка тарифов
     /// </summary>
     Task<List<TariffEntity>> GetTariffs(int offset = 0, int limit = 20);
+    
+    /// <summary>
+    /// Добавление кредита
+    /// </summary>
+    Task AddLoan(LoanEntity loanEntity);
 }

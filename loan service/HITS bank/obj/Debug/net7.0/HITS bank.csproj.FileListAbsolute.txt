@@ -138,3 +138,4 @@ C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.pdb
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.genruntimeconfig.cache
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\ref\HITS bank.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\RabbitMQ.Client.dll

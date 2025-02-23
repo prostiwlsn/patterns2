@@ -14,6 +14,16 @@
             Пагинация в запросе
             </summary>
         </member>
+        <member name="T:HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto">
+            <summary>
+            Создание кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Controllers.Dto.Request.UpdateTariffRequestDto">
+            <summary>
+            Изменение тарифа кредита
+            </summary>
+        </member>
         <member name="T:HITS_bank.Controllers.Dto.CreateTariffRequestDto">
             <summary>
             Создание таарифа кредита
@@ -49,9 +59,24 @@
             Удаление тарифа кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Controllers.LoanController.UpdateLoanTariff(HITS_bank.Controllers.Dto.Request.UpdateTariffRequestDto,System.Guid)">
+            <summary>
+            Обновление тарифа
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Controllers.LoanController.CreateLoan(HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto)">
+            <summary>
+            Взятие кредита
+            </summary>
+        </member>
         <member name="M:HITS_bank.Controllers.LoanController.GetResponseResult``1(HITS_bank.Utils.IResult)">
             <summary>
             Формирование ответа
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Data.Entities.LoanEntity">
+            <summary>
+            Сущность кредита
             </summary>
         </member>
         <member name="T:HITS_bank.Data.Entities.TariffEntity">
@@ -69,7 +94,12 @@
             Получение тарифа
             </summary>
         </member>
-        <member name="M:HITS_bank.Repositories.ILoanRepository.DeleteTariff(HITS_bank.Data.Entities.TariffEntity)">
+        <member name="M:HITS_bank.Repositories.ILoanRepository.UpdateTariff(HITS_bank.Data.Entities.TariffEntity,System.Guid)">
+            <summary>
+            Обновление тарифа
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.DeleteTariff(System.Guid)">
             <summary>
             Удаление тарифа
             </summary>
@@ -77,6 +107,11 @@
         <member name="M:HITS_bank.Repositories.ILoanRepository.GetTariffs(System.Int32,System.Int32)">
             <summary>
             Получение списка тарифов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.AddLoan(HITS_bank.Data.Entities.LoanEntity)">
+            <summary>
+            Добавление кредита
             </summary>
         </member>
         <member name="M:HITS_bank.Repositories.LoanRepository.AddTariff(HITS_bank.Data.Entities.TariffEntity)">
@@ -89,14 +124,24 @@
             Получение тарифа
             </summary>
         </member>
-        <member name="M:HITS_bank.Repositories.LoanRepository.DeleteTariff(HITS_bank.Data.Entities.TariffEntity)">
+        <member name="M:HITS_bank.Repositories.LoanRepository.DeleteTariff(System.Guid)">
             <summary>
             Удаление тарифа
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.UpdateTariff(HITS_bank.Data.Entities.TariffEntity,System.Guid)">
+            <summary>
+            Обновление тарифа
             </summary>
         </member>
         <member name="M:HITS_bank.Repositories.LoanRepository.GetTariffs(System.Int32,System.Int32)">
             <summary>
             Получение списка тарифов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.AddLoan(HITS_bank.Data.Entities.LoanEntity)">
+            <summary>
+            Добавление кредита
             </summary>
         </member>
         <member name="T:HITS_bank.Services.ILoanService">
@@ -114,9 +159,19 @@
             Удаление тарифа кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Services.ILoanService.UpdateTariff(HITS_bank.Controllers.Dto.Request.UpdateTariffRequestDto,System.Guid)">
+            <summary>
+            Обновление тарифа
+            </summary>
+        </member>
         <member name="M:HITS_bank.Services.ILoanService.GetTariffs(System.Int32,System.Int32)">
             <summary>
             Получение списка кредитов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.ILoanService.CreateLoan(HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto)">
+            <summary>
+            Создание кредита
             </summary>
         </member>
         <member name="T:HITS_bank.Services.LoanService">
@@ -134,9 +189,19 @@
             Удаление тарифа кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Services.LoanService.UpdateTariff(HITS_bank.Controllers.Dto.Request.UpdateTariffRequestDto,System.Guid)">
+            <summary>
+            Обновление тарифа
+            </summary>
+        </member>
         <member name="M:HITS_bank.Services.LoanService.GetTariffs(System.Int32,System.Int32)">
             <summary>
             Получение списка тарифов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.LoanService.CreateLoan(HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto)">
+            <summary>
+            Создание кредита
             </summary>
         </member>
         <member name="M:HITS_bank.Services.LoanService.ValidatePagination(System.Int32,System.Int32)">
@@ -150,6 +215,11 @@
             </summary>
         </member>
         <member name="T:HITS_bank.Utils.Success`1">
+            <summary>
+            Успешный результат выполнения запроса с возвращаемым ответом
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Utils.Success">
             <summary>
             Успешный результат выполнения запроса
             </summary>

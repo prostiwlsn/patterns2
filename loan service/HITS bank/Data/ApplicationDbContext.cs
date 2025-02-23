@@ -10,10 +10,12 @@ public class ApplicationDbContext : DbContext
     { }
     
     public DbSet<TariffEntity> Tariffs { get; set; }
+    public DbSet<LoanEntity> Loans { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TariffEntity>().HasKey(tariff => tariff.Id);
+        modelBuilder.Entity<LoanEntity>().HasKey(loan => loan.Id);
         
         base.OnModelCreating(modelBuilder);
     }

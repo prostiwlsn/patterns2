@@ -1,7 +1,5 @@
 ﻿using HITS_bank.Controllers.Dto;
-using HITS_bank.Controllers.Dto.Common;
 using HITS_bank.Controllers.Dto.Request;
-using HITS_bank.Controllers.Dto.Response;
 using IResult = HITS_bank.Utils.IResult;
 
 #pragma warning disable 1591
@@ -17,16 +15,24 @@ public interface ILoanService
     /// Создание тарифа кредита
     /// </summary>
     Task CreateTariff(CreateTariffRequestDto createTariffRequest);
-    
+
     /// <summary>
     /// Удаление тарифа кредита
     /// </summary>
     Task<IResult> DeleteTariff(Guid tariffId);
-    
+
+    /// <summary>
+    /// Обновление тарифа
+    /// </summary>
     Task<IResult> UpdateTariff(UpdateTariffRequestDto updatedTariff, Guid tariffId);
     
     /// <summary>
     /// Получение списка кредитов
     /// </summary>
     Task<IResult> GetTariffs(int pageNumber, int pageSize);
+    
+    /// <summary>
+    /// Создание кредита
+    /// </summary>
+    Task<IResult> CreateLoan(CreateLoanRequestDto createLoanRequest);
 }

@@ -88,6 +88,24 @@ public class LoanService : ILoanService
     }
 
     /// <summary>
+    /// Создание кредита
+    /// </summary>
+    public async Task<IResult> CreateLoan(CreateLoanRequestDto createLoanRequest)
+    {
+        var selectedTariff = await _loanRepository.GetTariff(createLoanRequest.TariffId);
+        
+        if (selectedTariff == null)
+            return new Error(StatusCodes.Status404NotFound, "Tariff not found");
+        
+        var loanEntity = _mapper.Map<LoanEntity>(createLoanRequest);
+        loanEntity.RatePercent = selectedTariff.RatePercent;
+
+        await _loanRepository.AddLoan(loanEntity);
+        
+        return new Success();
+    }
+    
+    /// <summary>
     /// Валидация пагинации
     /// </summary>
     private static IResult? ValidatePagination(int pageNumber, int pageSize)

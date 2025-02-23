@@ -21,5 +21,10 @@ public class LoanMapper : Profile
         CreateMap<PaginationResponseDto, TariffsListResponseDto>();
         
         CreateMap<UpdateTariffRequestDto, TariffEntity>();
+
+        CreateMap<CreateLoanRequestDto, LoanEntity>()
+            .ForMember(dest => dest.IssueDate, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTime.Now.AddYears(src.DurationInYears)))
+            .ForMember(dest => dest.Debt, opt => opt.MapFrom(src => src.Amount));
     }
 }
