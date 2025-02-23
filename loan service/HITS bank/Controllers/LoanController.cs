@@ -43,7 +43,7 @@ public class LoanController : ControllerBase
     [HttpGet]
     [Route("tariff")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TariffsListResponseDto))]
-    public async Task<IActionResult> GetLoanTariffsList([Required]int pageNumber, [Required]int pageSize) 
+    public async Task<IActionResult> GetLoanTariffsList([Required]int pageNumber = 1, [Required]int pageSize = 10) 
     {
         var tariffsList = await _loanService.GetTariffs(pageNumber, pageSize);
 
@@ -83,6 +83,18 @@ public class LoanController : ControllerBase
         var response = await _loanService.CreateLoan(loanRequest);
         
         return GetResponseResult<CreateLoanRequestDto>(response);
+    }
+
+    /// <summary>
+    /// Получение кредитов пользователя
+    /// </summary>
+    [HttpGet]
+    [Route("list/{userId}")]
+    public async Task<IActionResult> GetUsersLoansList(Guid userId, int pageNumber = 1, int pageSize = 10)
+    {
+        var response = await _loanService.GetUserLoansList(userId, pageNumber, pageSize);
+        
+        return GetResponseResult<LoansListResponseDto>(response);
     }
     
     /// <summary>

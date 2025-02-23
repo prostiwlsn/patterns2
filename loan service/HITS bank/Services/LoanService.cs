@@ -104,6 +104,40 @@ public class LoanService : ILoanService
         
         return new Success();
     }
+
+    /// <summary>
+    /// Получение списка кредитов пользователя
+    /// </summary>
+    public async Task<IResult> GetUserLoansList(Guid userId, int pageNumber, int pageSize)
+    {
+        // Валидация
+        var validationResult = ValidatePagination(pageNumber, pageSize);
+
+        if (validationResult != null)
+            return validationResult;
+        
+        // Получение списка кредитов
+        var offset = (pageNumber - 1) * pageSize;
+        var loanEntities = await _loanRepository.GetUserLoansList(userId, offset, pageSize);
+        
+        // Получение пагинации
+        var pagination = new PaginationResponseDto
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            PagesCount = loanEntities.Count / pageSize + 1,
+        };
+
+        // Маппинг ответа
+        var loansListDto = _mapper.Map<List<LoanDto>>(loanEntities);
+        var response = new LoansListResponseDto
+        {
+            Loans = loansListDto,
+            Pagination = pagination,
+        };
+        
+        return new Success<LoansListResponseDto>(response);
+    }
     
     /// <summary>
     /// Валидация пагинации

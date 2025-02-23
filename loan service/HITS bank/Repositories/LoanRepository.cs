@@ -85,4 +85,12 @@ public class LoanRepository : ILoanRepository
         
         await _context.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Получение списка кредитов пользователя
+    /// </summary>
+    public async Task<List<LoanEntity>> GetUserLoansList(Guid userId, int offset = 0, int limit = 20)
+    {
+        return await _context.Loans.Where(x => x.UserId == userId).Skip(offset).Take(limit).ToListAsync();
+    }
 }

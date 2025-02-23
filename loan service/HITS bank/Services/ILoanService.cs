@@ -35,4 +35,9 @@ public interface ILoanService
     /// Создание кредита
     /// </summary>
     Task<IResult> CreateLoan(CreateLoanRequestDto createLoanRequest);
+    
+    /// <summary>
+    /// Получение списко кредитов пользователя
+    /// </summary>
+    Task<IResult> GetUserLoansList(Guid userId, int pageNumber, int pageSize);
 }

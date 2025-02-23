@@ -29,6 +29,16 @@
             Создание таарифа кредита
             </summary>
         </member>
+        <member name="T:HITS_bank.Controllers.Dto.Response.LoanDto">
+            <summary>
+            Кредит
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Controllers.Dto.Response.LoansListResponseDto">
+            <summary>
+            Ответ списка кредитов
+            </summary>
+        </member>
         <member name="T:HITS_bank.Controllers.Dto.Response.TariffDto">
             <summary>
             Тариф кредита
@@ -67,6 +77,11 @@
         <member name="M:HITS_bank.Controllers.LoanController.CreateLoan(HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto)">
             <summary>
             Взятие кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Controllers.LoanController.GetUsersLoansList(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Получение кредитов пользователя
             </summary>
         </member>
         <member name="M:HITS_bank.Controllers.LoanController.GetResponseResult``1(HITS_bank.Utils.IResult)">
@@ -114,6 +129,11 @@
             Добавление кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.GetUserLoansList(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Получение списка кредитов пользователя
+            </summary>
+        </member>
         <member name="M:HITS_bank.Repositories.LoanRepository.AddTariff(HITS_bank.Data.Entities.TariffEntity)">
             <summary>
             Добавление тарифа кредита
@@ -142,6 +162,11 @@
         <member name="M:HITS_bank.Repositories.LoanRepository.AddLoan(HITS_bank.Data.Entities.LoanEntity)">
             <summary>
             Добавление кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.GetUserLoansList(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Получение списка кредитов пользователя
             </summary>
         </member>
         <member name="T:HITS_bank.Services.ILoanService">
@@ -174,6 +199,11 @@
             Создание кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Services.ILoanService.GetUserLoansList(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Получение списко кредитов пользователя
+            </summary>
+        </member>
         <member name="T:HITS_bank.Services.LoanService">
             <summary>
             Сервис кредитов
@@ -202,6 +232,11 @@
         <member name="M:HITS_bank.Services.LoanService.CreateLoan(HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto)">
             <summary>
             Создание кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.LoanService.GetUserLoansList(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Получение списка кредитов пользователя
             </summary>
         </member>
         <member name="M:HITS_bank.Services.LoanService.ValidatePagination(System.Int32,System.Int32)">

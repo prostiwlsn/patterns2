@@ -35,4 +35,9 @@ public interface ILoanRepository
     /// Добавление кредита
     /// </summary>
     Task AddLoan(LoanEntity loanEntity);
+    
+    /// <summary>
+    /// Получение списка кредитов пользователя
+    /// </summary>
+    Task<List<LoanEntity>> GetUserLoansList(Guid userId, int offset = 0, int limit = 20);
 }
