@@ -48,7 +48,7 @@ namespace patterns2_infoauth.Handlers
     {
         public static async Task SetupListeners(this IBus bus, WebApplication app)
         {
-            await bus.Rpc.RespondAsync<GetUserRequest, GetUserResponse>(async (request, cancellationToken) => await AuthMessageHandler.GetRpcResponse(app, request), x => x.WithQueueName("userinfo"));
+            await bus.Rpc.RespondAsync<GetUserRequest, GetUserResponse>(async (request, cancellationToken) => await AuthMessageHandler.GetRpcResponse(app, request), x => x.WithQueueName("userinfoxd"));
         }
     }
 }

@@ -50,7 +50,7 @@ namespace patterns2_infoauth.Common
             {
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
 
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
+                var credentials = new SigningCredentials(securityKey, "sha512");
 
                 var securityToken = new JwtSecurityToken(
                     claims: claims,

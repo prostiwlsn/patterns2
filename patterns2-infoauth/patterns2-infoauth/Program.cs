@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using patterns2_infoauth.Middleware;
+using EasyNetQ.DI;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,12 +25,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSingleton<IBus>(RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("BusConnection")));
+//builder.Services.AddSingleton<IBus>(RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("BusConnection")));
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<AuthMessageHandler>();
+
+var rabbitMqConnectionString = builder.Configuration.GetConnectionString("BusConnection");
+builder.Services.AddSingleton(new RpcServer(builder.Services.BuildServiceProvider(), rabbitMqConnectionString));
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -79,7 +84,10 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-await app.Services.GetService<IBus>().SetupListeners(app);
+//await app.Services.GetService<IBus>().SetupListeners(app);
+
+var rpcServer = app.Services.GetRequiredService<RpcServer>();
+rpcServer.Start();
 
 using (var serviceScope = app.Services.CreateScope())
 {
