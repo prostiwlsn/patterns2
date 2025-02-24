@@ -73,7 +73,7 @@ namespace patterns2_infoauth.Handlers
             };
 
             // Start consuming messages on the RPC queue.
-            _channel.BasicConsume(queue: "userinfoxd", autoAck: false, consumer: consumer);
+            _channel.BasicConsume(queue: "userinfo", autoAck: false, consumer: consumer);
         }
 
         public void Dispose()
