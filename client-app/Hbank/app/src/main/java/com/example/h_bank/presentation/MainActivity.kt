@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.h_bank.di.appModule
-import com.example.h_bank.presentation.common.AppNavigation
+import com.example.h_bank.presentation.navigation.AppNavigation
 import com.example.h_bank.ui.theme.HbankTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

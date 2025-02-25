@@ -14,4 +14,22 @@
     <string name="name">Имя</string>
     <string name="email">Email</string>
     <string name="repeat_password">Повторите пароль</string>
+    <string name="main_screen_bottom_sheet_account_button">Открыть счёт</string>
+    <string name="main_screen_bottom_sheet_credit_button">Оформить кредит</string>
+    <string name="operation_history">История операций</string>
+    <string name="transfer">Перевести</string>
+    <string name="transfers">Переводы</string>
+    <string name="credits">Кредиты</string>
+    <string name="accounts">Счета</string>
+    <string name="all">Все</string>
+    <string name="good_day">Добрый день</string>
+    <string name="applications">Заявки</string>
+    <string name="take_out_loan">Взять кредит</string>
+    <string name="open_account">Открыть счёт</string>
+    <string name="all_loans">Все кредиты</string>
+    <string name="all_accounts">Все счета</string>
+    <string name="success_account">Счёт успешно открыт</string>
+    <string name="success_loan">Кредит успешно оформлен</string>
+    <string name="to_main">На главную</string>
+    <string name="loan_processing">Оформление кредита</string>
 </resources>
