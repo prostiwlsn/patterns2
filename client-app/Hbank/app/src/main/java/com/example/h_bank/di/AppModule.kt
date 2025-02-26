@@ -1,5 +1,6 @@
 package com.example.h_bank.di
 
+import com.example.h_bank.presentation.loanProcessing.LoanProcessingViewModel
 import com.example.h_bank.presentation.login.LoginViewModel
 import com.example.h_bank.presentation.main.MainViewModel
 import com.example.h_bank.presentation.registration.RegistrationViewModel
@@ -14,6 +15,7 @@ val appModule = module {
     viewModel { LoginViewModel() }
     viewModel { RegistrationViewModel() }
     viewModel { MainViewModel() }
+    viewModel { LoanProcessingViewModel() }
     viewModel { SuccessfulAccountOpeningViewModel() }
     viewModel { SuccessfulLoanProcessingViewModel() }
 }

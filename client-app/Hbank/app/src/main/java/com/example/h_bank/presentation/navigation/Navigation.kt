@@ -3,6 +3,7 @@ package com.example.h_bank.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
+import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
 import com.example.h_bank.presentation.login.LoginScreen
 import com.example.h_bank.presentation.main.MainScreen
 import com.example.h_bank.presentation.registration.RegistrationScreen
@@ -25,6 +26,9 @@ fun AppNavigation() {
         }
         composable("main") {
             MainScreen(navController)
+        }
+        composable("loan_processing") {
+            LoanProcessingScreen(navController)
         }
         composable("successful_account_opening") {
             SuccessfulAccountOpeningScreen(navController)

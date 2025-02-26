@@ -23,8 +23,10 @@ import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bank.R
 import com.example.h_bank.presentation.main.components.AccountsBlock
+import com.example.h_bank.presentation.main.components.AccountsBottomSheetContent
 import com.example.h_bank.presentation.main.components.ApplicationsBlock
 import com.example.h_bank.presentation.main.components.LoansBlock
+import com.example.h_bank.presentation.main.components.LoansBottomSheetContent
 import com.example.h_bank.presentation.main.components.TransfersBlock
 
 @OptIn(ExperimentalMaterial3Api::class)

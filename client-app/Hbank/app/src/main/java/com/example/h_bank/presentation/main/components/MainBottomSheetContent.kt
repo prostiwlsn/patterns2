@@ -1,4 +1,4 @@
-package com.example.h_bank.presentation.main
+package com.example.h_bank.presentation.main.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,8 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.h_bank.R
 import com.example.h_bank.presentation.common.CustomButton
-import com.example.h_bank.presentation.main.components.AccountItem
-import com.example.h_bank.presentation.main.components.LoanItem
 
 @Composable
 fun AccountsBottomSheetContent(
