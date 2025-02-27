@@ -47,6 +47,7 @@ fun NumberInputField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(12.dp))
         HorizontalDivider(color = Color(0xFF282A31).copy(alpha = 0.06f))
     }
 }

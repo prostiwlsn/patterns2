@@ -2,29 +2,76 @@ package com.example.h_bank.presentation.main
 
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.Loan
+import java.time.LocalDateTime
+import java.util.UUID
 
 data class MainState(
     val accounts: List<Account> = listOf(
-        Account("1", "Счёт 1", "24 420,05 ₽"),
-        Account("2", "Счёт 2", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
-        Account("3", "Счёт 3", "10 000,00 ₽"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", "100000"),
     ),
     val loans: List<Loan> = listOf(
         Loan(
-            "1", "Кредит 1", "5 000,00 ₽",
-            dueDate = "25.05.2026"
+            id = UUID.randomUUID(),
+            documentNumber = 123456,
+            amount = 500_000,
+            debt = 250_000,
+            ratePercent = 12.5,
+            issueDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
         ),
-        Loan("2", "Кредит 2", "7 500,00 ₽",
-            dueDate = "25.05.2026"
-        )
+        Loan(
+            id = UUID.randomUUID(),
+            documentNumber = 123456,
+            amount = 500_000,
+            debt = 250_000,
+            ratePercent = 12.5,
+            issueDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
+        ),
+        Loan(
+            id = UUID.randomUUID(),
+            documentNumber = 123456,
+            amount = 500_000,
+            debt = 250_000,
+            ratePercent = 12.5,
+            issueDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
+        ),
+        Loan(
+            id = UUID.randomUUID(),
+            documentNumber = 123456,
+            amount = 500_000,
+            debt = 250_000,
+            ratePercent = 12.5,
+            issueDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
+        ),
+        Loan(
+            id = UUID.randomUUID(),
+            documentNumber = 123456,
+            amount = 500_000,
+            debt = 250_000,
+            ratePercent = 12.5,
+            issueDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
+        ),
+        Loan(
+            id = UUID.randomUUID(),
+            documentNumber = 123456,
+            amount = 500_000,
+            debt = 250_000,
+            ratePercent = 12.5,
+            issueDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
+        ),
     ),
     val isAccountsSheetVisible: Boolean = false,
     val isLoansSheetVisible: Boolean = false

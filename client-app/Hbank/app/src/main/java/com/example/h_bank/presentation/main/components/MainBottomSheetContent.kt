@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.h_bank.R
+import com.example.h_bank.presentation.common.AccountItem
 import com.example.h_bank.presentation.common.CustomButton
 
 @Composable

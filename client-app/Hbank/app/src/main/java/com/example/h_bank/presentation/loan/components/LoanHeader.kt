@@ -1,9 +1,11 @@
-package com.example.h_bank.presentation.loanProcessing.comnponents
+package com.example.h_bank.presentation.loan.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,8 +23,9 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 
 @Composable
-fun LoanProcessingHeader(
-    onBackClick: () -> Unit
+fun LoanHeader(
+    onBackClick: () -> Unit,
+    documentNumber: String
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -36,11 +39,20 @@ fun LoanProcessingHeader(
             )
         }
         Spacer(modifier = Modifier.width(32.dp))
-        Text(
-            text = stringResource(R.string.loan_processing),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(R.string.loan_agreement),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "№ $documentNumber",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF9B9CA1),
+            )
+        }
     }
 }

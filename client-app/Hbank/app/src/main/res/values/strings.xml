@@ -20,6 +20,7 @@
     <string name="transfer">Перевести</string>
     <string name="transfers">Переводы</string>
     <string name="credits">Кредиты</string>
+    <string name="payment_account">Счёт списания</string>
     <string name="accounts">Счета</string>
     <string name="all">Все</string>
     <string name="good_day">Добрый день</string>
@@ -33,10 +34,16 @@
     <string name="success_loan">Кредит успешно оформлен</string>
     <string name="to_main">На главную</string>
     <string name="loan_processing">Оформление кредита</string>
+    <string name="loan_agreement">Кредитный договор</string>
+    <string name="loan_payment">Погашение кредита</string>
     <string name="process_loan">Оформить кредит</string>
     <string name="rate">Тариф</string>
     <string name="loan_amount">Размер кредита</string>
+    <string name="amount">Сумма</string>
     <string name="term">Срок</string>
+    <string name="due_date">Дата окончания договора</string>
     <string name="interest_rate">Процентная ставка</string>
     <string name="daily_payment">Ежедневный платёж</string>
+    <string name="pay">Оплатить</string>
+    <string name="debt">Задолженность</string>
 </resources>

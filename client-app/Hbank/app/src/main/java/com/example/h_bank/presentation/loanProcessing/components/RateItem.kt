@@ -1,4 +1,4 @@
-package com.example.h_bank.presentation.loanProcessing.comnponents
+package com.example.h_bank.presentation.loanProcessing.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,7 +31,7 @@ fun RateItem(
             Text(text = rate.name, fontSize = 14.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = rate.interestRate.toString(),
+                text = rate.interestRate.toString() + "%",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )

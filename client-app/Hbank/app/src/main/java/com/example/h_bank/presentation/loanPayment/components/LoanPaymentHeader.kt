@@ -1,9 +1,11 @@
-package com.example.h_bank.presentation.loanProcessing
+package com.example.h_bank.presentation.loanPayment.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,7 +23,9 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 
 @Composable
-fun LoanProcessingHeader(onBackClick: () -> Unit) {
+fun LoanPaymentHeader(
+    onBackClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
@@ -35,7 +39,7 @@ fun LoanProcessingHeader(onBackClick: () -> Unit) {
         }
         Spacer(modifier = Modifier.width(32.dp))
         Text(
-            text = stringResource(R.string.loan_processing),
+            text = stringResource(R.string.loan_payment),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black

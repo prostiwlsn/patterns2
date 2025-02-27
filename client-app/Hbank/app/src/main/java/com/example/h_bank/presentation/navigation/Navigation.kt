@@ -1,8 +1,12 @@
 package com.example.h_bank.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.h_bank.presentation.loan.LoanScreen
+import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
 import com.example.h_bank.presentation.login.LoginScreen
 import com.example.h_bank.presentation.main.MainScreen
@@ -27,11 +31,26 @@ fun AppNavigation() {
         composable("main") {
             MainScreen(navController)
         }
+        composable(
+            route = "loan/{loanId}",
+            arguments = listOf(navArgument("loanId") { type = NavType.StringType }),
+        ) {
+            LoanScreen(navController)
+        }
+        composable(
+            route = "loan_payment/{loanId}",
+            arguments = listOf(navArgument("loanId") { type = NavType.StringType }),
+        ) {
+            LoanPaymentScreen(navController)
+        }
         composable("loan_processing") {
             LoanProcessingScreen(navController)
         }
         composable("successful_account_opening") {
             SuccessfulAccountOpeningScreen(navController)
+        }
+        composable("successful_loan_payment") {
+//            SuccessfulLoanPaymentScreen(navController)
         }
         composable("successful_loan_processing") {
             SuccessfulLoanProcessingScreen(navController)

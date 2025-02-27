@@ -16,12 +16,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.data.Loan
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun LoanItem(
     loan: Loan,
     onClick: () -> Unit
 ) {
+    val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,12 +31,16 @@ fun LoanItem(
             .padding(vertical = 12.dp, horizontal = 16.dp)
     ) {
         Column {
-            Text(text = loan.name, fontSize = 14.sp, color = Color.Black)
+            Text(
+                text = "Договор № " + loan.documentNumber.toString(),
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = loan.amount, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = loan.amount.toString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
         Text(
-            text = loan.dueDate,
+            text = "до " + loan.endDate.format(formatter),
             fontSize = 12.sp,
             color = Color.Gray,
             modifier = Modifier

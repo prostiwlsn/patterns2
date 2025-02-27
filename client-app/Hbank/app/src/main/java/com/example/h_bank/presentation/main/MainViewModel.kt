@@ -42,7 +42,7 @@ class MainViewModel : ViewModel() {
 
     fun onLoanClicked(loan: Loan) {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToLoan(loan.id))
+            _navigationEvent.emit(MainNavigationEvent.NavigateToLoan(loan.id.toString()))
         }
     }
 

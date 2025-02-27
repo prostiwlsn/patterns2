@@ -1,4 +1,4 @@
-package com.example.h_bank.presentation.loanProcessing
+package com.example.h_bank.presentation.loanPayment
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,34 +23,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.h_bank.R
+import com.example.h_bank.presentation.common.CustomButton
 import com.example.h_bank.presentation.common.CustomDisablableButton
 import com.example.h_bank.presentation.common.IconButtonField
-import com.example.h_bank.presentation.loanProcessing.components.RatesBottomSheetContent
 import com.example.h_bank.presentation.common.NumberInputField
 import com.example.h_bank.presentation.common.TextField
-import com.example.h_bank.presentation.loanProcessing.components.LoanProcessingHeader
+import com.example.h_bank.presentation.loan.components.LoanHeader
+import com.example.h_bank.presentation.loanPayment.components.LoanPaymentBottomSheetContent
+import com.example.h_bank.presentation.loanPayment.components.LoanPaymentHeader
+import com.example.h_bank.presentation.main.components.AccountsBottomSheetContent
 import org.koin.androidx.compose.koinViewModel
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoanProcessingScreen(
+fun LoanPaymentScreen(
     navController: NavController,
-    viewModel: LoanProcessingViewModel = koinViewModel()
+    viewModel: LoanPaymentViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                LoanProcessingNavigationEvent.NavigateToSuccessfulLoanProcessing -> navController.navigate(
-                    "successful_loan_processing"
+                LoanPaymentNavigationEvent.NavigateToSuccessfulLoanPayment -> navController.navigate(
+                    "successful_loan_payment"
                 )
 
-                LoanProcessingNavigationEvent.NavigateBack -> navController.popBackStack()
+                LoanPaymentNavigationEvent.NavigateBack -> navController.popBackStack()
             }
         }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -65,55 +68,41 @@ fun LoanProcessingScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(40.dp))
-            LoanProcessingHeader(onBackClick = { viewModel.onBackClicked() })
+            LoanPaymentHeader(
+                onBackClick = { viewModel.onBackClicked() }
+            )
             Spacer(modifier = Modifier.height(37.dp))
             IconButtonField(
-                labelRes = R.string.rate,
-                value = state.selectedRate.name,
+                labelRes = R.string.payment_account,
+                value = state.selectedAccount.name,
                 icon = Icons.Default.Edit,
-                onIconClick = {viewModel.showRatesSheet() },
+                onIconClick = { viewModel.showAccountsSheet() },
             )
             Spacer(modifier = Modifier.height(6.dp))
             NumberInputField(
-                labelRes = R.string.loan_amount,
+                labelRes = R.string.amount,
                 value = state.amount.toString() + " ₽",
                 onValueChange = { viewModel.onAmountChange(it.toInt()) }
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            NumberInputField(
-                labelRes = R.string.term,
-                value = state.term.toString() + " лет",
-                onValueChange = { viewModel.onTermChange(it.toInt()) }
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            TextField(
-                labelRes = R.string.interest_rate,
-                value = state.selectedRate.interestRate.toString() + " %",
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            TextField(
-                labelRes = R.string.daily_payment,
-                value = state.dailyPayment.toString() + " ₽",
-            )
             Spacer(modifier = Modifier.weight(1f))
             CustomDisablableButton(
-                enabled = state.areFieldsValid,
-                onClick = viewModel::onProcessLoanClicked,
-                textRes = R.string.process_loan
+                onClick = viewModel::onPayClicked,
+                textRes = R.string.pay,
+                enabled = state.areFieldsValid
             )
             Spacer(modifier = Modifier.height(32.dp))
         }
-        if (state.isRatesSheetVisible) {
+        if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
-                onDismissRequest = { viewModel.hideRatesSheet() },
+                onDismissRequest = { viewModel.hideAccountsSheet() },
                 containerColor = Color(0xFFF9F9F9),
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
-                RatesBottomSheetContent(
-                    rates = state.rates,
+                LoanPaymentBottomSheetContent(
+                    accounts = state.accounts,
                     onItemClick = { rate ->
-                        viewModel.onRateClicked(rate)
-                        viewModel.hideRatesSheet()
+                        viewModel.onAccountClicked(rate)
+                        viewModel.hideAccountsSheet()
                     }
                 )
             }

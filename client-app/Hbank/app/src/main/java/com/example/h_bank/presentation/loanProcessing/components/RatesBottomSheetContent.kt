@@ -1,4 +1,4 @@
-package com.example.h_bank.presentation.loanProcessing.comnponents
+package com.example.h_bank.presentation.loanProcessing.components
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -35,6 +35,5 @@ fun TextField(
             color = Color(0xFF282A31),
             fontWeight = FontWeight.Medium
         )
-        HorizontalDivider(color = Color(0xFF282A31).copy(alpha = 0.06f))
     }
 }

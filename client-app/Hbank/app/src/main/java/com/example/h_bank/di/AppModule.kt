@@ -1,5 +1,8 @@
 package com.example.h_bank.di
 
+import androidx.lifecycle.SavedStateHandle
+import com.example.h_bank.presentation.loan.LoanViewModel
+import com.example.h_bank.presentation.loanPayment.LoanPaymentViewModel
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingViewModel
 import com.example.h_bank.presentation.login.LoginViewModel
 import com.example.h_bank.presentation.main.MainViewModel
@@ -16,6 +19,8 @@ val appModule = module {
     viewModel { RegistrationViewModel() }
     viewModel { MainViewModel() }
     viewModel { LoanProcessingViewModel() }
+    viewModel { (savedStateHandle: SavedStateHandle) -> LoanPaymentViewModel(savedStateHandle) }
     viewModel { SuccessfulAccountOpeningViewModel() }
     viewModel { SuccessfulLoanProcessingViewModel() }
+    viewModel { (savedStateHandle: SavedStateHandle) -> LoanViewModel(savedStateHandle) }
 }

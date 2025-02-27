@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 import com.example.h_bank.data.Account
+import com.example.h_bank.presentation.common.AccountItem
 
 @Composable
 fun AccountsBlock(

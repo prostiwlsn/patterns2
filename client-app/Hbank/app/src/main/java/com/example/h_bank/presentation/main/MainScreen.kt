@@ -44,7 +44,7 @@ fun MainScreen(
                     navController.navigate("account/${event.accountId}")
 
                 is MainNavigationEvent.NavigateToLoan ->
-                    navController.navigate("credit/${event.loanId}")
+                    navController.navigate("loan/${event.loanId}")
 
                 is MainNavigationEvent.NavigateToTransfer ->
                     navController.navigate("transfer")
