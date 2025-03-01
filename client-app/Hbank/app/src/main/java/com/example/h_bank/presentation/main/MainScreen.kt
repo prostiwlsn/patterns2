@@ -49,8 +49,8 @@ fun MainScreen(
                 is MainNavigationEvent.NavigateToTransfer ->
                     navController.navigate("transfer")
 
-                is MainNavigationEvent.NavigateToHistory ->
-                    navController.navigate("history")
+                is MainNavigationEvent.NavigateToPaymentHistory ->
+                    navController.navigate("payment_history")
 
                 is MainNavigationEvent.NavigateToLoanProcessing ->
                     navController.navigate("loan_processing")

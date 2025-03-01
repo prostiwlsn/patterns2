@@ -1,5 +1,6 @@
 package com.example.h_bank.presentation.successfulLoanProcessing
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,10 +35,18 @@ fun SuccessfulLoanProcessingScreen(
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                SuccessfulLoanProcessingNavigationEvent.NavigateToMain -> navController.navigate("main")
-                SuccessfulLoanProcessingNavigationEvent.NavigateBack -> navController.popBackStack()
+                SuccessfulLoanProcessingNavigationEvent.NavigateToMain ->
+                    navController.navigate("main") {
+                        popUpTo(
+                            "main"
+                        ) { inclusive = true }
+                    }
             }
         }
+    }
+
+    BackHandler {
+        viewModel.onToMainClicked()
     }
 
     Column(
@@ -54,7 +63,7 @@ fun SuccessfulLoanProcessingScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            IconButton(onClick = { viewModel.onBackClicked() }) {
+            IconButton(onClick = { viewModel.onToMainClicked() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"

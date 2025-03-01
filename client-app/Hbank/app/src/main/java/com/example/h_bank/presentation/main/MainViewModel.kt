@@ -54,7 +54,7 @@ class MainViewModel : ViewModel() {
 
     fun onHistoryClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToHistory)
+            _navigationEvent.emit(MainNavigationEvent.NavigateToPaymentHistory)
         }
     }
 

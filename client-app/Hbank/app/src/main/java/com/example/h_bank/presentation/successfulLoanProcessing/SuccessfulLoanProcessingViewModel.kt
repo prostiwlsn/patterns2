@@ -15,10 +15,4 @@ class SuccessfulLoanProcessingViewModel : ViewModel() {
             _navigationEvent.emit(SuccessfulLoanProcessingNavigationEvent.NavigateToMain)
         }
     }
-
-    fun onBackClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(SuccessfulLoanProcessingNavigationEvent.NavigateBack)
-        }
-    }
 }

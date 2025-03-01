@@ -1,4 +1,4 @@
-package com.example.h_bank.presentation.successfulAccountOpening
+package com.example.h_bank.presentation.successfulLoanPayment
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -28,14 +28,14 @@ import com.example.h_bank.presentation.common.SuccessMessage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SuccessfulAccountOpeningScreen(
+fun SuccessfulLoanPaymentScreen(
     navController: NavController,
-    viewModel: SuccessfulAccountOpeningViewModel = koinViewModel()
+    viewModel: SuccessfulLoanPaymentViewModel = koinViewModel()
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                SuccessfulAccountOpeningNavigationEvent.NavigateToMain ->
+                SuccessfulLoanPaymentNavigationEvent.NavigateToMain ->
                     navController.navigate("main") {
                         popUpTo(
                             "main"
@@ -73,7 +73,7 @@ fun SuccessfulAccountOpeningScreen(
         Spacer(modifier = Modifier.weight(1f))
         SuccessIcon()
         Spacer(modifier = Modifier.height(16.dp))
-        SuccessMessage(textRes = R.string.success_account)
+        SuccessMessage(textRes = R.string.success_loan_payment)
         Spacer(modifier = Modifier.weight(1f))
         CustomButton(
             onClick = viewModel::onToMainClicked,

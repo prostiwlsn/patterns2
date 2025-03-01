@@ -10,8 +10,10 @@ import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
 import com.example.h_bank.presentation.login.LoginScreen
 import com.example.h_bank.presentation.main.MainScreen
+import com.example.h_bank.presentation.paymentHistory.PaymentHistoryScreen
 import com.example.h_bank.presentation.registration.RegistrationScreen
 import com.example.h_bank.presentation.successfulAccountOpening.SuccessfulAccountOpeningScreen
+import com.example.h_bank.presentation.successfulLoanPayment.SuccessfulLoanPaymentScreen
 import com.example.h_bank.presentation.successfulLoanProcessing.SuccessfulLoanProcessingScreen
 import com.example.h_bank.presentation.welcome.WelcomeScreen
 
@@ -46,11 +48,14 @@ fun AppNavigation() {
         composable("loan_processing") {
             LoanProcessingScreen(navController)
         }
+        composable("payment_history") {
+            PaymentHistoryScreen(navController)
+        }
         composable("successful_account_opening") {
             SuccessfulAccountOpeningScreen(navController)
         }
         composable("successful_loan_payment") {
-//            SuccessfulLoanPaymentScreen(navController)
+            SuccessfulLoanPaymentScreen(navController)
         }
         composable("successful_loan_processing") {
             SuccessfulLoanProcessingScreen(navController)

@@ -33,8 +33,17 @@ fun LoginScreen(
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 LoginNavigationEvent.NavigateToRegister -> navController.navigate("registration")
-                LoginNavigationEvent.NavigateToMain -> navController.navigate("main")
-                LoginNavigationEvent.NavigateBack -> navController.popBackStack()
+                LoginNavigationEvent.NavigateToMain -> navController.navigate("main") {
+                    popUpTo("welcome") { inclusive = true }
+                    launchSingleTop = true
+                }
+
+                LoginNavigationEvent.NavigateBack -> {
+                    val canNavigateBack = navController.previousBackStackEntry != null
+                    if (canNavigateBack) {
+                        navController.popBackStack()
+                    }
+                }
             }
         }
     }
