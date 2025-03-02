@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using patterns2_infoauth.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -34,14 +35,17 @@ namespace patterns2_infoauth.Common
             }
         }
 
-        public async Task<string> GenerateAccessToken(Guid id)
+        public async Task<string> GenerateAccessToken(Guid id, Guid sessionId, List<Claim> additionalClaims)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+                new Claim("sessionId", sessionId.ToString())
             };
 
-            return await GenerateToken(claims, DateTime.Now.AddMonths(1));
+            claims.AddRange(additionalClaims);
+
+            return await GenerateToken(claims, DateTime.Now.AddHours(1));
         }
 
         public async Task<string> GenerateToken(List<Claim> claims, DateTime expires)
@@ -68,6 +72,17 @@ namespace patterns2_infoauth.Common
             {
                 throw;
             }
+        }
+
+        public async Task<string> GenerateRefreshToken(Guid sessionId)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim("type", "refresh"),
+                new Claim("sessionId", sessionId.ToString())
+            };
+
+            return await GenerateToken(claims, DateTime.Now.AddMonths(1));
         }
     }
 }

@@ -12,6 +12,8 @@ namespace patterns2_infoauth.Handlers
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
+        private const string _userInfoQueueName = "userinfo";
+
         public RpcServer(IServiceProvider serviceProvider, string rabbitMqConnectionString)
         {
             _serviceProvider = serviceProvider;
@@ -25,7 +27,7 @@ namespace patterns2_infoauth.Handlers
 
             // Declare the RPC queue.
             _channel.QueueDeclare(
-                queue: "userinfo",
+                queue: _userInfoQueueName,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
@@ -44,12 +46,10 @@ namespace patterns2_infoauth.Handlers
                 GetUserResponse response;
                 try
                 {
-                    // Deserialize the incoming message.
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
                     var request = JsonSerializer.Deserialize<GetUserRequest>(message);
 
-                    // Resolve AuthMessageHandler from DI and handle the request.
                     using (var scope = _serviceProvider.CreateScope())
                     {
                         var handler = scope.ServiceProvider.GetRequiredService<AuthMessageHandler>();
@@ -61,19 +61,65 @@ namespace patterns2_infoauth.Handlers
                     response = new GetUserResponse { Success = false };
                 }
 
-                // Serialize the response and publish it.
-                var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
-                _channel.BasicPublish(
-                    exchange: "",
-                    routingKey: props.ReplyTo,
-                    basicProperties: replyProps,
-                    body: responseBytes);
+                try
+                {
+                    var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
+                    _channel.BasicPublish(
+                        exchange: "",
+                        routingKey: props.ReplyTo,
+                        basicProperties: replyProps,
+                        body: responseBytes);
+                }
+                catch (Exception ex) 
+                {
+                    Console.WriteLine(ex.Message);
+                }
 
-                _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                try
+                {
+                    _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             };
 
-            // Start consuming messages on the RPC queue.
-            _channel.BasicConsume(queue: "userinfo", autoAck: false, consumer: consumer);
+            _channel.BasicConsume(queue: _userInfoQueueName, autoAck: false, consumer: consumer);
+        }
+
+        private async Task HandleGetUserInfo(object model, BasicDeliverEventArgs ea)
+        {
+            var props = ea.BasicProperties;
+            var replyProps = _channel.CreateBasicProperties();
+            replyProps.CorrelationId = props.CorrelationId;
+
+            GetUserResponse response;
+            try
+            {
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                var request = JsonSerializer.Deserialize<GetUserRequest>(message);
+
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var handler = scope.ServiceProvider.GetRequiredService<AuthMessageHandler>();
+                    response = await handler.HandleGetUser(request);
+                }
+            }
+            catch
+            {
+                response = new GetUserResponse { Success = false };
+            }
+
+            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
+            _channel.BasicPublish(
+                exchange: "",
+                routingKey: props.ReplyTo,
+                basicProperties: replyProps,
+                body: responseBytes);
+
+            _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
         }
 
         public void Dispose()

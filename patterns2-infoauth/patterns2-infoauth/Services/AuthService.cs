@@ -1,5 +1,7 @@
 ﻿using EasyNetQ;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using patterns2_infoauth.Common;
 using patterns2_infoauth.Data;
@@ -22,7 +24,7 @@ namespace patterns2_infoauth.Services
             _dbContext = dbContext;
             _config = config;
         }
-        public async Task<string> Register(UserCredentialsDto model)
+        public async Task<TokenDto> Register(UserCredentialsDto model)
         {
 
             try
@@ -43,6 +45,15 @@ namespace patterns2_infoauth.Services
                     Password = CryptoCommon.ComputeSha256Hash(model.Password),
                 });
 
+                var session = new Session
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = id,
+                    IsActive = true,
+                    Expires = DateTime.UtcNow.AddMonths(1),
+                };
+                _dbContext.Sessions.Add(session);
+
                 var saveTask = _dbContext.SaveChangesAsync();
 
                 string key = _config.GetSection("Jwt:Key").Value;
@@ -53,7 +64,10 @@ namespace patterns2_infoauth.Services
 
                 await saveTask;
 
-                return await crypto.GenerateAccessToken(id);
+                var accessToken = await crypto.GenerateAccessToken(id, id, new List<Claim>());
+                var refreshToken = await crypto.GenerateRefreshToken(session.Id);
+
+                return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
             }
             catch
             {
@@ -61,9 +75,9 @@ namespace patterns2_infoauth.Services
             }
         }
 
-        public async Task<string> Login(LoginDto model)
+        public async Task<TokenDto> Login(LoginDto model)
         {
-            var user = _dbContext.UserCredentials.FirstOrDefault(creds => creds.Phone == model.Phone && creds.Password == CryptoCommon.ComputeSha256Hash(model.Password));
+            var user = _dbContext.UserCredentials.Include(u => u.UserRoles).FirstOrDefault(creds => creds.Phone == model.Phone && creds.Password == CryptoCommon.ComputeSha256Hash(model.Password));
             if (user == null) throw new ArgumentException();
 
             try
@@ -72,14 +86,106 @@ namespace patterns2_infoauth.Services
                 string issuer = _config.GetSection("Jwt:Issuer").Value;
                 string audience = _config.GetSection("Jwt:Audience").Value;
 
+                var session = new Session
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    IsActive = true,
+                    Expires = DateTime.UtcNow.AddMonths(1),
+                };
+
+                _dbContext.Sessions.Add(session);
+
                 var crypto = new CryptoCommon(key, issuer, audience);
 
-                return await crypto.GenerateAccessToken(user.Id);
+                List<Claim> additionalClaims = new List<Claim>();
+
+                user.UserRoles.ForEach(role =>
+                {
+                    additionalClaims.Add(new Claim(nameof(role.Role), "True"));
+                });
+
+                additionalClaims.Add(new Claim("isBlocked", user.IsBlocked.ToString()));
+
+                var accessToken = await crypto.GenerateAccessToken(user.Id, session.Id, additionalClaims);
+                var refreshToken = await crypto.GenerateRefreshToken(session.Id);
+
+                return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
             }
             catch
             {
                 throw;
             }
         }
+
+        public async Task Logout(Guid sessionId)
+        {
+            var session = _dbContext.Sessions.Find(sessionId);
+            if (session == null) throw new ArgumentException();
+
+            try
+            {
+                _dbContext.Sessions.Remove(session);
+                _dbContext.SaveChanges();
+            }
+            catch 
+            {
+                throw;
+            }
+        }
+
+        public async Task<TokenDto> Refresh(Guid sessionId)
+        {
+            var session = await _dbContext.Sessions.FindAsync(sessionId);
+
+            if (session == null)
+                throw new ArgumentException();
+
+            var user = await _dbContext.UserCredentials.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == session.UserId);
+
+            if (user == null)
+                throw new ArgumentException();
+
+            Guid newSessionId = Guid.NewGuid();
+
+            try
+            {
+                string key = _config.GetSection("Jwt:Key").Value;
+                string issuer = _config.GetSection("Jwt:Issuer").Value;
+                string audience = _config.GetSection("Jwt:Audience").Value;
+
+                List<Claim> additionalClaims = new List<Claim>();
+
+                user.UserRoles.ForEach(role =>
+                {
+                    additionalClaims.Add(new Claim(nameof(role.Role), "True"));
+                });
+
+                additionalClaims.Add(new Claim("isBlocked", user.IsBlocked.ToString()));
+
+                var crypto = new CryptoCommon(key, issuer, audience);
+                var accessToken = await crypto.GenerateAccessToken(user.Id, session.Id, additionalClaims);
+                var refreshToken = await crypto.GenerateRefreshToken(session.Id);
+
+                Session newSession = new Session
+                {
+                    Id = newSessionId,
+                    UserId = user.Id,
+                    IsActive = true,
+                    Expires = DateTime.UtcNow.AddMonths(1),
+                };
+
+                _dbContext.Sessions.Remove(session);
+                _dbContext.Sessions.Add(newSession);
+                _dbContext.SaveChanges();
+
+                return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
     }
 }
