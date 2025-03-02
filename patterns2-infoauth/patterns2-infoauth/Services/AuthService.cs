@@ -36,38 +36,16 @@ namespace patterns2_infoauth.Services
                     Console.WriteLine("this user exists");
                     throw new ArgumentException();
                 }
-
-                _dbContext.UserCredentials.Add(new UserCredentials
+                var user = new UserCredentials
                 {
                     Id = id,
                     Name = model.Name,
                     Phone = model.Phone,
                     Password = CryptoCommon.ComputeSha256Hash(model.Password),
-                });
-
-                var session = new Session
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = id,
-                    IsActive = true,
-                    Expires = DateTime.UtcNow.AddMonths(1),
                 };
-                _dbContext.Sessions.Add(session);
+                _dbContext.UserCredentials.Add(user);
 
-                var saveTask = _dbContext.SaveChangesAsync();
-
-                string key = _config.GetSection("Jwt:Key").Value;
-                string issuer = _config.GetSection("Jwt:Issuer").Value;
-                string audience = _config.GetSection("Jwt:Audience").Value;
-
-                var crypto = new CryptoCommon(key, issuer, audience);
-
-                await saveTask;
-
-                var accessToken = await crypto.GenerateAccessToken(id, id, new List<Claim>());
-                var refreshToken = await crypto.GenerateRefreshToken(session.Id);
-
-                return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
+                return await CreateTokenPair(user);
             }
             catch
             {
@@ -82,35 +60,7 @@ namespace patterns2_infoauth.Services
 
             try
             {
-                string key = _config.GetSection("Jwt:Key").Value;
-                string issuer = _config.GetSection("Jwt:Issuer").Value;
-                string audience = _config.GetSection("Jwt:Audience").Value;
-
-                var session = new Session
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = user.Id,
-                    IsActive = true,
-                    Expires = DateTime.UtcNow.AddMonths(1),
-                };
-
-                _dbContext.Sessions.Add(session);
-
-                var crypto = new CryptoCommon(key, issuer, audience);
-
-                List<Claim> additionalClaims = new List<Claim>();
-
-                user.UserRoles.ForEach(role =>
-                {
-                    additionalClaims.Add(new Claim(nameof(role.Role), "True"));
-                });
-
-                additionalClaims.Add(new Claim("isBlocked", user.IsBlocked.ToString()));
-
-                var accessToken = await crypto.GenerateAccessToken(user.Id, session.Id, additionalClaims);
-                var refreshToken = await crypto.GenerateRefreshToken(session.Id);
-
-                return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
+                return await CreateTokenPair(user);
             }
             catch
             {
@@ -139,52 +89,72 @@ namespace patterns2_infoauth.Services
             var session = await _dbContext.Sessions.FindAsync(sessionId);
 
             if (session == null)
-                throw new ArgumentException();
+                throw new ArgumentException("no session found");
 
             var user = await _dbContext.UserCredentials.Include(u => u.UserRoles).FirstOrDefaultAsync(u => u.Id == session.UserId);
 
             if (user == null)
-                throw new ArgumentException();
+                throw new ArgumentException("no user found");
 
             Guid newSessionId = Guid.NewGuid();
 
             try
             {
-                string key = _config.GetSection("Jwt:Key").Value;
-                string issuer = _config.GetSection("Jwt:Issuer").Value;
-                string audience = _config.GetSection("Jwt:Audience").Value;
-
-                List<Claim> additionalClaims = new List<Claim>();
-
-                user.UserRoles.ForEach(role =>
-                {
-                    additionalClaims.Add(new Claim(nameof(role.Role), "True"));
-                });
-
-                additionalClaims.Add(new Claim("isBlocked", user.IsBlocked.ToString()));
-
-                var crypto = new CryptoCommon(key, issuer, audience);
-                var accessToken = await crypto.GenerateAccessToken(user.Id, session.Id, additionalClaims);
-                var refreshToken = await crypto.GenerateRefreshToken(session.Id);
-
-                Session newSession = new Session
-                {
-                    Id = newSessionId,
-                    UserId = user.Id,
-                    IsActive = true,
-                    Expires = DateTime.UtcNow.AddMonths(1),
-                };
+                var tokens = CreateTokenPair(user);
 
                 _dbContext.Sessions.Remove(session);
-                _dbContext.Sessions.Add(newSession);
                 _dbContext.SaveChanges();
 
-                return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
+                return await tokens;
             }
             catch
             {
                 throw;
             }
+        }
+
+        public async Task<bool> IsSessionActive(Guid sessionId)
+        {
+            var session = await _dbContext.Sessions.FindAsync(sessionId);
+            if(session == null || !session.IsActive)
+                return false;
+
+            return true;
+        }
+
+        private async Task<TokenDto> CreateTokenPair(UserCredentials user)
+        {
+            string key = _config.GetSection("Jwt:Key").Value;
+            string issuer = _config.GetSection("Jwt:Issuer").Value;
+            string audience = _config.GetSection("Jwt:Audience").Value;
+
+            var session = new Session
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                IsActive = true,
+                Expires = DateTime.UtcNow.AddMonths(1),
+            };
+
+            _dbContext.Sessions.Add(session);
+
+            _dbContext.SaveChanges();
+
+            var crypto = new CryptoCommon(key, issuer, audience);
+
+            List<Claim> additionalClaims = new List<Claim>();
+
+            user.UserRoles.ForEach(role =>
+            {
+                additionalClaims.Add(new Claim(nameof(role.Role), Enum.GetName(typeof(RoleType), role.Role) ?? ""));
+            });
+
+            additionalClaims.Add(new Claim("isBlocked", user.IsBlocked.ToString()));
+
+            var accessToken = await crypto.GenerateAccessToken(user.Id, session.Id, additionalClaims);
+            var refreshToken = await crypto.GenerateRefreshToken(session.Id);
+
+            return new TokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
         }
 
     }

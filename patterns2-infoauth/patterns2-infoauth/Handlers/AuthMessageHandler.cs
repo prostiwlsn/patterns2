@@ -8,10 +8,12 @@ namespace patterns2_infoauth.Handlers
     public class AuthMessageHandler
     {
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public AuthMessageHandler(IUserService authenticationService)
+        public AuthMessageHandler(IUserService userService, IAuthService authService)
         {
-            _userService = authenticationService;
+            _userService = userService;
+            _authService = authService;
         }
 
         public async Task<GetUserResponse> HandleGetUser(GetUserRequest request)
@@ -34,12 +36,33 @@ namespace patterns2_infoauth.Handlers
             }
         }
 
-        public static async Task<GetUserResponse> GetRpcResponse(WebApplication app, GetUserRequest request)
+        public async Task<GetSessionStatusResponse> HandleGetSessionStatus(GetSessionStatusRequest request)
+        {
+            try
+            {
+                var status = await _authService.IsSessionActive(request.SessionId);
+                return new GetSessionStatusResponse { IsSessionActive = status };
+            }
+            catch
+            {
+                return new GetSessionStatusResponse { IsSessionActive = false };
+            }
+        }
+
+        public static async Task<GetUserResponse> GetUserRpcResponse(WebApplication app, GetUserRequest request)
         {
             //app.Services.CreateScope().ServiceProviderс
             using (var scope = app.Services.CreateScope())
             {
                 return await scope.ServiceProvider.GetRequiredService<AuthMessageHandler>().HandleGetUser(request);
+            }
+        }
+        public static async Task<GetSessionStatusResponse> GetSessionRpcResponse(WebApplication app, GetSessionStatusRequest request)
+        {
+            //app.Services.CreateScope().ServiceProviderс
+            using (var scope = app.Services.CreateScope())
+            {
+                return await scope.ServiceProvider.GetRequiredService<AuthMessageHandler>().HandleGetSessionStatus(request);
             }
         }
     }
@@ -48,7 +71,7 @@ namespace patterns2_infoauth.Handlers
     {
         public static async Task SetupListeners(this IBus bus, WebApplication app)
         {
-            await bus.Rpc.RespondAsync<GetUserRequest, GetUserResponse>(async (request, cancellationToken) => await AuthMessageHandler.GetRpcResponse(app, request), x => x.WithQueueName("userinfoxd"));
+            await bus.Rpc.RespondAsync<GetUserRequest, GetUserResponse>(async (request, cancellationToken) => await AuthMessageHandler.GetUserRpcResponse(app, request), x => x.WithQueueName("userinfoxd"));
         }
     }
 }

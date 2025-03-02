@@ -8,5 +8,6 @@ namespace patterns2_infoauth.Interfaces
         Task<TokenDto> Login(LoginDto model);
         Task<TokenDto> Refresh(Guid sessionId);
         Task Logout(Guid sessionId);
+        Task<bool> IsSessionActive(Guid sessionId);
     }
 }

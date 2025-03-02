@@ -11,14 +11,13 @@ namespace patterns2_infoauth.Handlers
         private readonly IServiceProvider _serviceProvider;
         private readonly IConnection _connection;
         private readonly IModel _channel;
-
-        private const string _userInfoQueueName = "userinfo";
+        private const string _queueName = "userinfo";
 
         public RpcServer(IServiceProvider serviceProvider, string rabbitMqConnectionString)
         {
             _serviceProvider = serviceProvider;
 
-            var factory = new ConnectionFactory()
+            var factory = new ConnectionFactory
             {
                 Uri = new Uri(rabbitMqConnectionString)
             };
@@ -27,7 +26,7 @@ namespace patterns2_infoauth.Handlers
 
             // Declare the RPC queue.
             _channel.QueueDeclare(
-                queue: _userInfoQueueName,
+                queue: _queueName,
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
@@ -42,23 +41,59 @@ namespace patterns2_infoauth.Handlers
                 var props = ea.BasicProperties;
                 var replyProps = _channel.CreateBasicProperties();
                 replyProps.CorrelationId = props.CorrelationId;
+                object response = null;
 
-                GetUserResponse response;
                 try
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-                    var request = JsonSerializer.Deserialize<GetUserRequest>(message);
+
+                    // Use JSON document to inspect the incoming message.
+                    using var document = JsonDocument.Parse(message);
+                    var root = document.RootElement;
 
                     using (var scope = _serviceProvider.CreateScope())
                     {
                         var handler = scope.ServiceProvider.GetRequiredService<AuthMessageHandler>();
-                        response = await handler.HandleGetUser(request);
+
+                        // Check for a RequestType discriminator in the JSON.
+                        if (root.TryGetProperty("RequestType", out JsonElement typeElement))
+                        {
+                            var requestType = typeElement.GetString();
+                            if (requestType == "GetSessionStatus")
+                            {
+                                var request = JsonSerializer.Deserialize<GetSessionStatusRequest>(message);
+                                response = await handler.HandleGetSessionStatus(request);
+                            }
+                            else if (requestType == "GetUser")
+                            {
+                                var request = JsonSerializer.Deserialize<GetUserRequest>(message);
+                                response = await handler.HandleGetUser(request);
+                            }
+                            else
+                            {
+                                response = new { Success = false, Error = "Unknown request type" };
+                            }
+                        }
+                        else
+                        {
+                            // Fallback: use available properties to differentiate the request.
+                            if (root.TryGetProperty("SessionId", out _))
+                            {
+                                var request = JsonSerializer.Deserialize<GetSessionStatusRequest>(message);
+                                response = await handler.HandleGetSessionStatus(request);
+                            }
+                            else
+                            {
+                                var request = JsonSerializer.Deserialize<GetUserRequest>(message);
+                                response = await handler.HandleGetUser(request);
+                            }
+                        }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    response = new GetUserResponse { Success = false };
+                    response = new { Success = false, Error = ex.Message };
                 }
 
                 try
@@ -70,9 +105,9 @@ namespace patterns2_infoauth.Handlers
                         basicProperties: replyProps,
                         body: responseBytes);
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Error publishing response: " + ex.Message);
                 }
 
                 try
@@ -81,45 +116,11 @@ namespace patterns2_infoauth.Handlers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Error sending ACK: " + ex.Message);
                 }
             };
 
-            _channel.BasicConsume(queue: _userInfoQueueName, autoAck: false, consumer: consumer);
-        }
-
-        private async Task HandleGetUserInfo(object model, BasicDeliverEventArgs ea)
-        {
-            var props = ea.BasicProperties;
-            var replyProps = _channel.CreateBasicProperties();
-            replyProps.CorrelationId = props.CorrelationId;
-
-            GetUserResponse response;
-            try
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                var request = JsonSerializer.Deserialize<GetUserRequest>(message);
-
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var handler = scope.ServiceProvider.GetRequiredService<AuthMessageHandler>();
-                    response = await handler.HandleGetUser(request);
-                }
-            }
-            catch
-            {
-                response = new GetUserResponse { Success = false };
-            }
-
-            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
-            _channel.BasicPublish(
-                exchange: "",
-                routingKey: props.ReplyTo,
-                basicProperties: replyProps,
-                body: responseBytes);
-
-            _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+            _channel.BasicConsume(queue: _queueName, autoAck: false, consumer: consumer);
         }
 
         public void Dispose()

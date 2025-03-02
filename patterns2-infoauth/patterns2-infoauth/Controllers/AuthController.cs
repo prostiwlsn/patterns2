@@ -73,7 +73,7 @@ namespace patterns2_infoauth.Controllers
             }
             catch (ArgumentException ex)
             {
-                return NotFound();
+                return NotFound(ex.Message);
             }
         }
 
