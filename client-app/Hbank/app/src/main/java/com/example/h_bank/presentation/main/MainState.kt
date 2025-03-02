@@ -7,15 +7,15 @@ import java.util.UUID
 
 data class MainState(
     val accounts: List<Account> = listOf(
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
-        Account("1", "Счёт 1", "100000"),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
+        Account("1", "Счёт 1", 100000),
     ),
     val loans: List<Loan> = listOf(
         Loan(

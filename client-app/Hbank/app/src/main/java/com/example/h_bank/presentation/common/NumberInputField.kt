@@ -24,6 +24,7 @@ fun NumberInputField(
     @StringRes labelRes: Int,
     value: String,
     onValueChange: (String) -> Unit,
+    @StringRes errorMessageRes: Int? = null
 //    modifier: Modifier = Modifier
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -49,5 +50,14 @@ fun NumberInputField(
         )
         Spacer(modifier = Modifier.height(12.dp))
         HorizontalDivider(color = Color(0xFF282A31).copy(alpha = 0.06f))
+        if (errorMessageRes != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(errorMessageRes),
+                color = Color.Red,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }

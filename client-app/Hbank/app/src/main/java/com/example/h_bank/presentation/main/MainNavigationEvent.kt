@@ -6,5 +6,7 @@ sealed class MainNavigationEvent {
     data object NavigateToTransfer : MainNavigationEvent()
     data object NavigateToPaymentHistory : MainNavigationEvent()
     data object NavigateToLoanProcessing : MainNavigationEvent()
+    data object NavigateToWithdrawal : MainNavigationEvent()
+    data object NavigateToReplenishment : MainNavigationEvent()
     data object NavigateToSuccessfulAccountOpening : MainNavigationEvent()
 }

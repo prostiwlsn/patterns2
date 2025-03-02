@@ -7,5 +7,6 @@ data class Payment(
     val type: PaymentType,
     val date: LocalDate,
     val amount: Double,
-    val account: Account
+    val account: Account,
+    val comment: String?
 )

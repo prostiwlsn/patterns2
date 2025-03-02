@@ -141,7 +141,11 @@ class PaymentHistoryViewModel : ViewModel() {
 
     fun onPaymentClicked(payment: Payment) {
         viewModelScope.launch {
-            _navigationEvent.emit(PaymentHistoryNavigationEvent.NavigateToPaymentDetails(payment.id))
+            _navigationEvent.emit(
+                PaymentHistoryNavigationEvent.NavigateToTransactionInfo(
+                    payment.id
+                )
+            )
         }
     }
 

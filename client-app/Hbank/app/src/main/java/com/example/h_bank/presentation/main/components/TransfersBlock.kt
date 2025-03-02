@@ -22,7 +22,9 @@ import com.example.h_bank.R
 @Composable
 fun TransfersBlock(
     onTransferClick: () -> Unit,
-    onHistoryClick: () -> Unit
+    onHistoryClick: () -> Unit,
+    onReplenishmentClick: () -> Unit,
+    onWithdrawalClick: () -> Unit
 ) {
     Column {
         Text(
@@ -53,6 +55,26 @@ fun TransfersBlock(
                     iconRes = R.drawable.history,
                     text = stringResource(R.string.operation_history),
                     onClick = onHistoryClick
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 32.dp),
+                    thickness = 1.dp,
+                    color = Color(0xFFD9D9D9)
+                )
+                ApplicationItem(
+                    iconRes = R.drawable.dollar,
+                    text = stringResource(R.string.replenish),
+                    onClick = onReplenishmentClick
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 32.dp),
+                    thickness = 1.dp,
+                    color = Color(0xFFD9D9D9)
+                )
+                ApplicationItem(
+                    iconRes = R.drawable.dollar,
+                    text = stringResource(R.string.withdraw),
+                    onClick = onWithdrawalClick
                 )
             }
         }

@@ -52,97 +52,73 @@ fun PaymentHistoryScreen(
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is PaymentHistoryNavigationEvent.NavigateToAccount ->
-                    navController.navigate("account/${event.accountId}")
-
-                is PaymentHistoryNavigationEvent.NavigateToPaymentDetails ->
-                    navController.navigate("loan/${event.paymentId}")
-
-                is PaymentHistoryNavigationEvent.NavigateToTransfer ->
-                    navController.navigate("transfer")
-
-                is PaymentHistoryNavigationEvent.NavigateToHistory ->
-                    navController.navigate("history")
-
-                is PaymentHistoryNavigationEvent.NavigateToLoanProcessing ->
-                    navController.navigate("loan_processing")
-
-                is PaymentHistoryNavigationEvent.NavigateToSuccessfulAccountOpening ->
-                    navController.navigate("successful_account_opening")
+                is PaymentHistoryNavigationEvent.NavigateToTransactionInfo ->
+                    navController.navigate("transaction_info/${event.transactionId}")
 
                 is PaymentHistoryNavigationEvent.NavigateBack -> navController.popBackStack()
             }
         }
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
+        Spacer(modifier = Modifier.height(40.dp))
+        PaymentHistoryHeader(onBackClick = { viewModel.onBackClicked() })
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                FilterButton(
+                    text = state.selectedAccount?.name ?: stringResource(R.string.all_accounts),
+                    onClick = { viewModel.showAccountsSheet() },
+                    isActive = state.selectedAccount != null
+                )
+            }
+            item {
+                FilterButton(
+                    text = state.selectedDateRange.let { (start, end) ->
+                        if (start != null && end != null) {
+                            "${start.format(dateFormatter)} - ${end.format(dateFormatter)}"
+                        } else {
+                            stringResource(R.string.period)
+                        }
+                    },
+                    onClick = { viewModel.showDatePicker() },
+                    isActive = state.selectedDateRange.first != null && state.selectedDateRange.second != null
+                )
+            }
+            item {
+                FilterButton(
+                    text = state.selectedType.displayName,
+                    onClick = { viewModel.showTypesSheet() },
+                    isActive = state.selectedType !is PaymentTypeFilter.All
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .clickable { viewModel.resetFilters() },
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = stringResource(R.string.reset_filters),
+                color = Color(0xFF5C49E0),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .weight(1f)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(40.dp))
-                PaymentHistoryHeader(onBackClick = { viewModel.onBackClicked() })
-            }
-            item {
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    item {
-                        FilterButton(
-                            text = state.selectedAccount?.name
-                                ?: stringResource(R.string.all_accounts),
-                            onClick = { viewModel.showAccountsSheet() },
-                            isActive = state.selectedAccount != null
-                        )
-                    }
-                    item {
-                        FilterButton(
-                            text = state.selectedDateRange.let { (start, end) ->
-                                if (start != null && end != null) {
-                                    "${start.format(dateFormatter)} - ${end.format(dateFormatter)}"
-                                } else {
-                                    stringResource(R.string.period)
-                                }
-                            },
-                            onClick = { viewModel.showDatePicker() },
-                            isActive = state.selectedDateRange.first != null &&
-                                    state.selectedDateRange.second != null
-                        )
-                    }
-                    item {
-                        FilterButton(
-                            text = state.selectedType.displayName,
-                            onClick = { viewModel.showTypesSheet() },
-                            isActive = state.selectedType !is PaymentTypeFilter.All
-                        )
-                    }
-                }
-            }
-
-            item {
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                        .clickable { viewModel.resetFilters() },
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = stringResource(R.string.reset_filters),
-                        color = Color(0xFF5C49E0),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-
             items(state.filteredPayments) { payment ->
                 PaymentItem(
                     payment,
@@ -154,94 +130,93 @@ fun PaymentHistoryScreen(
                 )
             }
         }
-
-        if (state.isTypesSheetVisible) {
-            ModalBottomSheet(
-                onDismissRequest = { viewModel.hideTypesSheet() },
-                containerColor = Color(0xFFF9F9F9),
-                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
-            ) {
-                TypeBottomSheetContent(
-                    onItemClick = { type ->
-                        viewModel.onTypeClicked(type)
-                        viewModel.hideTypesSheet()
-                    }
-                )
-            }
-        }
-        if (state.isAccountsSheetVisible) {
-            ModalBottomSheet(
-                onDismissRequest = { viewModel.hideAccountsSheet() },
-                containerColor = Color(0xFFF9F9F9),
-                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
-            ) {
-                LoanPaymentBottomSheetContent(
-                    accounts = state.accounts,
-                    onItemClick = { account ->
-                        viewModel.onAccountClicked(account)
-                        viewModel.hideAccountsSheet()
-                    }
-                )
-            }
-        }
-        if (state.isDatePickerVisible) {
-            DatePickerDialog(
-                onDismissRequest = { viewModel.hideDatePicker() },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            viewModel.onDateRangeSelected()
-                            viewModel.hideDatePicker()
-                        },
-                        enabled = viewModel.dateRangePickerState.selectedStartDateMillis != null &&
-                                viewModel.dateRangePickerState.selectedEndDateMillis != null
-                    ) {
-                        Text(stringResource(R.string.confirm))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { viewModel.hideDatePicker() }) {
-                        Text(stringResource(R.string.cancel))
-                    }
+    }
+    if (state.isTypesSheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = { viewModel.hideTypesSheet() },
+            containerColor = Color(0xFFF9F9F9),
+            shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+        ) {
+            TypeBottomSheetContent(
+                onItemClick = { type ->
+                    viewModel.onTypeClicked(type)
+                    viewModel.hideTypesSheet()
                 }
-            ) {
-                DateRangePicker(
-                    state = viewModel.dateRangePickerState,
-                    modifier = Modifier.padding(16.dp),
-                    headline = {
-                        val formatter = DateTimeFormatter.ofPattern(
-                            "dd.MM.yyyy", Locale("ru")
-                        )
-                        val start = viewModel.dateRangePickerState.selectedStartDateMillis?.let {
-                            LocalDate.ofInstant(
-                                java.time.Instant.ofEpochMilli(it),
-                                ZoneId.systemDefault()
-                            )
-                        }
-                        val end = viewModel.dateRangePickerState.selectedEndDateMillis?.let {
-                            LocalDate.ofInstant(
-                                java.time.Instant.ofEpochMilli(it),
-                                ZoneId.systemDefault()
-                            )
-                        }
-                        val headlineText = if (start != null && end != null) {
-                            "${start.format(formatter)} - ${end.format(formatter)}"
-                        } else {
-                            stringResource(R.string.choose_period)
-                        }
-                        Text(
-                            text = headlineText,
-                            style = TextStyle(fontSize = 16.sp),
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .fillMaxWidth(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+            )
+        }
+    }
+
+    if (state.isAccountsSheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = { viewModel.hideAccountsSheet() },
+            containerColor = Color(0xFFF9F9F9),
+            shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+        ) {
+            LoanPaymentBottomSheetContent(
+                accounts = state.accounts,
+                onItemClick = { account ->
+                    viewModel.onAccountClicked(account)
+                    viewModel.hideAccountsSheet()
+                }
+            )
+        }
+    }
+
+    if (state.isDatePickerVisible) {
+        DatePickerDialog(
+            onDismissRequest = { viewModel.hideDatePicker() },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.onDateRangeSelected()
+                        viewModel.hideDatePicker()
                     },
-                    title = null
-                )
+                    enabled = viewModel.dateRangePickerState.selectedStartDateMillis != null &&
+                            viewModel.dateRangePickerState.selectedEndDateMillis != null
+                ) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.hideDatePicker() }) {
+                    Text(stringResource(R.string.cancel))
+                }
             }
+        ) {
+            DateRangePicker(
+                state = viewModel.dateRangePickerState,
+                modifier = Modifier.padding(16.dp),
+                headline = {
+                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale("ru"))
+                    val start = viewModel.dateRangePickerState.selectedStartDateMillis?.let {
+                        LocalDate.ofInstant(
+                            java.time.Instant.ofEpochMilli(it),
+                            ZoneId.systemDefault()
+                        )
+                    }
+                    val end = viewModel.dateRangePickerState.selectedEndDateMillis?.let {
+                        LocalDate.ofInstant(
+                            java.time.Instant.ofEpochMilli(it),
+                            ZoneId.systemDefault()
+                        )
+                    }
+                    val headlineText = if (start != null && end != null) {
+                        "${start.format(formatter)} - ${end.format(formatter)}"
+                    } else {
+                        stringResource(R.string.choose_period)
+                    }
+                    Text(
+                        text = headlineText,
+                        style = TextStyle(fontSize = 16.sp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .fillMaxWidth(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                title = null
+            )
         }
     }
 }

@@ -35,9 +35,6 @@ class MainViewModel : ViewModel() {
     }
 
     fun onAccountClicked(account: Account) {
-        viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToAccount(account.id))
-        }
     }
 
     fun onLoanClicked(loan: Loan) {
@@ -49,6 +46,18 @@ class MainViewModel : ViewModel() {
     fun onTransferClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(MainNavigationEvent.NavigateToTransfer)
+        }
+    }
+
+    fun onReplenishmentClicked() {
+        viewModelScope.launch {
+            _navigationEvent.emit(MainNavigationEvent.NavigateToReplenishment)
+        }
+    }
+
+    fun onWithdrawalClicked() {
+        viewModelScope.launch {
+            _navigationEvent.emit(MainNavigationEvent.NavigateToWithdrawal)
         }
     }
 

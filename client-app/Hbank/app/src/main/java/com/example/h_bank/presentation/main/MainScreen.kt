@@ -49,6 +49,12 @@ fun MainScreen(
                 is MainNavigationEvent.NavigateToTransfer ->
                     navController.navigate("transfer")
 
+                is MainNavigationEvent.NavigateToReplenishment ->
+                    navController.navigate("replenishment")
+
+                is MainNavigationEvent.NavigateToWithdrawal ->
+                    navController.navigate("withdrawal")
+
                 is MainNavigationEvent.NavigateToPaymentHistory ->
                     navController.navigate("payment_history")
 
@@ -113,7 +119,9 @@ fun MainScreen(
             }
             TransfersBlock(
                 onTransferClick = { viewModel.onTransferClicked() },
-                onHistoryClick = { viewModel.onHistoryClicked() }
+                onHistoryClick = { viewModel.onHistoryClicked() },
+                onReplenishmentClick = { viewModel.onReplenishmentClicked() },
+                onWithdrawalClick = { viewModel.onWithdrawalClicked() }
             )
             Spacer(modifier = Modifier.height(24.dp))
             ApplicationsBlock(

@@ -38,7 +38,7 @@ fun PaymentHistoryHeader(onBackClick: () -> Unit) {
         }
         Spacer(modifier = Modifier.width(32.dp))
         Text(
-            text = stringResource(R.string.payments),
+            text = stringResource(R.string.transaction_history),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black

@@ -8,10 +8,17 @@ import com.example.h_bank.presentation.login.LoginViewModel
 import com.example.h_bank.presentation.main.MainViewModel
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryViewModel
 import com.example.h_bank.presentation.registration.RegistrationViewModel
+import com.example.h_bank.presentation.replenishment.ReplenishmentViewModel
 import com.example.h_bank.presentation.successfulAccountOpening.SuccessfulAccountOpeningViewModel
 import com.example.h_bank.presentation.successfulLoanPayment.SuccessfulLoanPaymentViewModel
 import com.example.h_bank.presentation.successfulLoanProcessing.SuccessfulLoanProcessingViewModel
+import com.example.h_bank.presentation.successfulReplenishment.SuccessfulReplenishmentViewModel
+import com.example.h_bank.presentation.successfulTransfer.SuccessfulTransferViewModel
+import com.example.h_bank.presentation.successfulWithdrawal.SuccessfulWithdrawalViewModel
+import com.example.h_bank.presentation.transactionInfo.TransactionInfoViewModel
+import com.example.h_bank.presentation.transfer.TransferViewModel
 import com.example.h_bank.presentation.welcome.WelcomeViewModel
+import com.example.h_bank.presentation.withdrawal.WithdrawalViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -26,5 +33,22 @@ val appModule = module {
     viewModel { SuccessfulLoanProcessingViewModel() }
     viewModel { SuccessfulLoanPaymentViewModel() }
     viewModel { PaymentHistoryViewModel() }
+    viewModel { TransferViewModel() }
+    viewModel { (savedStateHandle: SavedStateHandle) -> TransactionInfoViewModel(savedStateHandle) }
+    viewModel { ReplenishmentViewModel() }
+    viewModel { WithdrawalViewModel() }
     viewModel { (savedStateHandle: SavedStateHandle) -> LoanViewModel(savedStateHandle) }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        SuccessfulTransferViewModel(savedStateHandle)
+    }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        SuccessfulWithdrawalViewModel(
+            savedStateHandle
+        )
+    }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        SuccessfulReplenishmentViewModel(
+            savedStateHandle
+        )
+    }
 }
