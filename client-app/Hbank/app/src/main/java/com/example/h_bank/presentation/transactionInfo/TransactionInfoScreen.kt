@@ -61,12 +61,19 @@ fun TransactionInfoScreen(
         SuccessIcon()
         Spacer(modifier = Modifier.height(24.dp))
         Text(
+            text = state.operation.operationType.displayName,
+            fontSize = 32.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Normal
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
             text = state.operation.amount.toString() + " ₽",
             fontSize = 30.sp,
             color = Color.Black,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = state.operation.transactionDateTime.format(dateFormatter) + ", "
                     + state.operation.transactionDateTime.format(timeFormatter),
