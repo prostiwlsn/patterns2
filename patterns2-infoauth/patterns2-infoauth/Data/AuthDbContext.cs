@@ -18,6 +18,7 @@ namespace patterns2_infoauth.Data
         }
         public DbSet<UserCredentials> UserCredentials { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
+        public DbSet<Session> Sessions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
             .UseSeeding((context, _) =>

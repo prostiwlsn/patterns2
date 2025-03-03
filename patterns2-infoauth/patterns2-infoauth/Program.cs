@@ -11,24 +11,37 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using patterns2_infoauth.Middleware;
+using EasyNetQ.DI;
+using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
+using Quartz;
+using patterns2_infoauth.CronJobs;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opts =>
+{
+    var enumConverter = new JsonStringEnumConverter();
+    opts.JsonSerializerOptions.Converters.Add(enumConverter);
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSingleton<IBus>(RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("BusConnection")));
+//builder.Services.AddSingleton<IBus>(RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("BusConnection")));
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<AuthMessageHandler>();
+
+var rabbitMqConnectionString = builder.Configuration.GetConnectionString("BusConnection");
+builder.Services.AddSingleton(new RpcServer(builder.Services.BuildServiceProvider(), rabbitMqConnectionString));
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -77,9 +90,31 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsBlocked", policy =>
+        policy.RequireClaim("isBlocked", "False"));
+});
+
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("SessionCleanupJob");
+    q.AddJob<SessionCleanupJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("SessionCleanupTrigger")
+        .WithCronSchedule("0 0 * * * ?"));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
 var app = builder.Build();
 
-await app.Services.GetService<IBus>().SetupListeners(app);
+//await app.Services.GetService<IBus>().SetupListeners(app);
+
+var rpcServer = app.Services.GetRequiredService<RpcServer>();
+rpcServer.Start();
 
 using (var serviceScope = app.Services.CreateScope())
 {
@@ -91,7 +126,7 @@ using (var serviceScope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-//app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

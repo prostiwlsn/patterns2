@@ -4,7 +4,10 @@ namespace patterns2_infoauth.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> Register(UserCredentialsDto model);
-        Task<string> Login(LoginDto model);
+        Task<TokenDto> Register(UserCredentialsDto model);
+        Task<TokenDto> Login(LoginDto model);
+        Task<TokenDto> Refresh(Guid sessionId);
+        Task Logout(Guid sessionId);
+        Task<bool> IsSessionActive(Guid sessionId);
     }
 }
