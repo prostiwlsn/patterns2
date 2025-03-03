@@ -36,15 +36,21 @@ class RegistrationViewModel : ViewModel() {
         validateFields()
     }
 
-    fun onLogin() {
+    fun onLoginClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(RegistrationNavigationEvent.NavigateToLogin)
         }
     }
 
-    fun onRegister() {
+    fun onRegisterClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(RegistrationNavigationEvent.NavigateToWelcome)
+            _navigationEvent.emit(RegistrationNavigationEvent.NavigateToMain)
+        }
+    }
+
+    fun onBackClicked() {
+        viewModelScope.launch {
+            _navigationEvent.emit(RegistrationNavigationEvent.NavigateBack)
         }
     }
 

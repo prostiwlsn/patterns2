@@ -16,4 +16,25 @@
     <string name="email">Email</string>
     <string name="repeat_password">Повторите пароль</string>
     <string name="hits_bank">Hits bank\nPRO</string>
+    <string name="actions">Действия</string>
+    <string name="create_loan_rate">Создать тариф для кредита</string>
+    <string name="loan_rate_creation">Создание тарифа</string>
+    <string name="loan_rate_editing">Редактирование тарифа</string>
+    <string name="create_user">Создать пользователя</string>
+    <string name="create">Создать</string>
+    <string name="all">Все</string>
+    <string name="to_main">На главную</string>
+    <string name="successful_rate_creation">Тариф успешно
+    создан</string>
+    <string name="successful_rate_editing">Тариф успешно
+    отредактирован</string>
+    <string name="rate">Ставка</string>
+    <string name="rate_in_percent">Ставка в %</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="accounts">Счета</string>
+    <string name="loans">Кредиты</string>
+    <string name="all_users">Все пользователи</string>
+    <string name="users">Пользователи</string>
+    <string name="good_day">Добрый день</string>
 </resources>

@@ -26,13 +26,19 @@ class LoginViewModel : ViewModel() {
         validateFields()
     }
 
-    fun onLogin() {
+    fun onLoginClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(LoginNavigationEvent.NavigateToWelcome)
+            _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
         }
     }
 
-    fun onRegister() {
+    fun onBackClicked() {
+        viewModelScope.launch {
+            _navigationEvent.emit(LoginNavigationEvent.NavigateBack)
+        }
+    }
+
+    fun onRegisterClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(LoginNavigationEvent.NavigateToRegister)
         }

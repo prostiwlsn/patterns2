@@ -2,8 +2,6 @@ package com.example.h_bankpro.presentation.welcome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.h_bankpro.presentation.welcome.WelcomeNavigationEvent
-import com.example.h_bankpro.presentation.welcome.WelcomeState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

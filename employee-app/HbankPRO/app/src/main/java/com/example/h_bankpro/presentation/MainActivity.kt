@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.h_bankpro.di.appModule
-import com.example.h_bankpro.presentation.common.AppNavigation
+import com.example.h_bankpro.presentation.navigation.AppNavigation
 import com.example.h_bankpro.ui.theme.HbankPROTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

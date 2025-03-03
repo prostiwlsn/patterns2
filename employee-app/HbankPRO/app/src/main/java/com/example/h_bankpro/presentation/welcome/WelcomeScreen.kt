@@ -59,14 +59,14 @@ fun WelcomeScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = stringResource(R.string.hits_bank),
+            text = "Hits bank",
             fontSize = 40.sp,
             fontWeight = FontWeight.Normal,
+            letterSpacing = 2.sp,
             textAlign = TextAlign.Center,
-            color = Color.Black,
-            lineHeight = 50.sp
+            color = Color.Black
         )
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = stringResource(R.string.welcome_content),
             fontSize = 17.sp,
