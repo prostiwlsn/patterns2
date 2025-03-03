@@ -14,6 +14,8 @@ using patterns2_infoauth.Middleware;
 using EasyNetQ.DI;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json.Serialization;
+using Quartz;
+using patterns2_infoauth.CronJobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +88,19 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 });
+
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("SessionCleanupJob");
+    q.AddJob<SessionCleanupJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("SessionCleanupTrigger")
+        .WithCronSchedule("0 0 * * * ?"));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
