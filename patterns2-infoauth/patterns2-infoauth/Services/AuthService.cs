@@ -115,8 +115,9 @@ namespace patterns2_infoauth.Services
 
         public async Task<bool> IsSessionActive(Guid sessionId)
         {
+            Console.WriteLine("xd");
             var session = await _dbContext.Sessions.FindAsync(sessionId);
-            if(session == null || !session.IsActive)
+            if(session == null || !session.IsActive || session.Expires <= DateTime.UtcNow)
                 return false;
 
             return true;
