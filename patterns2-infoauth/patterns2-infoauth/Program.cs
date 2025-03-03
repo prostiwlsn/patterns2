@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using System.Text.Json.Serialization;
 using Quartz;
 using patterns2_infoauth.CronJobs;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,12 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsBlocked", policy =>
+        policy.RequireClaim("isBlocked", "False"));
 });
 
 builder.Services.AddQuartz(q =>

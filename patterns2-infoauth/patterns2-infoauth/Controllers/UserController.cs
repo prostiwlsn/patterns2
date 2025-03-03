@@ -96,7 +96,7 @@ namespace patterns2_infoauth.Controllers
         }
 
         [HttpGet("/profile")]
-        [Authorize]
+        [Authorize(Policy = "IsBlocked")  ]
         public async Task<IActionResult> GetProfile()
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -114,7 +114,7 @@ namespace patterns2_infoauth.Controllers
             }
         }
         [HttpPut("/profile")]
-        [Authorize]
+        [Authorize(Policy = "IsBlocked")]
         public async Task<IActionResult> EditProfile(UserEditDto model)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);

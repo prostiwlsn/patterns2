@@ -77,7 +77,7 @@ namespace patterns2_infoauth.Controllers
             }
         }
 
-        [HttpPost("/Logout")]
+        [HttpPost("/logout")]
         [Authorize]
         public async Task<IActionResult> Logout()
         {
