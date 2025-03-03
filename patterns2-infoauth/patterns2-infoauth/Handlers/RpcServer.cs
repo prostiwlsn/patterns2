@@ -68,6 +68,7 @@ namespace patterns2_infoauth.Handlers
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
+                Console.WriteLine(message);
                 var request = JsonSerializer.Deserialize<GetUserRequest>(message);
                 using (var scope = _serviceProvider.CreateScope())
                 {
@@ -82,6 +83,7 @@ namespace patterns2_infoauth.Handlers
 
             try
             {
+                Console.WriteLine(JsonSerializer.Serialize(response));
                 var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
                 _channel.BasicPublish(
                     exchange: "",
