@@ -23,7 +23,6 @@ import com.example.h_bankpro.presentation.login.components.LoginForm
 import com.example.h_bankpro.presentation.login.components.LoginHeader
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,

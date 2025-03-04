@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -59,4 +61,26 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //encryptedSharedPreferences
+    implementation(libs.androidx.security.crypto)
+
+    //network
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+
+    //interceptor
+    implementation(libs.logging.interceptor)
+
+    // serialization
+    implementation(libs.converter.gson)
+
+    //OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
+    //JWT
+    implementation(libs.jwtdecode)
+
+    //coroutines
+    implementation(libs.kotlinx.coroutines.android)
 }
