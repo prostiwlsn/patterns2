@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.h_bankpro.di.appModule
+import com.example.h_bankpro.di.authorizationModule
+import com.example.h_bankpro.di.networkModule
 import com.example.h_bankpro.presentation.navigation.AppNavigation
 import com.example.h_bankpro.ui.theme.HbankPROTheme
 import org.koin.android.ext.koin.androidContext
@@ -22,6 +24,8 @@ class MainActivity : ComponentActivity() {
             androidLogger()
             androidContext(this@MainActivity)
             modules(appModule)
+            modules(networkModule)
+            modules(authorizationModule)
         }
         enableEdgeToEdge()
         setContent {

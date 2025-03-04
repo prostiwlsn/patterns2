@@ -2,33 +2,58 @@ package com.example.h_bankpro.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.domain.useCase.LoginUseCase
+import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
+import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
+import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val updateCredentialsUseCase: UpdateCredentialsUseCase,
+    private val validationUseCase: LoginValidationUseCase,
+    private val loginUseCase: LoginUseCase,
+    getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
+) : ViewModel() {
+
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state
 
     private val _navigationEvent = MutableSharedFlow<LoginNavigationEvent>()
     val navigationEvent: SharedFlow<LoginNavigationEvent> = _navigationEvent
 
-    fun onLoginChange(login: String) {
-        _state.update { it.copy(login = login) }
-        validateFields()
+    init {
+        getCredentialsFlowUseCase().onEach { credentials ->
+            _state.update {
+                it.copy(
+                    login = credentials.phoneNumber.orEmpty(),
+                    password = credentials.password.orEmpty(),
+                    areFieldsValid = !credentials.phoneNumber.isNullOrBlank() &&
+                            !credentials.password.isNullOrBlank()
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun onPasswordChange(password: String) {
-        _state.update { it.copy(password = password) }
-        validateFields()
-    }
+    fun onLoginChange(login: String) = updateCredentialsUseCase { copy(phoneNumber = login) }
+
+    fun onPasswordChange(password: String) = updateCredentialsUseCase { copy(password = password) }
 
     fun onLoginClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
+        val validationErrors = validationUseCase()
+        _state.update { it.copy(fieldErorrs = validationErrors) }
+
+        if (validationErrors == null) {
+            viewModelScope.launch {
+                loginUseCase()
+                _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
+            }
         }
     }
 
@@ -41,15 +66,6 @@ class LoginViewModel : ViewModel() {
     fun onRegisterClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(LoginNavigationEvent.NavigateToRegister)
-        }
-    }
-
-    private fun validateFields() {
-        _state.update {
-            it.copy(
-                areFieldsValid = _state.value.login.isNotBlank() &&
-                        _state.value.password.isNotBlank()
-            )
         }
     }
 

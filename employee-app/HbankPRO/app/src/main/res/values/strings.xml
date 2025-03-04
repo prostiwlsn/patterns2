@@ -5,11 +5,15 @@
     <string name="registration">Регистрация</string>
     <string name="login">Войти</string>
     <string name="login_button_text">Вход</string>
+
+    // Логин
     <string name="user_login">Логин</string>
     <string name="password">Пароль</string>
     <string name="login_bottom_text">"Уже есть аккаунт? "</string>
     <string name="login_bottom_text_2">Зарегистрируйтесь</string>
     <string name="registration_bottom_text">"Ещё нет аккаунта? "</string>
+    <string name="phone_number_prefix">+7</string>
+
     <string name="registration_bottom_text_2">Войдите</string>
     <string name="registration_button">Зарегистрироваться</string>
     <string name="name">Имя</string>
