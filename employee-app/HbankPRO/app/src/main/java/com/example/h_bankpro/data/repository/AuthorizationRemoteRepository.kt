@@ -1,5 +1,6 @@
 package com.example.h_bankpro.data.repository
 
+import com.example.h_bankpro.data.dto.RegisterDto
 import com.example.h_bankpro.data.dto.TokenDto
 import com.example.h_bankpro.data.mapper.toLoginRequestDto
 import com.example.h_bankpro.data.network.AuthorizationApi
@@ -19,5 +20,9 @@ class AuthorizationRemoteRepository(
         return runResultCatching {
             api.login(loginRequest)
         }
+    }
+
+    override suspend fun register(request: RegisterDto) = runResultCatching {
+        api.register(request)
     }
 }

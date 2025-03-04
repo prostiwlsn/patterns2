@@ -7,4 +7,5 @@ interface IAuthorizationLocalRepository {
     fun updateCredentials(update: CredentialsEntity.() -> CredentialsEntity)
     fun getCredentialsFlow(): Flow<CredentialsEntity>
     fun getCredentialsState(): CredentialsEntity
+    fun reset()
 }

@@ -7,6 +7,7 @@ import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.domain.useCase.LoginUseCase
 import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
+import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
 import com.example.h_bankpro.presentation.login.model.LoginFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +24,7 @@ class LoginViewModel(
     private val validationUseCase: LoginValidationUseCase,
     private val loginUseCase: LoginUseCase,
     getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
+    resetCredentialsUseCase: ResetCredentialsUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -32,6 +34,7 @@ class LoginViewModel(
     val navigationEvent: SharedFlow<LoginNavigationEvent> = _navigationEvent
 
     init {
+        resetCredentialsUseCase()
         getCredentialsFlowUseCase().onEach { credentials ->
             _state.update {
                 it.copy(

@@ -32,7 +32,10 @@ fun RegistrationScreen(
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                RegistrationNavigationEvent.NavigateToLogin -> navController.navigate("login")
+                RegistrationNavigationEvent.NavigateToLogin -> navController.navigate("login") {
+                    popUpTo("welcome") { inclusive = false }
+                    launchSingleTop = true
+                }
                 RegistrationNavigationEvent.NavigateToMain -> navController.navigate("main") {
                     popUpTo("welcome") { inclusive = true }
                     launchSingleTop = true
@@ -62,7 +65,7 @@ fun RegistrationScreen(
         RegistrationForm(
             state = state.value,
             onNameChange = viewModel::onNameChange,
-            onEmailChange = viewModel::onEmailChange,
+            onEmailChange = viewModel::onPhoneNumberChange,
             onPasswordChange = viewModel::onPasswordChange,
             onRepeatPasswordChange = viewModel::onRepeatPasswordChange,
             onChangePasswordVisibility = viewModel::onChangePasswordVisibility,

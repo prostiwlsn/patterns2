@@ -8,8 +8,12 @@ import com.example.h_bankpro.domain.repository.IAuthorizationRemoteRepository
 import com.example.h_bankpro.domain.useCase.LoginUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
+import com.example.h_bankpro.domain.useCase.RegisterUseCase
+import com.example.h_bankpro.domain.useCase.RegistrationValidationUseCase
+import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
 import com.example.h_bankpro.presentation.login.LoginViewModel
+import com.example.h_bankpro.presentation.registration.RegistrationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -56,12 +60,42 @@ val authorizationModule = module {
         )
     }
 
+    factory<ResetCredentialsUseCase> {
+        ResetCredentialsUseCase(
+            storageRepository = get(),
+        )
+    }
+
+    factory<RegistrationValidationUseCase> {
+        RegistrationValidationUseCase(
+            storageRepository = get(),
+        )
+    }
+
+    factory<RegisterUseCase> {
+        RegisterUseCase(
+            authorizationRepository = get(),
+            storageRepository = get(),
+        )
+    }
+
     viewModel {
         LoginViewModel(
             getCredentialsFlowUseCase = get(),
             updateCredentialsUseCase = get(),
             validationUseCase = get(),
             loginUseCase = get(),
+            resetCredentialsUseCase = get(),
+        )
+    }
+
+    viewModel {
+        RegistrationViewModel(
+            updateCredentialsUseCase = get(),
+            getCredentialsFlowUseCase = get(),
+            resetCredentialsUseCase = get(),
+            validationUseCase = get(),
+            registerUseCase = get(),
         )
     }
 }

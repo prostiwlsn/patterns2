@@ -15,4 +15,6 @@ class AuthorizationLocalStorage : IAuthorizationLocalRepository {
     override fun getCredentialsFlow() = credentials
 
     override fun getCredentialsState() = credentials.value
+
+    override fun reset() = credentials.update { CredentialsEntity() }
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import com.example.h_bankpro.R
 import com.example.h_bankpro.presentation.registration.RegistrationState
 
@@ -40,6 +44,16 @@ fun RegistrationForm(
             onValueChange = onNameChange,
             label = { Text(stringResource(R.string.name)) },
             shape = RoundedCornerShape(8.dp),
+            singleLine = true,
+            isError = state.fieldErrors?.nameFieldError != null,
+            supportingText = {
+                state.fieldErrors?.nameFieldError?.let {
+                    Text(text = it)
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+            ),
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF5C49E0),
@@ -48,9 +62,24 @@ fun RegistrationForm(
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = state.email,
-            onValueChange = onEmailChange,
-            label = { Text(stringResource(R.string.email)) },
+            value = state.phoneNumber,
+            onValueChange = { newValue ->
+                if (newValue.isDigitsOnly() && newValue.length <= 10) {
+                    onEmailChange(newValue)
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done,
+            ),
+            isError = state.fieldErrors?.phoneNumberFieldError != null,
+            supportingText = {
+                state.fieldErrors?.phoneNumberFieldError?.let {
+                    Text(text = it)
+                }
+            },
+            prefix = { Text(stringResource(id = R.string.phone_number_prefix)) },
+            label = { Text(stringResource(R.string.phone_number)) },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -64,6 +93,12 @@ fun RegistrationForm(
             onValueChange = onPasswordChange,
             label = { Text(stringResource(R.string.password)) },
             shape = RoundedCornerShape(8.dp),
+            isError = state.fieldErrors?.passwordFieldError != null,
+            supportingText = {
+                state.fieldErrors?.passwordFieldError?.let {
+                    Text(text = it)
+                }
+            },
             visualTransformation = if (state.isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = onChangePasswordVisibility) {
@@ -76,6 +111,9 @@ fun RegistrationForm(
                     )
                 }
             },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+            ),
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF5C49E0),
@@ -88,6 +126,12 @@ fun RegistrationForm(
             onValueChange = onRepeatPasswordChange,
             label = { Text(stringResource(R.string.repeat_password)) },
             shape = RoundedCornerShape(8.dp),
+            isError = state.fieldErrors?.passwordConfirmationFieldError != null,
+            supportingText = {
+                state.fieldErrors?.passwordConfirmationFieldError?.let {
+                    Text(text = it)
+                }
+            },
             visualTransformation = if (state.isRepeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = onChangeRepeatPasswordVisibility) {
@@ -100,6 +144,9 @@ fun RegistrationForm(
                     )
                 }
             },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+            ),
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color(0xFF5C49E0),

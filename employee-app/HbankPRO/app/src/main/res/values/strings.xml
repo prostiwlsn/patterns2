@@ -17,7 +17,7 @@
     <string name="registration_bottom_text_2">Войдите</string>
     <string name="registration_button">Зарегистрироваться</string>
     <string name="name">Имя</string>
-    <string name="email">Email</string>
+    <string name="phone_number">Номер телефона</string>
     <string name="repeat_password">Повторите пароль</string>
     <string name="hits_bank">Hits bank\nPRO</string>
     <string name="actions">Действия</string>
