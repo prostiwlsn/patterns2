@@ -22,13 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
-import com.example.h_bankpro.data.Account
-import com.example.h_bankpro.presentation.common.AccountItem
+import com.example.h_bankpro.data.Rate
 
 @Composable
-fun AccountsBlock(
-    accounts: List<Account>,
-    onItemClick: (Account) -> Unit,
+fun RatesBlock(
+    rates: List<Rate>,
+    onItemClick: (Rate) -> Unit,
     onSeeAllClick: () -> Unit
 ) {
     Column {
@@ -38,7 +37,7 @@ fun AccountsBlock(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.accounts),
+                text = stringResource(R.string.rates),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.Black
@@ -59,9 +58,9 @@ fun AccountsBlock(
             border = BorderStroke(1.dp, Color(0xFFD9D9D9))
         ) {
             Column {
-                val itemsToShow = accounts.take(2)
-                itemsToShow.forEachIndexed { index, account ->
-                    AccountItem(account = account, onClick = { onItemClick(account) })
+                val itemsToShow = rates.take(2)
+                itemsToShow.forEachIndexed { index, rate ->
+                    RateItem(rate = rate, onClick = { onItemClick(rate) })
                     if (index < itemsToShow.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),

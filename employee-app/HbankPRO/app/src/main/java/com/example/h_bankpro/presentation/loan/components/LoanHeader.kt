@@ -1,9 +1,11 @@
-package com.example.h_bankpro.presentation.rateEditing.components
+package com.example.h_bankpro.presentation.loan.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,7 +23,10 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
 
 @Composable
-fun RateEditingHeader(onBackClick: () -> Unit) {
+fun LoanHeader(
+    onBackClick: () -> Unit,
+    documentNumber: String
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
@@ -33,12 +38,21 @@ fun RateEditingHeader(onBackClick: () -> Unit) {
                 contentDescription = "Back"
             )
         }
-        Spacer(modifier = Modifier.width(24.dp))
-        Text(
-            text = stringResource(R.string.loan_rate_editing),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        Spacer(modifier = Modifier.width(32.dp))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(R.string.loan_agreement),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "№ $documentNumber",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF9B9CA1),
+            )
+        }
     }
 }

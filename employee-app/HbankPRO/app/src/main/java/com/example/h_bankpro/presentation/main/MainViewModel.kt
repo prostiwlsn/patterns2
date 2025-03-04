@@ -2,6 +2,7 @@ package com.example.h_bankpro.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.data.Rate
 import com.example.h_bankpro.data.User
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,9 +26,23 @@ class MainViewModel : ViewModel() {
         _state.update { it.copy(isUsersSheetVisible = false) }
     }
 
+    fun showRatesSheet() {
+        _state.update { it.copy(isRatesSheetVisible = true) }
+    }
+
+    fun hideRatesSheet() {
+        _state.update { it.copy(isRatesSheetVisible = false) }
+    }
+
     fun onUserClicked(user: User) {
         viewModelScope.launch {
             _navigationEvent.emit(MainNavigationEvent.NavigateToUser(user.id.toString()))
+        }
+    }
+
+    fun onRateClicked(rate: Rate) {
+        viewModelScope.launch {
+            _navigationEvent.emit(MainNavigationEvent.NavigateToRate)
         }
     }
 

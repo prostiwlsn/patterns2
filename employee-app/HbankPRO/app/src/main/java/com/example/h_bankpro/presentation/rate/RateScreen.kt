@@ -1,4 +1,4 @@
-package com.example.h_bankpro.presentation.rateCreation
+package com.example.h_bankpro.presentation.rate
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,26 +17,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.h_bankpro.R
-import com.example.h_bankpro.presentation.common.CustomDisablableButton
-import com.example.h_bankpro.presentation.common.FloatInputField
-import com.example.h_bankpro.presentation.common.TextInputField
-import com.example.h_bankpro.presentation.rateCreation.components.RateCreationHeader
+import com.example.h_bankpro.presentation.common.TextField
+import com.example.h_bankpro.presentation.rate.components.RateHeader
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RateCreationScreen(
+fun RateScreen(
     navController: NavController,
-    viewModel: RateCreationViewModel = koinViewModel()
+    viewModel: RateViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is RateCreationNavigationEvent.NavigateToSuccessfulRateCreation ->
-                    navController.navigate("successful_rate_creation")
+                is RateNavigationEvent.NavigateToRateEditing ->
+                    navController.navigate("rate_editing")
 
-                RateCreationNavigationEvent.NavigateBack -> navController.popBackStack()
+                RateNavigationEvent.NavigateBack -> navController.popBackStack()
             }
         }
     }
@@ -50,36 +48,25 @@ fun RateCreationScreen(
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.height(40.dp))
-        RateCreationHeader(
-            onBackClick = { viewModel.onBackClicked() }
+        RateHeader(
+            onBackClick = { viewModel.onBackClicked() },
+            onDeleteClick = { viewModel.onDeleteClicked() },
+            onEditClick = { viewModel.onEditClicked() }
         )
         Spacer(modifier = Modifier.height(37.dp))
-        TextInputField(
+        TextField(
             labelRes = R.string.title,
-            value = state.name,
-            onValueChange = { viewModel.onNameChange(it) }
+            value = state.name
         )
         Spacer(modifier = Modifier.height(6.dp))
-        FloatInputField(
+        TextField(
             labelRes = R.string.rate_in_percent,
-            value = if (state.interestRate != 0.0f) state.interestRate.toString() else "",
-            onValueChange = { text ->
-                val floatValue = text.toFloatOrNull() ?: 0.0f
-                viewModel.onRateChange(floatValue)
-            }
+            value = state.interestRate.toString()
         )
         Spacer(modifier = Modifier.height(6.dp))
-        TextInputField(
+        TextField(
             labelRes = R.string.description,
-            value = state.description,
-            onValueChange = { viewModel.onDescriptionChange(it) }
+            value = state.description
         )
-        Spacer(modifier = Modifier.weight(1f))
-        CustomDisablableButton(
-            onClick = viewModel::onCreateClicked,
-            textRes = R.string.create,
-            enabled = state.areFieldsValid
-        )
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }

@@ -1,4 +1,4 @@
-package com.example.h_bankpro.presentation.rateEditing.components
+package com.example.h_bankpro.presentation.rate.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -21,7 +23,11 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
 
 @Composable
-fun RateEditingHeader(onBackClick: () -> Unit) {
+fun RateHeader(
+    onBackClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
@@ -33,12 +39,28 @@ fun RateEditingHeader(onBackClick: () -> Unit) {
                 contentDescription = "Back"
             )
         }
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(32.dp))
         Text(
-            text = stringResource(R.string.loan_rate_editing),
+            text = stringResource(R.string.rate),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
+        Spacer(modifier = Modifier.width(12.dp))
+        IconButton(onClick = onEditClick) {
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                tint = Color.Black,
+                contentDescription = "Edit"
+            )
+        }
+        Spacer(modifier = Modifier.width(3.dp))
+        IconButton(onClick = onDeleteClick) {
+            Icon(
+                imageVector = Icons.Outlined.Delete,
+                tint = Color.Red,
+                contentDescription = "Delete"
+            )
+        }
     }
 }

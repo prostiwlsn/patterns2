@@ -24,6 +24,8 @@ import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.R
 import com.example.h_bankpro.presentation.main.components.UsersBottomSheetContent
 import com.example.h_bankpro.presentation.main.components.ActionBlock
+import com.example.h_bankpro.presentation.main.components.RatesBlock
+import com.example.h_bankpro.presentation.main.components.RatesBottomSheetContent
 import com.example.h_bankpro.presentation.main.components.UsersBlock
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +47,9 @@ fun MainScreen(
 
                 is MainNavigationEvent.NavigateToUserCreation ->
                     navController.navigate("user_creation")
+
+                is MainNavigationEvent.NavigateToRate ->
+                    navController.navigate("rate")
             }
         }
     }
@@ -95,6 +100,15 @@ fun MainScreen(
                 onCreateRateClick = { viewModel.onCreateRateClicked() },
                 onCreateUserClick = { viewModel.onCreateUserClicked() }
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            if (state.rates.isNotEmpty()) {
+                RatesBlock(
+                    rates = state.rates,
+                    onItemClick = { viewModel.onRateClicked(it) },
+                    onSeeAllClick = { viewModel.showRatesSheet() }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
             Spacer(modifier = Modifier.height(32.dp))
         }
         if (state.isUsersSheetVisible) {
@@ -108,6 +122,21 @@ fun MainScreen(
                     onItemClick = { account ->
                         viewModel.onUserClicked(account)
                         viewModel.hideUsersSheet()
+                    }
+                )
+            }
+        }
+        if (state.isRatesSheetVisible) {
+            ModalBottomSheet(
+                onDismissRequest = { viewModel.hideRatesSheet() },
+                containerColor = Color(0xFFF9F9F9),
+                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
+            ) {
+                RatesBottomSheetContent(
+                    rates = state.rates,
+                    onItemClick = { rate ->
+                        viewModel.onRateClicked(rate)
+                        viewModel.hideRatesSheet()
                     }
                 )
             }

@@ -1,4 +1,4 @@
-package com.example.h_bankpro.presentation.rateEditing.components
+package com.example.h_bankpro.presentation.transactionInfo.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
 
 @Composable
-fun RateEditingHeader(onBackClick: () -> Unit) {
+fun TransactionInfoHeader(onBackClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
@@ -33,9 +33,9 @@ fun RateEditingHeader(onBackClick: () -> Unit) {
                 contentDescription = "Back"
             )
         }
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(32.dp))
         Text(
-            text = stringResource(R.string.loan_rate_editing),
+            text = stringResource(R.string.transaction_info),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black

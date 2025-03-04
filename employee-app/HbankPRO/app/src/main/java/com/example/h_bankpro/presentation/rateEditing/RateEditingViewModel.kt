@@ -1,6 +1,5 @@
 package com.example.h_bankpro.presentation.rateEditing
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -10,14 +9,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RateEditingViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class RateEditingViewModel : ViewModel() {
     private val _state = MutableStateFlow(RateEditingState())
     val state: StateFlow<RateEditingState> = _state
 
     private val _navigationEvent = MutableSharedFlow<RateEditingNavigationEvent>()
     val navigationEvent: SharedFlow<RateEditingNavigationEvent> = _navigationEvent
-
-    private val rateId: String = checkNotNull(savedStateHandle["rateId"])
 
     init {
         _state.update {
@@ -61,7 +58,7 @@ class RateEditingViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         }
     }
 
-    fun onCreateClicked() {
+    fun onSaveClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(
                 RateEditingNavigationEvent.NavigateToSuccessfulRateEditing

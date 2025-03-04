@@ -1,10 +1,11 @@
-package com.example.h_bankpro.presentation.rateEditing.components
+package com.example.h_bankpro.presentation.account.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -21,7 +22,10 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
 
 @Composable
-fun RateEditingHeader(onBackClick: () -> Unit) {
+fun AccountHeader(
+    accountId: String,
+    onBackClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
@@ -33,12 +37,22 @@ fun RateEditingHeader(onBackClick: () -> Unit) {
                 contentDescription = "Back"
             )
         }
-        Spacer(modifier = Modifier.width(24.dp))
-        Text(
-            text = stringResource(R.string.loan_rate_editing),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        Spacer(modifier = Modifier.weight(0.75f))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = accountId,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.transaction_history),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF9B9CA1),
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
