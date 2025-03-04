@@ -1,5 +1,6 @@
 package ru.hits.core.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -7,12 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hits.core.domain.dto.account.AccountDTO;
 import ru.hits.core.domain.dto.account.AccountFilters;
+import ru.hits.core.domain.dto.user.RoleEnum;
+import ru.hits.core.domain.dto.user.RpcRequest;
 import ru.hits.core.domain.entity.AccountEntity;
 import ru.hits.core.exceptions.AccountNotFoundException;
 import ru.hits.core.exceptions.BadRequestException;
 import ru.hits.core.exceptions.ForbiddenException;
 import ru.hits.core.mapper.AccountMapper;
 import ru.hits.core.repository.AccountRepository;
+import ru.hits.core.rpc.RpcClientService;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.specification.AccountSpecification;
 
@@ -28,6 +32,8 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+
+    private final RpcClientService rpcClientService;
 
     private static final Random RANDOM = new Random();
 
@@ -53,11 +59,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public AccountDTO deleteAccount(UUID userId, UUID accountId) {
-        var accountEntity = accountRepository.findById(accountId).orElse(null);
-
-        if (accountEntity == null) {
-            throw new BadRequestException("Счёт с идентификатором " + accountId + " не найден");
-        }
+        var accountEntity = accountRepository.findById(accountId)
+                .orElseThrow(() ->new BadRequestException("Счёт с идентификатором " + accountId + " не найден"));
 
         if (!accountEntity.getUserId().equals(userId)) {
             throw new ForbiddenException();
@@ -69,7 +72,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<AccountDTO> getAccounts(UUID userId) {
+    public List<AccountDTO> getAccounts(UUID myUserId, UUID userId) throws JsonProcessingException {
+        var myUserEntity = rpcClientService.sendRequest(new RpcRequest(myUserId));
+
+        if (myUserEntity.getRoles().stream().noneMatch(r -> r.equals(RoleEnum.ADMIN) || r.equals(RoleEnum.MANAGER)) && !myUserId.equals(userId)) {
+            throw new ForbiddenException();
+        }
+
         AccountFilters request = AccountFilters.builder()
                 .userId(userId)
                 .build();

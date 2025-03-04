@@ -11,3 +11,11 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/dbchangelog.xml
+  rabbitmq:
+    host: 194.59.186.122
+    username: guest
+    password: guest
+
+security:
+  jwt:
+    secret: "somejwttokenlmaosomejwttokenlmaosomejwttokenlmaosomejwttokenlmao"

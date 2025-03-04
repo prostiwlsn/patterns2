@@ -1,5 +1,6 @@
 package ru.hits.core.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Sort;
 import ru.hits.core.domain.dto.account.AccountDTO;
 import ru.hits.core.domain.dto.account.AccountFilters;
@@ -14,7 +15,7 @@ public interface AccountService {
 
     AccountDTO deleteAccount(UUID userId, UUID accountId);
 
-    List<AccountDTO> getAccounts(UUID userId);
+    List<AccountDTO> getAccounts(UUID myUserId, UUID userId) throws JsonProcessingException;
 
     List<AccountDTO> getAccounts(AccountFilters request);
 

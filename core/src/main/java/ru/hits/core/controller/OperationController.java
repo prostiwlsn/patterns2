@@ -1,5 +1,6 @@
 package ru.hits.core.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -7,16 +8,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.web.bind.annotation.*;
 import ru.hits.core.domain.dto.operation.OperationDTO;
 import ru.hits.core.domain.dto.operation.OperationShortDTO;
 import ru.hits.core.domain.dto.operation.OperationRequestBody;
 import ru.hits.core.service.OperationService;
+import ru.hits.core.service.impl.JwtService;
 
 import java.util.UUID;
 
@@ -27,6 +25,7 @@ import java.util.UUID;
 public class OperationController {
 
     private final OperationService operationService;
+    private final JwtService jwtService;
 
     @Operation(
             summary = "Создание операции",
@@ -34,9 +33,10 @@ public class OperationController {
     )
     @PostMapping
     private OperationDTO createOperation(
+            @RequestHeader("Authorization") String authHeader,
             @RequestBody(required = true) OperationRequestBody operationRequestBody
     ) {
-        return operationService.createOperation(operationRequestBody);
+        return operationService.createOperation(jwtService.getUserId(authHeader), operationRequestBody);
     }
 
     @Operation(
@@ -45,11 +45,12 @@ public class OperationController {
     )
     @GetMapping("/byAccount/{accountId}")
     private Page<OperationShortDTO> getOperations(
+            @RequestHeader("Authorization") String authHeader,
             @PathVariable("accountId") UUID accountId,
             @PageableDefault(size = 10, page = 0, sort = "transactionDateTime", direction = Sort.Direction.DESC)
             Pageable pageable
-    ) {
-        return operationService.getOperations(accountId, pageable);
+    ) throws JsonProcessingException {
+        return operationService.getOperations(jwtService.getUserId(authHeader), accountId, pageable);
     }
 
     @Operation(
@@ -58,9 +59,10 @@ public class OperationController {
     )
     @GetMapping("/{operationId}")
     private OperationDTO getOperation(
+            @RequestHeader("Authorization") String authHeader,
             @PathVariable("operationId") UUID operationId
-    ) {
-        return operationService.getOperation(operationId);
+    ) throws JsonProcessingException {
+        return operationService.getOperation(jwtService.getUserId(authHeader), operationId);
     }
 
 }
