@@ -73,8 +73,7 @@ dependencies {
     implementation(libs.logging.interceptor)
 
     // serialization
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.converter.gson)
 
     //OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.9.0")

@@ -2,10 +2,13 @@ package com.example.h_bankpro.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
+import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.domain.useCase.LoginUseCase
-import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
+import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bankpro.presentation.login.model.LoginFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -52,7 +55,21 @@ class LoginViewModel(
         if (validationErrors == null) {
             viewModelScope.launch {
                 loginUseCase()
-                _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
+                    .onSuccess {
+                        _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
+                    }
+                    .onFailure {
+                        if (it.code == 400) {
+                            _state.update {
+                                it.copy(
+                                    fieldErorrs = LoginFrontErrors(
+                                        loginFieldError = "",
+                                        passwordFieldError = "Неверный логин или пароль",
+                                    )
+                                )
+                            }
+                        }
+                    }
             }
         }
     }
