@@ -1,5 +1,6 @@
 package ru.hits.core.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.hits.core.domain.dto.operation.OperationDTO;
@@ -10,10 +11,10 @@ import java.util.UUID;
 
 public interface OperationService {
 
-    OperationDTO createOperation(OperationRequestBody operationRequestBody);
+    OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody);
 
-    Page<OperationShortDTO> getOperations(UUID accountId, Pageable pageable);
+    Page<OperationShortDTO> getOperations(UUID userId, UUID accountId, Pageable pageable) throws JsonProcessingException;
 
-    OperationDTO getOperation(UUID operationId);
+    OperationDTO getOperation(UUID userId, UUID operationId) throws JsonProcessingException;
 
 }
