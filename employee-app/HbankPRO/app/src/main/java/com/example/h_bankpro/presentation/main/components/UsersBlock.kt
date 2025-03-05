@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
-import com.example.h_bankpro.data.User
+import com.example.h_bankpro.domain.model.User
 
 @Composable
 fun UsersBlock(

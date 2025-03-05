@@ -14,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
-import com.example.h_bankpro.data.User
+import com.example.h_bankpro.domain.model.User
 
 @Composable
 fun UserItem(
@@ -39,5 +40,9 @@ fun UserItem(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = user.name, fontSize = 14.sp, color = Color.Black)
+        if (user.isBlocked) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = stringResource(R.string.blocked), fontSize = 14.sp, color = Color.Red)
+        }
     }
 }

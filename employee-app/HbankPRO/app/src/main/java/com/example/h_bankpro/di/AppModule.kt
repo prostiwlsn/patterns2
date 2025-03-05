@@ -7,7 +7,6 @@ import com.example.h_bankpro.presentation.main.MainViewModel
 import com.example.h_bankpro.presentation.rate.RateViewModel
 import com.example.h_bankpro.presentation.rateCreation.RateCreationViewModel
 import com.example.h_bankpro.presentation.rateEditing.RateEditingViewModel
-import com.example.h_bankpro.presentation.registration.RegistrationViewModel
 import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateCreationViewModel
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingViewModel
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationViewModel
@@ -20,7 +19,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     viewModel { WelcomeViewModel() }
-    viewModel { MainViewModel() }
+    viewModel { MainViewModel(get()) }
     viewModel { RateCreationViewModel() }
     viewModel { SuccessfulRateCreationViewModel() }
     viewModel { SuccessfulRateEditingViewModel() }
@@ -31,5 +30,13 @@ val appModule = module {
     viewModel { SuccessfulUserCreationViewModel() }
     viewModel { AccountViewModel() }
     viewModel { TransactionInfoViewModel() }
-    viewModel { (savedStateHandle: SavedStateHandle) -> UserViewModel(savedStateHandle) }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        UserViewModel(
+            savedStateHandle,
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 }

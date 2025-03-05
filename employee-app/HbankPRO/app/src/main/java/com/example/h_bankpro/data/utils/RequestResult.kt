@@ -1,5 +1,7 @@
 package com.example.h_bankpro.data.utils
 
+import com.example.h_bankpro.data.dto.UserDto
+
 sealed interface RequestResult<T> {
     data class Success<T>(
         val data: T,
@@ -11,4 +13,12 @@ sealed interface RequestResult<T> {
     ) : RequestResult<T>
 
     class NoInternetConnection<T> : RequestResult<T>
+}
+
+inline fun <T, R> RequestResult<T>.mapSuccess(transform: (T) -> R): RequestResult<R> {
+    return when (this) {
+        is RequestResult.Success -> RequestResult.Success(transform(this.data))
+        is RequestResult.Error -> RequestResult.Error(this.code, this.message)
+        is RequestResult.NoInternetConnection -> RequestResult.NoInternetConnection()
+    }
 }

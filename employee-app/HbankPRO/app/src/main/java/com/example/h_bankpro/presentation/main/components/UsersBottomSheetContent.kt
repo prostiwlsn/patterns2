@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.h_bankpro.R
-import com.example.h_bankpro.data.User
+import com.example.h_bankpro.domain.model.User
 
 @Composable
 fun UsersBottomSheetContent(

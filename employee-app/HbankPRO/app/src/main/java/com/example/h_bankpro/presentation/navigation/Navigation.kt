@@ -1,12 +1,22 @@
 package com.example.h_bankpro.presentation.navigation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.h_bankpro.data.utils.RequestResult
+import com.example.h_bankpro.domain.repository.ITokenStorage
+import com.example.h_bankpro.domain.repository.TokenLocalStorage
+import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
 import com.example.h_bankpro.presentation.account.AccountScreen
 import com.example.h_bankpro.presentation.loan.LoanScreen
 import com.example.h_bankpro.presentation.login.LoginScreen
@@ -25,9 +35,39 @@ import com.example.h_bankpro.presentation.welcome.WelcomeScreen
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshTokenUseCase) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "welcome") {
+    var isAuthorized by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        val currentToken = tokenStorage.getTokenState()
+        Log.d("AppNavigation", "Current token: $currentToken")
+        if (currentToken.accessToken != null) {
+            if (tokenStorage.isTokenValid()) {
+                Log.d("AppNavigation", "Token is valid")
+                isAuthorized = true
+            } else {
+                when (val result = refreshTokenUseCase()) {
+                    is RequestResult.Success -> {
+                        isAuthorized = true
+                    }
+                    is RequestResult.Error -> {
+                        tokenStorage.clearToken()
+                        isAuthorized = false
+                    }
+                    is RequestResult.NoInternetConnection -> {
+                        isAuthorized = false
+                    }
+                }
+            }
+        } else {
+            isAuthorized = false
+        }
+    }
+    NavHost(
+        navController = navController,
+        startDestination = if (isAuthorized) "main" else "welcome"
+    ) {
         composable("welcome") {
             WelcomeScreen(navController)
         }
@@ -48,7 +88,9 @@ fun AppNavigation() {
         }
         composable(
             route = "user/{userId}",
-            arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType }
+            ),
         ) {
             UserScreen(navController)
         }

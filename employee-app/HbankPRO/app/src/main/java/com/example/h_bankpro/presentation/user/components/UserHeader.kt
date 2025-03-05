@@ -26,8 +26,10 @@ import com.example.h_bankpro.data.RoleType
 fun UserHeader(
     name: String,
     roles: List<RoleType>,
+    isBlocked: Boolean,
     onBackClick: () -> Unit,
-    onBlockClick: () -> Unit
+    onBlockClick: () -> Unit,
+    onUnblockClick: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -57,11 +59,12 @@ fun UserHeader(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = onBlockClick) {
+        IconButton(onClick = if (isBlocked) onUnblockClick else onBlockClick) {
             Icon(
-                painter = painterResource(id = R.drawable.block),
-                tint = Color.Red,
-                contentDescription = "Block"
+                painter = if (isBlocked) painterResource(id = R.drawable.check) else
+                    painterResource(id = R.drawable.block),
+                tint = if (isBlocked) Color.Green else Color.Red,
+                contentDescription = ""
             )
         }
     }

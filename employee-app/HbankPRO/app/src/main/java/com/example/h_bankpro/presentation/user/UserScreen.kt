@@ -7,11 +7,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.h_bankpro.R
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.presentation.user.components.AccountsBlock
 import com.example.h_bankpro.presentation.user.components.AccountsBottomSheetContent
@@ -55,12 +60,22 @@ fun UserScreen(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
             UserHeader(
-                name = state.user.name,
+                name = state.user?.name ?: "",
                 onBackClick = { viewModel.onBackClicked() },
                 onBlockClick = { viewModel.onBlockUserClicked() },
-                roles = state.user.roles
+                onUnblockClick = { viewModel.onUnblockUserClicked() },
+                roles = state.user?.roles ?: emptyList(),
+                isBlocked = state.user?.isBlocked == true
             )
             Spacer(modifier = Modifier.height(24.dp))
+            if (state.user?.isBlocked == true) {
+                Text(
+                    text = stringResource(R.string.blocked),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+            }
             if (state.accounts.isNotEmpty()) {
                 AccountsBlock(
                     accounts = state.accounts,
