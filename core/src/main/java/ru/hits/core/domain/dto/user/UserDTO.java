@@ -2,6 +2,7 @@ package ru.hits.core.domain.dto.user;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.hits.core.domain.enums.RoleEnum;
 
 import java.util.List;
 import java.util.UUID;

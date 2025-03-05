@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface OperationService {
 
-    OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody);
+    OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException;
 
     Page<OperationShortDTO> getOperations(UUID userId, UUID accountId, Pageable pageable) throws JsonProcessingException;
 

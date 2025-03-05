@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface AccountService {
 
-    AccountDTO createAccount(UUID userId);
+    AccountDTO createAccount(UUID userId) throws JsonProcessingException;
 
     AccountDTO deleteAccount(UUID userId, UUID accountId);
 
