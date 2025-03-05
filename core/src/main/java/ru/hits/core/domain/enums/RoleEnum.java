@@ -1,4 +1,4 @@
-package ru.hits.core.domain.dto.user;
+package ru.hits.core.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

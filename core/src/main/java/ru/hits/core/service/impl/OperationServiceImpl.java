@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hits.core.domain.dto.operation.LoanPaymentRequest;
 import ru.hits.core.domain.dto.operation.OperationDTO;
 import ru.hits.core.domain.dto.operation.OperationRequestBody;
 import ru.hits.core.domain.dto.operation.OperationShortDTO;
-import ru.hits.core.domain.dto.user.RoleEnum;
-import ru.hits.core.domain.dto.user.RpcRequest;
+import ru.hits.core.domain.enums.RoleEnum;
+import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.entity.AccountEntity;
 import ru.hits.core.domain.entity.OperationEntity;
 import ru.hits.core.domain.enums.OperationTypeEnum;
@@ -19,7 +20,6 @@ import ru.hits.core.exceptions.ForbiddenException;
 import ru.hits.core.exceptions.OperationNotFoundException;
 import ru.hits.core.mapper.OperationMapper;
 import ru.hits.core.repository.OperationRepository;
-import ru.hits.core.rpc.RpcClientService;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.service.OperationService;
 
@@ -38,7 +38,7 @@ public class OperationServiceImpl implements OperationService {
 
     @Transactional
     @Override
-    public OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody) {
+    public OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException {
         switch (operationRequestBody.getOperationType()) {
             case OperationTypeEnum.TRANSFER -> {
                 return createTransferOperation(userId, operationRequestBody);
@@ -92,7 +92,7 @@ public class OperationServiceImpl implements OperationService {
         return operationMapper.entityToDTO(operationRepository.save(operation));
     }
 
-    private OperationDTO createLoanPaymentOperation(UUID userId, OperationRequestBody operationRequestBody) {
+    private OperationDTO createLoanPaymentOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException {
         var senderAccount = accountService.getRawAccount(operationRequestBody.getSenderAccountId());
 
         if (!senderAccount.getUserId().equals(userId)) {
@@ -103,12 +103,18 @@ public class OperationServiceImpl implements OperationService {
             throw new BadRequestException("Недостаточно средств на счете отправителя.");
         }
 
+        rpcClientService.loanPaymentRequest(
+                new LoanPaymentRequest(
+                        senderAccount.getId(),
+                        operationRequestBody.getRecipientAccountId(),
+                        operationRequestBody.getAmount()
+                )
+        );
+
         accountService.updateBalance(
                 senderAccount,
                 senderAccount.getBalance() - operationRequestBody.getAmount()
         );
-
-        // TODO обращение к сервису кредитов
 
         var operation = OperationEntity.builder()
                 .id(UUID.randomUUID())
@@ -177,7 +183,9 @@ public class OperationServiceImpl implements OperationService {
             UUID accountId,
             Pageable pageable
     ) throws JsonProcessingException {
-        var user = rpcClientService.sendRequest(RpcRequest.builder().Id(userId).build());
+        var user = rpcClientService.getUserInfo(
+                new UserInfoRequest(userId)
+        );
         var account = accountService.getRawAccount(accountId);
 
         if (
@@ -199,7 +207,9 @@ public class OperationServiceImpl implements OperationService {
                         .orElseThrow(() -> new OperationNotFoundException(operationId))
         );
 
-        var user = rpcClientService.sendRequest(RpcRequest.builder().Id(userId).build());
+        var user = rpcClientService.getUserInfo(
+                new UserInfoRequest(userId)
+        );
 
         AccountEntity recipientAccount = (operation.getRecipientAccountId() != null)
                 ? accountService.getRawAccount(operation.getRecipientAccountId())

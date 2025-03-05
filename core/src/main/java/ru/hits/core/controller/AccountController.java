@@ -1,15 +1,14 @@
 package ru.hits.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.core.domain.dto.account.AccountDTO;
-import ru.hits.core.domain.dto.user.RpcRequest;
+import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.dto.user.UserDTO;
-import ru.hits.core.rpc.RpcClientService;
+import ru.hits.core.service.impl.RpcClientService;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.service.impl.JwtService;
 
@@ -37,7 +36,9 @@ public class AccountController {
             }
 
             var id = jwtService.getUserId(authHeader);
-            return rpcClientService.sendRequest(new RpcRequest(id));
+            return rpcClientService.getUserInfo(
+                    new UserInfoRequest(id)
+            );
 
         } catch (Exception e) {
             throw new RuntimeException("Invalid token");
@@ -51,7 +52,7 @@ public class AccountController {
     @PostMapping
     private AccountDTO createAccount(
             @RequestHeader("Authorization") String authHeader
-    ) {
+    ) throws JsonProcessingException {
         return accountService.createAccount(jwtService.getUserId(authHeader));
     }
 
