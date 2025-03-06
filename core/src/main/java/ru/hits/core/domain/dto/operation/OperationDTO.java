@@ -19,8 +19,14 @@ public class OperationDTO {
     @Schema(description = "Идентификатор счёта отправителя", example = "c1234567-d89b-12d3-a456-426614174000")
     private UUID senderAccountId;
 
+    @Schema(description = "Номер счёта отправителя", example = "1234 1234 1324 1324")
+    private String senderAccountNumber;
+
     @Schema(description = "Идентификатор счёта получателя", example = "d1234567-e89b-12d3-a456-426614174000")
     private UUID recipientAccountId;
+
+    @Schema(description = "Номер счёта отправителя", example = "1234 1234 1324 1324")
+    private String recipientAccountNumber;
 
     @Schema(description = "Значение определяющее была ли операция плюсом к счету или минусом", example = "true")
     private Boolean directionToMe;
