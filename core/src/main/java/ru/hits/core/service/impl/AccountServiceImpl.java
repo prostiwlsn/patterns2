@@ -125,7 +125,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         for (int i = 4; i < 19; i += 5) {
-            sb.replace(i, i, " ");
+            sb.replace(i, i + 1, " ");
         }
 
         return sb.toString();
