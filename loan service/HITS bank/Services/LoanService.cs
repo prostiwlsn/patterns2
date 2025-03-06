@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
@@ -26,7 +27,7 @@ public class LoanService : ILoanService
         _loanRepository = loanRepository;
         _mapper = mapper;
     }
-    
+
     /// <summary>
     /// Создание тарифа кредита
     /// </summary>
@@ -51,7 +52,7 @@ public class LoanService : ILoanService
     {
         var updatedTariffEntity = _mapper.Map<TariffEntity>(updatedTariff);
         updatedTariffEntity.Id = tariffId;
-        
+
         return await _loanRepository.UpdateTariff(updatedTariffEntity, tariffId);
     }
 
@@ -62,14 +63,14 @@ public class LoanService : ILoanService
     {
         // Валидация
         var validationResult = ValidatePagination(pageNumber, pageSize);
-        
+
         if (validationResult != null)
             return validationResult;
-        
+
         // Получение списка тарифов
         var offset = (pageNumber - 1) * pageSize;
         var tariffsEntities = await _loanRepository.GetTariffs(offset: offset, limit: pageSize);
-        
+
         // Получение пагинации
         var paginationResponseDto = new PaginationResponseDto
         {
@@ -77,7 +78,7 @@ public class LoanService : ILoanService
             PageNumber = pageNumber,
             PagesCount = tariffsEntities.Count / pageSize + 1,
         };
-        
+
         // Маппинг ответа
         var tariffsDtoList = _mapper.Map<List<TariffDto>>(tariffsEntities);
         var response = new TariffsListResponseDto
@@ -94,15 +95,15 @@ public class LoanService : ILoanService
     public async Task<IResult> CreateLoan(CreateLoanRequestDto createLoanRequest)
     {
         var selectedTariff = await _loanRepository.GetTariff(createLoanRequest.TariffId);
-        
+
         if (selectedTariff == null)
             return new Error(StatusCodes.Status404NotFound, "Tariff not found");
-        
+
         var loanEntity = _mapper.Map<LoanEntity>(createLoanRequest);
         loanEntity.RatePercent = selectedTariff.RatePercent;
 
         await _loanRepository.AddLoan(loanEntity);
-        
+
         return new Success();
     }
 
@@ -116,11 +117,11 @@ public class LoanService : ILoanService
 
         if (validationResult != null)
             return validationResult;
-        
+
         // Получение списка кредитов
         var offset = (pageNumber - 1) * pageSize;
         var loanEntities = await _loanRepository.GetUserLoansList(userId, offset, pageSize);
-        
+
         // Получение пагинации
         var pagination = new PaginationResponseDto
         {
@@ -136,33 +137,60 @@ public class LoanService : ILoanService
             Loans = loansListDto,
             Pagination = pagination,
         };
-        
+
         return new Success<LoansListResponseDto>(response);
     }
 
     /// <summary>
     /// Оплатить кредит
     /// </summary>
-    public async Task<IResult> PayForLoan(Guid loanId, PaymentLoanRequestDto paymentInfo)
+    public async Task<LoanPaymentResultDto> PayForLoan(LoanPaymentDto loanPayment)
     {
-        // Валидация
-        var validationResult = ValidateAccountNumber(paymentInfo.AccountNumber);
-        
-        if (validationResult != null)
-            return validationResult;
-        
         // Получение кредита
-        var loan = await _loanRepository.GetLoan(loanId);
-        
-        if (loan == null)
-            return new Error(StatusCodes.Status404NotFound, "Loan not found");
-        
-        // Оплата кредита
-        loan.Debt -= Math.Min(paymentInfo.Amount, loan.Debt);
+        LoanEntity? loan = await _loanRepository.GetLoan(loanPayment.RecipientAccountId);
 
-        return await _loanRepository.UpdateLoan(loan);
+        if (loan == null)
+            return new LoanPaymentResultDto
+            {
+                SenderAccountId = loanPayment.SenderAccountId,
+                ReturnedAmount = loanPayment.Amount,
+                ErrorMessage = "Loan not found",
+                ErrorStatusCode = StatusCodes.Status404NotFound,
+            };
+
+        // Оплата кредита
+        var debtPayment = Math.Min(loanPayment.Amount, loan.Debt);
+        loan.Debt -= debtPayment;
+
+        var result = await _loanRepository.UpdateLoan(loan);
+
+        // Возврат лишней суммы
+        if (result is Success)
+        {
+            var returnAmount = loanPayment.Amount - debtPayment;
+
+            return new LoanPaymentResultDto
+            {
+                SenderAccountId = loanPayment.SenderAccountId,
+                ReturnedAmount = returnAmount,
+            };
+        }
+        if (result is Error error)
+        {
+            return new LoanPaymentResultDto
+            {
+                ErrorMessage = error.Message,
+                ErrorStatusCode = error.StatusCode,
+            };
+        }
+        
+        return new LoanPaymentResultDto
+        {
+            ErrorMessage = "Что-то пошло не так",
+            ErrorStatusCode = StatusCodes.Status500InternalServerError,
+        };
     }
-    
+
     /// <summary>
     /// Валидация пагинации
     /// </summary>
@@ -170,13 +198,13 @@ public class LoanService : ILoanService
     {
         if (pageNumber < 1)
             return new Error(StatusCodes.Status400BadRequest, "Page number cannot be less than 1");
-        
+
         if (pageSize < 0)
             return new Error(StatusCodes.Status400BadRequest, "Page size cannot be less than 0");
-        
+
         return null;
     }
-    
+
     /// <summary>
     /// Валидация номера счета
     /// </summary>
@@ -184,7 +212,7 @@ public class LoanService : ILoanService
     {
         if (accountNumber.Length != 20)
             return new Error(StatusCodes.Status400BadRequest, "Account number must be 20 characters long");
-        
+
         if (accountNumber.Any(x => !char.IsDigit(x)))
             return new Error(StatusCodes.Status400BadRequest, "Account number must contain only digits");
 

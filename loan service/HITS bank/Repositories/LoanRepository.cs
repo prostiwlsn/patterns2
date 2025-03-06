@@ -33,20 +33,20 @@ public class LoanRepository : ILoanRepository
     {
         return await _context.Tariffs.FirstOrDefaultAsync(x => x.Id == tariffId);
     }
-    
+
     /// <summary>
     /// Удаление тарифа
     /// </summary>
     public async Task<IResult> DeleteTariff(Guid tariffId)
     {
         var tariffEntity = await _context.Tariffs.FirstOrDefaultAsync(x => x.Id == tariffId);
-        
+
         if (tariffEntity == null)
             return new Error(StatusCodes.Status404NotFound, "Tariff not found");
-        
+
         _context.Tariffs.Remove(tariffEntity);
         await _context.SaveChangesAsync();
-        
+
         return new Success();
     }
 
@@ -80,9 +80,9 @@ public class LoanRepository : ILoanRepository
     public async Task AddLoan(LoanEntity loanEntity)
     {
         loanEntity.DocumentNumber = _context.Loans.Count() + 1;
-        
+
         _context.Loans.Add(loanEntity);
-        
+
         await _context.SaveChangesAsync();
     }
 
@@ -99,7 +99,9 @@ public class LoanRepository : ILoanRepository
     /// </summary>
     public async Task<LoanEntity?> GetLoan(Guid loanId)
     {
-        return await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanId);
+        var result = await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanId);
+
+        return result;
     }
 
     /// <summary>

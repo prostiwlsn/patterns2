@@ -5,6 +5,7 @@ using HITS_bank.Mappers;
 using HITS_bank.Middlewares;
 using HITS_bank.Repositories;
 using HITS_bank.Services;
+using HITS_bank.Services.BackgroundServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -70,6 +71,9 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
+
+// Слушатели RabbitMq
+builder.Services.AddHostedService<LoanPaymentConsumer>();
 
 // Мапперы
 builder.Services.AddAutoMapper(typeof(LoanMapper));

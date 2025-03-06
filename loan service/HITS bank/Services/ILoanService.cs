@@ -1,4 +1,5 @@
 ﻿using HITS_bank.Controllers.Dto;
+using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
 using IResult = HITS_bank.Utils.IResult;
 
@@ -44,5 +45,5 @@ public interface ILoanService
     /// <summary>
     /// Оплатить кредит
     /// </summary>
-    Task<IResult> PayForLoan(Guid loanId, PaymentLoanRequestDto paymentInfo);
+    Task<LoanPaymentResultDto> PayForLoan(LoanPaymentDto loanPayment);
 }

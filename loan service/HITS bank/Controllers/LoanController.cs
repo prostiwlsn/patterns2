@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Text.Json;
 using HITS_bank.Controllers.Dto;
+using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Services;
+using HITS_bank.Services.idk;
 using HITS_bank.Utils;
 using Microsoft.AspNetCore.Mvc;
+using RabbitMQ.Client;
 using IResult = HITS_bank.Utils.IResult;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -90,23 +95,12 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("{userId}/list")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoansListResponseDto))]
     public async Task<IActionResult> GetUsersLoansList(Guid userId, int pageNumber = 1, int pageSize = 10)
     {
         var response = await _loanService.GetUserLoansList(userId, pageNumber, pageSize);
         
         return GetResponseResult<LoansListResponseDto>(response);
-    }
-
-    /// <summary>
-    /// Оплата кредита
-    /// </summary>
-    [HttpPatch]
-    [Route("{loanId}/payment")]
-    public async Task<IActionResult> PayForLoan(Guid loanId, PaymentLoanRequestDto paymentInfo)
-    {
-        var response = await _loanService.PayForLoan(loanId, paymentInfo);
-        
-        return GetResponseResult<PaymentLoanRequestDto>(response);
     }
     
     /// <summary>
@@ -125,32 +119,4 @@ public class LoanController : ControllerBase
 
         return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
     }
-    
-    /*var factory = new ConnectionFactory{ HostName = "194.59.186.122" };
-
-        // Создание очереди сообщений
-        using (var connection = factory.CreateConnection())
-        using (var channel = connection.CreateModel())
-        {
-            channel.ExchangeDeclare(exchange: "easy_net_q_rpc",
-                type: ExchangeType.Direct,
-                durable: true);
-
-            // Отправка сообщения
-            var message = JsonSerializer.Serialize(
-                new Message
-                {
-                    Id = userId
-                }
-                );
-            var body = Encoding.UTF8.GetBytes(message);
-
-            var properties = channel.CreateBasicProperties();
-            properties.Persistent = true;
-
-            channel.BasicPublish(exchange: "easy_net_q_rpc",
-                routingKey: "patterns2_infoauth.Model.GetUserRequest, patterns2-infoauth",
-                basicProperties: properties,
-                body: body);
-        }*/
 }
