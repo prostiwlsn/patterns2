@@ -112,6 +112,12 @@ public class AccountServiceImpl implements AccountService {
                         .orElseThrow(() -> new AccountNotFoundException(accountId));
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<UUID> getMyAccountIds(UUID userId) {
+        return accountRepository.selectAllIdsByUserId(userId);
+    }
+
     @Override
     public void updateBalance(AccountEntity account, Float newBalance) {
         account.setBalance(newBalance);

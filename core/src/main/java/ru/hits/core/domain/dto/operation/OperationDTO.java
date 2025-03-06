@@ -16,12 +16,14 @@ public class OperationDTO {
     @Schema(description = "Уникальный идентификатор операции", example = "a1234567-b89b-12d3-a456-426614174000")
     private UUID id;
 
-    @Schema(description = "Идентификатор счёта отправителя (может быть null, если это пополнение)",
-            example = "c1234567-d89b-12d3-a456-426614174000")
+    @Schema(description = "Идентификатор счёта отправителя", example = "c1234567-d89b-12d3-a456-426614174000")
     private UUID senderAccountId;
 
     @Schema(description = "Идентификатор счёта получателя", example = "d1234567-e89b-12d3-a456-426614174000")
     private UUID recipientAccountId;
+
+    @Schema(description = "Значение определяющее была ли операция плюсом к счету или минусом", example = "true")
+    private Boolean directionToMe;
 
     @Schema(description = "Сумма операции", example = "500.75")
     private Float amount;
@@ -32,6 +34,6 @@ public class OperationDTO {
     @Schema(description = "Сообщение, сопровождающее операцию", example = "Оплата за услуги")
     private String message;
 
-    @Schema(description = "Тип операции", example = "WITHDRAWAL")
+    @Schema(description = "Тип операции", example = "replenishment")
     private OperationTypeEnum operationType;
 }

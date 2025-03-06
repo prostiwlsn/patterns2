@@ -23,6 +23,8 @@ public interface AccountService {
 
     AccountEntity getRawAccount(UUID accountId);
 
+    List<UUID> getMyAccountIds(UUID userId);
+
     void updateBalance(AccountEntity account, Float newBalance);
 
 }

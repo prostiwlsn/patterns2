@@ -24,11 +24,14 @@ import ru.hits.core.service.AccountService;
 import ru.hits.core.service.OperationService;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class OperationServiceImpl implements OperationService {
+
+    private final float MAX_MONEY_VALUE = 100000000f;
 
     private final AccountService accountService;
     private final OperationRepository operationRepository;
@@ -39,6 +42,10 @@ public class OperationServiceImpl implements OperationService {
     @Transactional
     @Override
     public OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException {
+        if (MAX_MONEY_VALUE < operationRequestBody.getAmount()) {
+            throw new BadRequestException("Превышено максимальное значение деняг");
+        }
+
         switch (operationRequestBody.getOperationType()) {
             case OperationTypeEnum.TRANSFER -> {
                 return createTransferOperation(userId, operationRequestBody);
@@ -59,6 +66,10 @@ public class OperationServiceImpl implements OperationService {
     }
 
     private OperationDTO createTransferOperation(UUID userId, OperationRequestBody operationRequestBody) {
+        if(operationRequestBody.getSenderAccountId().equals(operationRequestBody.getRecipientAccountId())) {
+            throw new BadRequestException("Нельзя перевести самому себе");
+        }
+
         var senderAccount = accountService.getRawAccount(operationRequestBody.getSenderAccountId());
         var recipientAccount = accountService.getRawAccount(operationRequestBody.getRecipientAccountId());
 
@@ -79,6 +90,10 @@ public class OperationServiceImpl implements OperationService {
                 recipientAccount.getBalance() + operationRequestBody.getAmount()
         );
 
+        if (MAX_MONEY_VALUE < recipientAccount.getBalance()) {
+            throw new BadRequestException("Превышено максимальное значение деняг");
+        }
+
         var operation = OperationEntity.builder()
                 .id(UUID.randomUUID())
                 .senderAccountId(operationRequestBody.getSenderAccountId())
@@ -89,7 +104,10 @@ public class OperationServiceImpl implements OperationService {
                 .operationType(operationRequestBody.getOperationType())
                 .build();
 
-        return operationMapper.entityToDTO(operationRepository.save(operation));
+        return operationMapper.entityToDTO(
+                operationRepository.save(operation),
+                List.of(operationRequestBody.getSenderAccountId())
+        );
     }
 
     private OperationDTO createLoanPaymentOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException {
@@ -101,6 +119,10 @@ public class OperationServiceImpl implements OperationService {
 
         if (senderAccount.getBalance() < operationRequestBody.getAmount()) {
             throw new BadRequestException("Недостаточно средств на счете отправителя.");
+        }
+
+        if (MAX_MONEY_VALUE < operationRequestBody.getAmount()) {
+            throw new BadRequestException("Превышено максимальное значение деняг");
         }
 
         rpcClientService.loanPaymentRequest(
@@ -125,16 +147,27 @@ public class OperationServiceImpl implements OperationService {
                 .operationType(operationRequestBody.getOperationType())
                 .build();
 
-        return operationMapper.entityToDTO(operationRepository.save(operation));
+        return operationMapper.entityToDTO(
+                operationRepository.save(operation),
+                List.of(operationRequestBody.getSenderAccountId())
+        );
     }
 
     private OperationDTO createReplenishmentOperation(OperationRequestBody operationRequestBody) {
         var recipientAccount = accountService.getRawAccount(operationRequestBody.getRecipientAccountId());
 
+        if (MAX_MONEY_VALUE < operationRequestBody.getAmount()) {
+            throw new BadRequestException("Превышено максимальное значение деняг");
+        }
+
         accountService.updateBalance(
                 recipientAccount,
                 recipientAccount.getBalance() + operationRequestBody.getAmount()
         );
+
+        if (MAX_MONEY_VALUE < recipientAccount.getBalance()) {
+            throw new BadRequestException("Превышено максимальное значение деняг на счету");
+        }
 
         var operation = OperationEntity.builder()
                 .id(UUID.randomUUID())
@@ -145,7 +178,10 @@ public class OperationServiceImpl implements OperationService {
                 .operationType(operationRequestBody.getOperationType())
                 .build();
 
-        return operationMapper.entityToDTO(operationRepository.save(operation));
+        return operationMapper.entityToDTO(
+                operationRepository.save(operation),
+                null
+        );
     }
 
     private OperationDTO createWithdrawalOperation(UUID userId, OperationRequestBody operationRequestBody) {
@@ -173,7 +209,10 @@ public class OperationServiceImpl implements OperationService {
                 .operationType(operationRequestBody.getOperationType())
                 .build();
 
-        return operationMapper.entityToDTO(operationRepository.save(operation));
+        return operationMapper.entityToDTO(
+                operationRepository.save(operation),
+                List.of(operationRequestBody.getSenderAccountId())
+        );
     }
 
     @Transactional(readOnly = true)
@@ -196,15 +235,18 @@ public class OperationServiceImpl implements OperationService {
         }
 
         return operationRepository.findAllByAccountId(accountId, pageable)
-                .map(operationMapper::entityToShortDTO);
+                .map(a -> operationMapper.entityToShortDTO(a, List.of(accountId)));
     }
 
     @Transactional(readOnly = true)
     @Override
     public OperationDTO getOperation(UUID userId, UUID operationId) throws JsonProcessingException {
+        List<UUID> accountIds = accountService.getMyAccountIds(userId);
+
         var operation = operationMapper.entityToDTO(
                 operationRepository.findById(operationId)
-                        .orElseThrow(() -> new OperationNotFoundException(operationId))
+                        .orElseThrow(() -> new OperationNotFoundException(operationId)),
+                accountIds
         );
 
         var user = rpcClientService.getUserInfo(
