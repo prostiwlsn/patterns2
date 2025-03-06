@@ -15,6 +15,9 @@ public class AccountDTO {
     @Schema(description = "Уникальный идентификатор счёта", example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;
 
+    @Schema(description = "Уникальный номер счёта", example = "2202 1685 1423 4312")
+    private String accountNumber;
+
     @Schema(description = "Баланс счёта", example = "1000.50")
     private Float balance;
 

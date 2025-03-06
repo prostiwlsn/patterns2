@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String REQUEST_QUEUE = "userinfo";
-    public static final String REPLY_QUEUE = "responseQueue";
+    public static final String REPLY_QUEUE = "userInfoResponseQueue";
 
     @Bean
     public Queue requestQueue() {

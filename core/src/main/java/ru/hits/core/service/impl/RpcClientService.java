@@ -80,7 +80,7 @@ public class RpcClientService {
             throw new RuntimeException("Error serializing request");
         }
 
-        var responseMap = sendRequest("userInfo", "userInfoResponseQueue", requestBytes);
+        var responseMap = sendRequest("userinfo", "userInfoResponseQueue", requestBytes);
 
         if (responseMap.containsKey("Success") && responseMap.get("Success").equals(false)) {
             throw new RuntimeException("Ошибка в получении информации о пользователе");
