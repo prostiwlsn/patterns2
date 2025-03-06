@@ -119,10 +119,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private String generateAccountNumber() {
-        StringBuilder sb = new StringBuilder(20);
-        for (int i = 0; i < 20; i++) {
+        StringBuilder sb = new StringBuilder(19);
+        for (int i = 0; i < 19; i++) {
             sb.append(RANDOM.nextInt(10));
         }
+
+        for (int i = 4; i < 19; i += 5) {
+            sb.replace(i, i, " ");
+        }
+
         return sb.toString();
     }
 
