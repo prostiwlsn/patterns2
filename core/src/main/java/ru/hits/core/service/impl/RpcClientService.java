@@ -70,7 +70,7 @@ public class RpcClientService {
             UserInfoRequest requestMessage
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
         byte[] requestBytes;
 
         try {
@@ -93,7 +93,7 @@ public class RpcClientService {
             LoanPaymentRequest requestMessage
     ) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
         byte[] requestBytes;
 
         try {
