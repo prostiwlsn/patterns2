@@ -8,14 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.core.domain.dto.operation.OperationDTO;
 import ru.hits.core.domain.dto.operation.OperationShortDTO;
 import ru.hits.core.domain.dto.operation.OperationRequestBody;
+import ru.hits.core.domain.enums.OperationTypeEnum;
 import ru.hits.core.service.OperationService;
 import ru.hits.core.service.impl.JwtService;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
@@ -47,10 +48,20 @@ public class OperationController {
     private Page<OperationShortDTO> getOperations(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("accountId") UUID accountId,
+            @RequestParam(required = false) Instant timeStart,
+            @RequestParam(required = false) Instant timeEnd,
+            @RequestParam(required = false) OperationTypeEnum operationType,
             @PageableDefault(size = 10, page = 0, sort = "transactionDateTime", direction = Sort.Direction.DESC)
             Pageable pageable
     ) throws JsonProcessingException {
-        return operationService.getOperations(jwtService.getUserId(authHeader), accountId, pageable);
+        return operationService.getOperations(
+                jwtService.getUserId(authHeader),
+                accountId,
+                timeStart,
+                timeEnd,
+                operationType,
+                pageable
+        );
     }
 
     @Operation(

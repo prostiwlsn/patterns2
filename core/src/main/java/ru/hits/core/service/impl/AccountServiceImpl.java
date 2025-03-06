@@ -109,7 +109,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountEntity getRawAccount(UUID accountId) {
         return accountRepository.findById(accountId)
-                        .orElseThrow(() -> new AccountNotFoundException(accountId));
+                        .orElse(null);
     }
 
     @Transactional(readOnly = true)

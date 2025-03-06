@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.hits.core.domain.dto.operation.LoanPaymentRequest;
-import ru.hits.core.domain.dto.operation.OperationDTO;
-import ru.hits.core.domain.dto.operation.OperationRequestBody;
-import ru.hits.core.domain.dto.operation.OperationShortDTO;
+import ru.hits.core.domain.dto.operation.*;
 import ru.hits.core.domain.enums.RoleEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.entity.AccountEntity;
@@ -22,6 +20,7 @@ import ru.hits.core.mapper.OperationMapper;
 import ru.hits.core.repository.OperationRepository;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.service.OperationService;
+import ru.hits.core.specification.OperationSpecification;
 
 import java.time.Instant;
 import java.util.List;
@@ -66,7 +65,7 @@ public class OperationServiceImpl implements OperationService {
     }
 
     private OperationDTO createTransferOperation(UUID userId, OperationRequestBody operationRequestBody) {
-        if(operationRequestBody.getSenderAccountId().equals(operationRequestBody.getRecipientAccountId())) {
+        if (operationRequestBody.getSenderAccountId().equals(operationRequestBody.getRecipientAccountId())) {
             throw new BadRequestException("Нельзя перевести самому себе");
         }
 
@@ -106,7 +105,9 @@ public class OperationServiceImpl implements OperationService {
 
         return operationMapper.entityToDTO(
                 operationRepository.save(operation),
-                List.of(operationRequestBody.getSenderAccountId())
+                List.of(operationRequestBody.getSenderAccountId()),
+                senderAccount.getAccountNumber(),
+                recipientAccount.getAccountNumber()
         );
     }
 
@@ -149,7 +150,9 @@ public class OperationServiceImpl implements OperationService {
 
         return operationMapper.entityToDTO(
                 operationRepository.save(operation),
-                List.of(operationRequestBody.getSenderAccountId())
+                List.of(operationRequestBody.getSenderAccountId()),
+                senderAccount.getAccountNumber(),
+                null
         );
     }
 
@@ -180,7 +183,9 @@ public class OperationServiceImpl implements OperationService {
 
         return operationMapper.entityToDTO(
                 operationRepository.save(operation),
-                null
+                null,
+                null,
+                recipientAccount.getAccountNumber()
         );
     }
 
@@ -211,7 +216,9 @@ public class OperationServiceImpl implements OperationService {
 
         return operationMapper.entityToDTO(
                 operationRepository.save(operation),
-                List.of(operationRequestBody.getSenderAccountId())
+                List.of(operationRequestBody.getSenderAccountId()),
+                senderAccount.getAccountNumber(),
+                null
         );
     }
 
@@ -220,6 +227,9 @@ public class OperationServiceImpl implements OperationService {
     public Page<OperationShortDTO> getOperations(
             UUID userId,
             UUID accountId,
+            Instant timeStart,
+            Instant timeEnd,
+            OperationTypeEnum operationType,
             Pageable pageable
     ) throws JsonProcessingException {
         var user = rpcClientService.getUserInfo(
@@ -234,8 +244,22 @@ public class OperationServiceImpl implements OperationService {
             throw new ForbiddenException();
         }
 
-        return operationRepository.findAllByAccountId(accountId, pageable)
-                .map(a -> operationMapper.entityToShortDTO(a, List.of(accountId)));
+        return getOperations(
+                OperationFilters.builder()
+                        .accountId(accountId)
+                        .timeStart(timeStart)
+                        .timeEnd(timeEnd)
+                        .operationType(operationType)
+                        .build(),
+                pageable,
+                List.of(accountId)
+        );
+    }
+
+    private Page<OperationShortDTO> getOperations(OperationFilters filters, Pageable pageable, List<UUID> accountIds) {
+        var spec = getSpecByFilters(filters);
+        var test = operationRepository.findAll(spec, pageable).map(o -> operationMapper.entityToShortDTO(o, accountIds));
+        return test;
     }
 
     @Transactional(readOnly = true)
@@ -243,19 +267,19 @@ public class OperationServiceImpl implements OperationService {
     public OperationDTO getOperation(UUID userId, UUID operationId) throws JsonProcessingException {
         List<UUID> accountIds = accountService.getMyAccountIds(userId);
 
-        var operation = operationMapper.entityToDTO(
-                operationRepository.findById(operationId)
-                        .orElseThrow(() -> new OperationNotFoundException(operationId)),
-                accountIds
-        );
+        OperationEntity operation = operationRepository.findById(operationId)
+                        .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         var user = rpcClientService.getUserInfo(
                 new UserInfoRequest(userId)
         );
 
-        AccountEntity recipientAccount = (operation.getRecipientAccountId() != null)
-                ? accountService.getRawAccount(operation.getRecipientAccountId())
-                : null;
+        AccountEntity recipientAccount = null;
+        if (!operation.getOperationType().equals(OperationTypeEnum.LOAN_REPAYMENT)) {
+            recipientAccount = (operation.getRecipientAccountId() != null)
+                    ? accountService.getRawAccount(operation.getRecipientAccountId())
+                    : null;
+        }
 
         AccountEntity senderAccount = (operation.getSenderAccountId() != null)
                 ? accountService.getRawAccount(operation.getSenderAccountId())
@@ -271,6 +295,19 @@ public class OperationServiceImpl implements OperationService {
             throw new ForbiddenException();
         }
 
-        return operation;
+        return operationMapper.entityToDTO(
+                operation,
+                accountIds,
+                senderAccount == null ? null : senderAccount.getAccountNumber(),
+                recipientAccount == null ? null : recipientAccount.getAccountNumber()
+        );
+    }
+
+    private Specification<OperationEntity> getSpecByFilters(OperationFilters request) {
+        return Specification.where(OperationSpecification.userIdEqual(request.getUserId()))
+                .and(OperationSpecification.accountIdEquals(request.getAccountId()))
+                .and(OperationSpecification.timeStart(request.getTimeStart()))
+                .and(OperationSpecification.timeEnd(request.getTimeEnd()))
+                .and(OperationSpecification.operationType(request.getOperationType()));
     }
 }

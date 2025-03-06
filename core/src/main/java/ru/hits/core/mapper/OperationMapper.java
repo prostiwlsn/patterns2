@@ -15,7 +15,14 @@ import java.util.UUID;
 public interface OperationMapper {
 
     @Mapping(target = "directionToMe", expression = "java(getMoneyDirection(operationEntity, myAccountIds))")
-    OperationDTO entityToDTO(OperationEntity operationEntity, List<UUID> myAccountIds);
+    @Mapping(target = "senderAccountNumber", source = "senderAccountNumber")
+    @Mapping(target = "recipientAccountNumber", source = "recipientAccountNumber")
+    OperationDTO entityToDTO(
+            OperationEntity operationEntity,
+            List<UUID> myAccountIds,
+            String senderAccountNumber,
+            String recipientAccountNumber
+    );
 
     @Mapping(target = "directionToMe", expression = "java(getMoneyDirection(operationEntity, myAccountIds))")
     OperationShortDTO entityToShortDTO(OperationEntity operationEntity, List<UUID> myAccountIds);
