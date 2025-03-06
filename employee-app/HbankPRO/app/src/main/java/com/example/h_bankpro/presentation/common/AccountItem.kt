@@ -34,7 +34,7 @@ fun AccountItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = account.id, fontSize = 14.sp, color = Color.Black)
+            Text(text = account.accountNumber, fontSize = 14.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = account.balance.toString(), fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }

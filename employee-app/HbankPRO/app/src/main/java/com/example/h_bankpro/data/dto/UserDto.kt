@@ -10,7 +10,7 @@ data class UserDto(
     val phone: String,
     val name: String,
     val isBlocked: Boolean,
-    val roles: List<String>
+    val roles: List<RoleType>
 )
 
 internal fun UserDto.toDomain(): User {
@@ -19,6 +19,6 @@ internal fun UserDto.toDomain(): User {
         phone = phone,
         name = name,
         isBlocked = isBlocked,
-        roles = roles.mapNotNull { RoleType.fromString(it) }
+        roles = roles
     )
 }

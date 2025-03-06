@@ -10,6 +10,7 @@ import kotlinx.datetime.toLocalDateTime
 @Serializable
 data class AccountDTO(
     val id: String,
+    val accountNumber: String,
     val balance: Float,
     val userId: String,
     val isDeleted: Boolean,
@@ -20,6 +21,7 @@ data class AccountDTO(
 internal fun AccountDTO.toDomain(): Account {
     return Account(
         id = id,
+        accountNumber = accountNumber,
         balance = balance,
         userId = userId,
         isDeleted = isDeleted,

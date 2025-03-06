@@ -23,7 +23,7 @@ import com.example.h_bankpro.R
 
 @Composable
 fun AccountHeader(
-    accountId: String,
+    accountNumber: String,
     onBackClick: () -> Unit
 ) {
     Row(
@@ -40,7 +40,7 @@ fun AccountHeader(
         Spacer(modifier = Modifier.weight(0.75f))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = accountId,
+                text = accountNumber,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black

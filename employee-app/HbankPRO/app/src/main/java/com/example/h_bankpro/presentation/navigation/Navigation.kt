@@ -15,7 +15,6 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.repository.ITokenStorage
-import com.example.h_bankpro.domain.repository.TokenLocalStorage
 import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
 import com.example.h_bankpro.presentation.account.AccountScreen
 import com.example.h_bankpro.presentation.loan.LoanScreen
@@ -51,10 +50,12 @@ fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshToken
                     is RequestResult.Success -> {
                         isAuthorized = true
                     }
+
                     is RequestResult.Error -> {
                         tokenStorage.clearToken()
                         isAuthorized = false
                     }
+
                     is RequestResult.NoInternetConnection -> {
                         isAuthorized = false
                     }
@@ -90,7 +91,7 @@ fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshToken
             route = "user/{userId}",
             arguments = listOf(
                 navArgument("userId") { type = NavType.StringType }
-            ),
+            )
         ) {
             UserScreen(navController)
         }
@@ -112,10 +113,21 @@ fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshToken
         composable("rate_editing") {
             RateEditingScreen(navController)
         }
-        composable("account") {
+        composable(
+            route = "account/{accountId}/{accountNumber}",
+            arguments = listOf(
+                navArgument("accountId") { type = NavType.StringType },
+                navArgument("accountNumber") { type = NavType.StringType },
+            )
+        ) {
             AccountScreen(navController)
         }
-        composable("transaction_info") {
+        composable(
+            route = "transaction_info/{operationId}",
+            arguments = listOf(
+                navArgument("operationId") { type = NavType.StringType }
+            )
+        ) {
             TransactionInfoScreen(navController)
         }
     }

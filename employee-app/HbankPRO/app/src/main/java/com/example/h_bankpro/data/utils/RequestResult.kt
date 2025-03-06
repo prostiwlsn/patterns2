@@ -1,7 +1,5 @@
 package com.example.h_bankpro.data.utils
 
-import com.example.h_bankpro.data.dto.UserDto
-
 sealed interface RequestResult<T> {
     data class Success<T>(
         val data: T,

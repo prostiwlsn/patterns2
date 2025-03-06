@@ -24,7 +24,7 @@ fun RoleToggleSwitch(
         horizontalArrangement = Arrangement.Center
     ) {
         RoleButton(
-            text = stringResource(R.string.employee),
+            text = stringResource(R.string.manager),
             isSelected = !isClientSelected,
             onClick = { onRoleSelected(false) }
         )

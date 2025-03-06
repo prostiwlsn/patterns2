@@ -1,5 +1,6 @@
 package com.example.h_bankpro.data.repository
 
+import com.example.h_bankpro.data.dto.UserCreationDto
 import com.example.h_bankpro.data.dto.UserDto
 import com.example.h_bankpro.data.network.UserApi
 import com.example.h_bankpro.data.utils.NetworkUtils.runResultCatching
@@ -12,6 +13,12 @@ class UserRepository(
     override suspend fun getUsers(): RequestResult<List<UserDto>> {
         return runResultCatching {
             api.getUsers()
+        }
+    }
+
+    override suspend fun getCurrentUser(): RequestResult<UserDto> {
+        return runResultCatching {
+            api.getCurrentUser()
         }
     }
 
@@ -30,6 +37,12 @@ class UserRepository(
     override suspend fun unblockUser(userId: String): RequestResult<Unit> {
         return runResultCatching {
             api.unblockUser(userId)
+        }
+    }
+
+    override suspend fun createUser(request: UserCreationDto): RequestResult<Unit> {
+        return runResultCatching {
+            api.createUser(request)
         }
     }
 }

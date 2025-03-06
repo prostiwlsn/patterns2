@@ -38,8 +38,10 @@ fun UserScreen(
                 UserNavigationEvent.NavigateToLoan ->
                     navController.navigate("loan")
 
-                UserNavigationEvent.NavigateToAccount ->
-                    navController.navigate("account")
+                is UserNavigationEvent.NavigateToAccount ->
+                    navController.navigate(
+                        "account/${event.accountId}/${event.accountNumber}"
+                    )
 
                 UserNavigationEvent.NavigateBack ->
                     navController.popBackStack()
@@ -79,7 +81,7 @@ fun UserScreen(
             if (state.accounts.isNotEmpty()) {
                 AccountsBlock(
                     accounts = state.accounts,
-                    onItemClick = { viewModel.onAccountClicked() },
+                    onItemClick = { viewModel.onAccountClicked(it) },
                     onSeeAllClick = { viewModel.showAccountsSheet() }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -102,7 +104,7 @@ fun UserScreen(
                 AccountsBottomSheetContent(
                     accounts = state.accounts,
                     onItemClick = {
-                        viewModel.onAccountClicked()
+                        viewModel.onAccountClicked(it)
                         viewModel.hideAccountsSheet()
                     }
                 )

@@ -1,106 +1,20 @@
 package com.example.h_bankpro.presentation.account
 
-import com.example.h_bankpro.data.Account
-import com.example.h_bankpro.data.Payment
-import com.example.h_bankpro.data.PaymentType
+import com.example.h_bankpro.data.OperationTypeFilter
 import com.example.h_bankpro.data.PaymentTypeFilter
+import com.example.h_bankpro.domain.model.OperationShort
 import java.time.LocalDate
 
 data class AccountState(
-    val allPayments: List<Payment> = listOf(
-//        Payment(
-//            "1",
-//            PaymentType.INCOMING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("1", "Счёт 1", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-//        Payment(
-//            "1",
-//            PaymentType.OUTGOING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("2", "Счёт 2", 100000),
-//            null
-//        ),
-    ),
-    val filteredPayments: List<Payment> = listOf(
-//        Payment(
-//            "1",
-//            PaymentType.INCOMING,
-//            LocalDate.of(2025, 2, 1),
-//            500.0,
-//            Account("1", "Счёт 1", 100000),
-//            null
-//        )
-    ),
-    val accountId: String = "Счёт · 7928",
-    val selectedType: PaymentTypeFilter = PaymentTypeFilter.All,
+    val allOperations: List<OperationShort> = emptyList(),
+    val filteredOperations: List<OperationShort> = emptyList(),
+    val currentPage: Int = 0,
+    val pageSize: Int = 20,
+    val totalPages: Int = 1,
+    val selectedOperationType: OperationTypeFilter = OperationTypeFilter.All,
+    val isLoading: Boolean = false,
+    val accountId: String = "",
+    val accountNumber: String = "",
     val selectedDateRange: Pair<LocalDate?, LocalDate?> = null to null,
     val isTypesSheetVisible: Boolean = false,
     val isDatePickerVisible: Boolean = false

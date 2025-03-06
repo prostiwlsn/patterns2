@@ -3,6 +3,7 @@ package com.example.h_bankpro.presentation.user
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.data.Account
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.domain.useCase.BlockUserUseCase
@@ -80,9 +81,14 @@ class UserViewModel(
         }
     }
 
-    fun onAccountClicked() {
+    fun onAccountClicked(account: Account) {
         viewModelScope.launch {
-            _navigationEvent.emit(UserNavigationEvent.NavigateToAccount)
+            _navigationEvent.emit(
+                UserNavigationEvent.NavigateToAccount(
+                    account.id,
+                    account.accountNumber
+                )
+            )
         }
     }
 

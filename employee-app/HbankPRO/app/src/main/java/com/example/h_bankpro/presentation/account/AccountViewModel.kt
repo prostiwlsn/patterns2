@@ -6,23 +6,44 @@ import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.h_bankpro.data.Payment
-import com.example.h_bankpro.data.PaymentTypeFilter
+import com.example.h_bankpro.data.OperationTypeFilter
+import com.example.h_bankpro.data.dto.Pageable
+import com.example.h_bankpro.data.utils.RequestResult
+import com.example.h_bankpro.domain.model.OperationShort
+import com.example.h_bankpro.domain.useCase.GetOperationsByAccountUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import java.time.ZoneId
 import java.util.Locale
+import java.time.LocalDate as JavaLocalDate
+import java.time.Instant as JavaInstant
 
-class AccountViewModel : ViewModel() {
+class AccountViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val getOperationsByAccountUseCase: GetOperationsByAccountUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(AccountState())
     val state: StateFlow<AccountState> = _state
+
+    private val accountId: String = checkNotNull(savedStateHandle["accountId"])
+    private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+
+    private val defaultPageable = Pageable(
+        page = 0,
+        size = 20,
+        sort = listOf("transactionDateTime,desc")
+    )
 
     @OptIn(ExperimentalMaterial3Api::class)
     val dateRangePickerState = DateRangePickerState(
@@ -35,11 +56,11 @@ class AccountViewModel : ViewModel() {
         selectableDates = object : SelectableDates {
             @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val date = LocalDate.ofInstant(
-                    java.time.Instant.ofEpochMilli(utcTimeMillis),
+                val date = JavaLocalDate.ofInstant(
+                    JavaInstant.ofEpochMilli(utcTimeMillis),
                     ZoneId.systemDefault()
                 )
-                return !date.isAfter(LocalDate.now())
+                return !date.isAfter(JavaLocalDate.now())
             }
 
             override fun isSelectableYear(year: Int): Boolean {
@@ -52,7 +73,89 @@ class AccountViewModel : ViewModel() {
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
-        _state.update { it.copy(filteredPayments = state.value.allPayments) }
+        _state.update { it.copy(accountId = accountId) }
+        _state.update { it.copy(accountNumber = accountNumber) }
+        loadInitialOperations()
+    }
+
+    private fun loadInitialOperations() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            val accountId = state.value.accountId ?: return@launch
+            when (val result = getOperationsByAccountUseCase(accountId, defaultPageable)) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        val operations = result.data.content
+                        it.copy(
+                            allOperations = operations,
+                            filteredOperations = filterOperations(operations),
+                            currentPage = result.data.number,
+                            totalPages = result.data.totalPages,
+                            isLoading = false
+                        )
+                    }
+                }
+
+                is RequestResult.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+
+                is RequestResult.NoInternetConnection -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    fun loadNextPage() {
+        viewModelScope.launch {
+            val currentPage = state.value.currentPage
+            val totalPages = state.value.totalPages
+            if (currentPage + 1 >= totalPages || state.value.isLoading) return@launch
+
+            _state.update { it.copy(isLoading = true) }
+            val accountId = state.value.accountId ?: return@launch
+            val nextPageable = defaultPageable.copy(page = currentPage + 1)
+            when (val result = getOperationsByAccountUseCase(accountId, nextPageable)) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        val newOperations = it.allOperations + result.data.content
+                        it.copy(
+                            allOperations = newOperations,
+                            filteredOperations = filterOperations(newOperations),
+                            currentPage = result.data.number,
+                            isLoading = false
+                        )
+                    }
+                }
+
+                is RequestResult.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+
+                is RequestResult.NoInternetConnection -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    private fun filterOperations(operations: List<OperationShort>): List<OperationShort> {
+        return operations.filter { operation ->
+            val typeMatch = when (val selectedType = state.value.selectedOperationType) {
+                is OperationTypeFilter.All -> true
+                is OperationTypeFilter.Specific -> operation.operationType == selectedType.type
+            }
+            val dateMatch = state.value.selectedDateRange.let { (start, end) ->
+                if (start == null || end == null) true
+                else {
+                    val operationDate = operation.transactionDateTime.date
+                        .toJavaLocalDate()
+                    operationDate in start..end
+                }
+            }
+            typeMatch && dateMatch
+        }
     }
 
     fun showTypesSheet() {
@@ -76,64 +179,45 @@ class AccountViewModel : ViewModel() {
     fun onDateRangeSelected() {
         val startDateMillis = dateRangePickerState.selectedStartDateMillis
         val endDateMillis = dateRangePickerState.selectedEndDateMillis
-
         val startDate = startDateMillis?.let {
-            LocalDate.ofInstant(
-                java.time.Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
-            )
+            Instant.fromEpochMilliseconds(it)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
+                .toJavaLocalDate()
         }
         val endDate = endDateMillis?.let {
-            LocalDate.ofInstant(
-                java.time.Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
-            )
+            Instant.fromEpochMilliseconds(it)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
+                .toJavaLocalDate()
         }
-
-        _state.value = _state.value.copy(selectedDateRange = startDate to endDate)
-        filterPayments()
+        _state.update { it.copy(selectedDateRange = startDate to endDate) }
+        _state.update { it.copy(filteredOperations = filterOperations(it.allOperations)) }
     }
 
     fun resetFilters() {
-        _state.value = _state.value.copy(
-            selectedType = PaymentTypeFilter.All,
-            selectedDateRange = null to null,
-            filteredPayments = _state.value.allPayments
-        )
-    }
-
-    private fun filterPayments() {
-        val filtered = _state.value.allPayments.filter { payment ->
-            val typeMatch = when (val selectedType = _state.value.selectedType) {
-                is PaymentTypeFilter.All -> true
-                is PaymentTypeFilter.Specific -> payment.type == selectedType.type
-            }
-
-            val dateMatch = _state.value.selectedDateRange.let { (start, end) ->
-                if (start == null || end == null) true
-                else {
-                    payment.date in start..end
-                }
-            }
-
-            typeMatch && dateMatch
+        _state.update {
+            it.copy(
+                selectedOperationType = OperationTypeFilter.All,
+                selectedDateRange = null to null,
+                filteredOperations = it.allOperations
+            )
         }
-        _state.update { it.copy(filteredPayments = filtered) }
     }
 
-    fun onPaymentClicked(payment: Payment) {
+    fun onOperationClicked(operation: OperationShort) {
         viewModelScope.launch {
             _navigationEvent.emit(
                 AccountNavigationEvent.NavigateToTransactionInfo(
-                    payment.id
+                    operation.id
                 )
             )
         }
     }
 
-    fun onTypeClicked(type: PaymentTypeFilter) {
-        _state.update { it.copy(selectedType = type) }
-        filterPayments()
+    fun onTypeClicked(type: OperationTypeFilter) {
+        _state.update { it.copy(selectedOperationType = type) }
+        _state.update { it.copy(filteredOperations = filterOperations(it.allOperations)) }
     }
 
     fun onBackClicked() {

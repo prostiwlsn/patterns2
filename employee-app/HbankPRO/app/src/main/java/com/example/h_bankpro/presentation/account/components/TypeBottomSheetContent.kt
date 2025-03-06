@@ -8,12 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.h_bankpro.data.PaymentType
+import com.example.h_bankpro.data.OperationType
+import com.example.h_bankpro.data.OperationTypeFilter
 import com.example.h_bankpro.data.PaymentTypeFilter
 
 @Composable
 fun TypeBottomSheetContent(
-    onItemClick: (PaymentTypeFilter) -> Unit
+    onItemClick: (OperationTypeFilter) -> Unit
 ) {
     Column(Modifier.padding(16.dp)) {
         Text(
@@ -21,17 +22,17 @@ fun TypeBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    onItemClick(PaymentTypeFilter.All)
+                    onItemClick(OperationTypeFilter.All)
                 }
                 .padding(16.dp)
         )
-        PaymentType.entries.forEach { type ->
+        OperationType.entries.forEach { type ->
             Text(
                 text = type.displayName,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        onItemClick(PaymentTypeFilter.Specific(type))
+                        onItemClick(OperationTypeFilter.Specific(type))
                     }
                     .padding(16.dp)
             )

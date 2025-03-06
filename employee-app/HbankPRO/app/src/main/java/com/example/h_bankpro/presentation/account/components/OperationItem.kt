@@ -16,20 +16,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
-import com.example.h_bankpro.data.Payment
-import com.example.h_bankpro.data.PaymentType
+import com.example.h_bankpro.data.OperationType
+import com.example.h_bankpro.domain.model.OperationShort
+import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun PaymentItem(payment: Payment, onClick: () -> Unit) {
+fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale("ru"))
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,34 +39,47 @@ fun PaymentItem(payment: Payment, onClick: () -> Unit) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val color = when (operation.operationType) {
+            OperationType.REPLENISHMENT -> Color(0xFF188133)
+            OperationType.WITHDRAWAL -> Color(0xFFA62828)
+            OperationType.TRANSFER -> if (operation.directionToMe) Color(0xFF188133) else Color(
+                0xFFA62828
+            )
+
+            OperationType.LOAN_REPAYMENT -> Color(0xFFA62828)
+        }
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = Color(0xFF5C49E0),
+                    color = color,
                     shape = RoundedCornerShape(8.dp)
                 ),
             contentAlignment = Alignment.Center
         ) {
+            val iconResId = when (operation.operationType) {
+                OperationType.REPLENISHMENT -> R.drawable.add
+                OperationType.WITHDRAWAL -> R.drawable.arrow_downward
+                OperationType.TRANSFER -> R.drawable.transfer
+                OperationType.LOAN_REPAYMENT -> R.drawable.dollar
+            }
             Icon(
-                painter = painterResource(id = R.drawable.arrow_downward),
+                painter = painterResource(id = iconResId),
                 contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.rotate(if (payment.type == PaymentType.INCOMING) 0f else 180f)
+                tint = Color.White
             )
         }
         Spacer(Modifier.width(16.dp))
         Column {
             Text(
-                text = "${payment.amount} ₽",
+                text = "${operation.amount} ₽",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "${payment.type.displayName} · ${
-                    payment.date.format(
-                        DateTimeFormatter.ofPattern("dd MMM yyyy", Locale("ru"))
-                    )
+                text = "${operation.operationType.displayName} · ${
+                    operation.transactionDateTime.toJavaLocalDateTime()
+                        .let { it.format(dateFormatter) + ", " + it.format(timeFormatter) }
                 }",
                 fontSize = 12.sp,
                 color = Color(0xFF9B9CA1)

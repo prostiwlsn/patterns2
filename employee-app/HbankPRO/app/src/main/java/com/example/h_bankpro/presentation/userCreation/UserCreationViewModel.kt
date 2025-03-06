@@ -2,6 +2,11 @@ package com.example.h_bankpro.presentation.userCreation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.data.RoleType
+import com.example.h_bankpro.data.dto.UserCreationDto
+import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
+import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.domain.useCase.CreateUserUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -9,7 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UserCreationViewModel : ViewModel() {
+class UserCreationViewModel(
+    private val createUserUseCase: CreateUserUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(UserCreationState())
     val state: StateFlow<UserCreationState> = _state
 
@@ -59,9 +66,20 @@ class UserCreationViewModel : ViewModel() {
 
     fun onCreateClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(
-                UserCreationNavigationEvent.NavigateToSuccessfulUserCreation
+            val request = UserCreationDto(
+                phone = state.value.phone,
+                password = state.value.password,
+                name = state.value.name,
+                role = if (state.value.selectedRole) null else RoleType.MANAGER
             )
+            createUserUseCase(request = request)
+                .onSuccess {
+                    _navigationEvent.emit(
+                        UserCreationNavigationEvent.NavigateToSuccessfulUserCreation
+                    )
+                }
+                .onFailure {
+                }
         }
     }
 }

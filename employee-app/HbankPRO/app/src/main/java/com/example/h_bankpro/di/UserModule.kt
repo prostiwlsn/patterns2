@@ -4,6 +4,8 @@ import com.example.h_bankpro.data.network.UserApi
 import com.example.h_bankpro.data.repository.UserRepository
 import com.example.h_bankpro.domain.repository.IUserRepository
 import com.example.h_bankpro.domain.useCase.BlockUserUseCase
+import com.example.h_bankpro.domain.useCase.CreateUserUseCase
+import com.example.h_bankpro.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bankpro.domain.useCase.GetUserByIdUseCase
 import com.example.h_bankpro.domain.useCase.GetUsersUseCase
 import com.example.h_bankpro.domain.useCase.UnblockUserUseCase
@@ -24,8 +26,20 @@ val userModule = module {
         )
     }
 
+    factory<GetCurrentUserUseCase> {
+        GetCurrentUserUseCase(
+            userRepository = get()
+        )
+    }
+
     factory<GetUserByIdUseCase> {
         GetUserByIdUseCase(
+            userRepository = get()
+        )
+    }
+
+    factory<CreateUserUseCase> {
+        CreateUserUseCase(
             userRepository = get()
         )
     }

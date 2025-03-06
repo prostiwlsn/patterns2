@@ -6,6 +6,7 @@ import com.example.h_bankpro.data.Rate
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.domain.model.User
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bankpro.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bankpro.domain.useCase.GetUsersUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val getUsersUseCase: GetUsersUseCase
+    private val getUsersUseCase: GetUsersUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
@@ -25,6 +27,7 @@ class MainViewModel(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
+        getCurrentUserId()
         loadUsers()
     }
 
@@ -48,9 +51,10 @@ class MainViewModel(
         viewModelScope.launch {
             getUsersUseCase()
                 .onSuccess { result ->
-                    _state.update {
-                        it.copy(users = result.data)
+                    val filteredUsers = result.data.filter { user ->
+                        user.id != state.value.currentUserId
                     }
+                    _state.update { it.copy(users = filteredUsers) }
                 }
                 .onFailure {
 //                    _state.update { state ->
@@ -63,6 +67,17 @@ class MainViewModel(
 //                            }
 //                        )
 //                    }
+                }
+        }
+    }
+
+    private fun getCurrentUserId() {
+        viewModelScope.launch {
+            getCurrentUserUseCase()
+                .onSuccess { result ->
+                    _state.update { it.copy(currentUserId = result.data.id) }
+                }
+                .onFailure {
                 }
         }
     }

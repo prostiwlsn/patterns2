@@ -1,16 +1,13 @@
 package com.example.h_bankpro.data
 
-enum class RoleType(val displayName: String) {
-    MANAGER("Менеджер"),
-    ADMIN("Администратор");
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-    companion object {
-        fun fromString(value: String): RoleType? {
-            return try {
-                valueOf(value.uppercase())
-            } catch (e: IllegalArgumentException) {
-                null
-            }
-        }
-    }
+@Serializable
+enum class RoleType(val displayName: String) {
+    @SerialName("Manager")
+    MANAGER("Менеджер"),
+
+    @SerialName("Admin")
+    ADMIN("Администратор");
 }

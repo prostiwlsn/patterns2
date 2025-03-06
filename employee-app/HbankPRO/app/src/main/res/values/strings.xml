@@ -71,4 +71,7 @@
     <string name="comment">Комментарий</string>
     <string name="payment_account">Счёт списания</string>
     <string name="blocked">Заблокирован</string>
+    <string name="incoming_transfer">Входящий перевод</string>
+    <string name="outgoing_transfer">Исходящий перевод</string>
+    <string name="manager">Менеджер</string>
 </resources>

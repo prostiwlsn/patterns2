@@ -13,6 +13,7 @@ import com.example.h_bankpro.di.accountModule
 import com.example.h_bankpro.di.appModule
 import com.example.h_bankpro.di.authorizationModule
 import com.example.h_bankpro.di.networkModule
+import com.example.h_bankpro.di.operationModule
 import com.example.h_bankpro.di.userModule
 import com.example.h_bankpro.domain.repository.ITokenStorage
 import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
             modules(appModule)
             modules(userModule)
             modules(accountModule)
+            modules(operationModule)
         }
         enableEdgeToEdge()
         setContent {
