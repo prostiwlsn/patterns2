@@ -7,7 +7,6 @@ using HITS_bank.Repositories;
 using HITS_bank.Services;
 using HITS_bank.Services.BackgroundServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -17,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connection));
 
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
@@ -87,10 +86,11 @@ builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 var app = builder.Build();
 
 // Обновление базы данных
-using var serviceScope = app.Services.CreateScope();
-var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-
-context?.Database.Migrate();
+using (var serviceScope = app.Services.CreateScope())
+{
+    var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
