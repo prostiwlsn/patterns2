@@ -57,6 +57,7 @@ namespace patterns2_infoauth.Services
         {
             var user = _dbContext.UserCredentials.Include(u => u.UserRoles).FirstOrDefault(creds => creds.Phone == model.Phone && creds.Password == CryptoCommon.ComputeSha256Hash(model.Password));
             if (user == null) throw new ArgumentException();
+            if (user.IsBlocked) throw new InvalidOperationException();
 
             try
             {

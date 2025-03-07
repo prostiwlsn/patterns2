@@ -23,8 +23,11 @@ namespace patterns2_infoauth.Services
 
         public async Task<UserInfoDto> GetUser(Guid id)
         {
+            Console.WriteLine(id);
             var user = _dbContext.UserCredentials.Include(u => u.UserRoles).FirstOrDefault(u => u.Id == id);
             if (user == null) throw new ArgumentException();
+
+            Console.WriteLine(user.Name);
 
             return new UserInfoDto { Phone = user.Phone, Name = user.Name, Id = user.Id, IsBlocked = user.IsBlocked, Roles = user.UserRoles.Select(role => role.Role).ToArray() };
         }
