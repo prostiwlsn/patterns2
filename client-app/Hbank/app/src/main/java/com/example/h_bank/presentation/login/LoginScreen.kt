@@ -32,7 +32,10 @@ fun LoginScreen(
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                LoginNavigationEvent.NavigateToRegister -> navController.navigate("registration")
+                LoginNavigationEvent.NavigateToRegister -> navController.navigate("registration") {
+                    popUpTo("welcome") { inclusive = false }
+                    launchSingleTop = true
+                }
                 LoginNavigationEvent.NavigateToMain -> navController.navigate("main") {
                     popUpTo("welcome") { inclusive = true }
                     launchSingleTop = true

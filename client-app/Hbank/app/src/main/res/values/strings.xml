@@ -69,4 +69,38 @@
     <string name="confirm">Подтвердить</string>
     <string name="cancel">Отмена</string>
     <string name="choose_period">Выберите период</string>
+
+    // Логин
+    <string name="phone_number_prefix">+7</string>
+
+    <string name="phone_number">Номер телефона</string>
+    <string name="hits_bank">Hits bank\nPRO</string>
+    <string name="actions">Действия</string>
+    <string name="create_loan_rate">Создать тариф для кредита</string>
+    <string name="loan_rate_creation">Создание тарифа</string>
+    <string name="user_creation">Создание пользователя</string>
+    <string name="loan_rate_editing">Редактирование тарифа</string>
+    <string name="create_user">Создать пользователя</string>
+    <string name="create">Создать</string>
+    <string name="save">Сохранить</string>
+    <string name="successful_rate_creation">Тариф успешно
+создан</string>
+    <string name="successful_user_creation">Пользователь
+    успешно создан</string>
+    <string name="successful_rate_editing">Тариф успешно
+отредактирован</string>
+    <string name="rate_in_percent">Ставка в %</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="loans">Кредиты</string>
+    <string name="all_users">Все пользователи</string>
+    <string name="rates">Кредитные тарифы</string>
+    <string name="users">Пользователи</string>
+    <string name="employee">Сотрудник</string>
+    <string name="client">Клиент</string>
+    <string name="phone">Номер телефона</string>
+    <string name="blocked">Заблокирован</string>
+    <string name="incoming_transfer">Входящий перевод</string>
+    <string name="outgoing_transfer">Исходящий перевод</string>
+    <string name="manager">Менеджер</string>
 </resources>

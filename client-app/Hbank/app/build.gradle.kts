@@ -59,4 +59,28 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.kotlinx.datetime)
+
+    //encryptedSharedPreferences
+    implementation(libs.androidx.security.crypto)
+
+    //network
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+
+    //interceptor
+    implementation(libs.logging.interceptor)
+
+    // serialization
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    //OkHttp
+    implementation(libs.okhttp.v490)
+
+    //JWT
+    implementation(libs.jwtdecode)
+
+    //coroutines
+    implementation(libs.kotlinx.coroutines.android)
 }

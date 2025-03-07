@@ -2,39 +2,63 @@ package com.example.h_bank.presentation.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bank.data.utils.NetworkUtils.onFailure
+import com.example.h_bank.data.utils.NetworkUtils.onSuccess
+import com.example.h_bank.domain.useCase.RegisterUseCase
+import com.example.h_bank.domain.useCase.RegistrationValidationUseCase
+import com.example.h_bank.domain.useCase.storage.GetCredentialsFlowUseCase
+import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
+import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bank.presentation.registration.model.RegistrationFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RegistrationViewModel : ViewModel() {
+class RegistrationViewModel(
+    private val updateCredentialsUseCase: UpdateCredentialsUseCase,
+    private val validationUseCase: RegistrationValidationUseCase,
+    private val registerUseCase: RegisterUseCase,
+    getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
+    resetCredentialsUseCase: ResetCredentialsUseCase,
+) : ViewModel() {
     private val _state = MutableStateFlow(RegistrationState())
     val state: StateFlow<RegistrationState> = _state
 
     private val _navigationEvent = MutableSharedFlow<RegistrationNavigationEvent>()
     val navigationEvent: SharedFlow<RegistrationNavigationEvent> = _navigationEvent
 
-    fun onNameChange(name: String) {
-        _state.update { it.copy(name = name) }
-        validateFields()
+    init {
+        resetCredentialsUseCase()
+        getCredentialsFlowUseCase().onEach { credentials ->
+            _state.update {
+                it.copy(
+                    phoneNumber = credentials.phoneNumber.orEmpty(),
+                    name = credentials.name.orEmpty(),
+                    password = credentials.password.orEmpty(),
+                    repeatPassword = credentials.passwordConfirmation.orEmpty(),
+                    areFieldsValid = !credentials.name.isNullOrBlank() &&
+                            !credentials.phoneNumber.isNullOrBlank() &&
+                            !credentials.password.isNullOrBlank() &&
+                            !credentials.passwordConfirmation.isNullOrBlank()
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun onEmailChange(email: String) {
-        _state.update { it.copy(email = email) }
-        validateFields()
-    }
+    fun onNameChange(name: String) = updateCredentialsUseCase { copy(name = name) }
 
-    fun onPasswordChange(password: String) {
-        _state.update { it.copy(password = password) }
-        validateFields()
-    }
+    fun onPhoneNumberChange(phoneNumber: String) =
+        updateCredentialsUseCase { copy(phoneNumber = phoneNumber) }
 
-    fun onRepeatPasswordChange(repeatPassword: String) {
-        _state.update { it.copy(repeatPassword = repeatPassword) }
-        validateFields()
-    }
+    fun onPasswordChange(password: String) = updateCredentialsUseCase { copy(password = password) }
+
+    fun onRepeatPasswordChange(repeatPassword: String) =
+        updateCredentialsUseCase { copy(passwordConfirmation = repeatPassword) }
 
     fun onLoginClicked() {
         viewModelScope.launch {
@@ -43,25 +67,37 @@ class RegistrationViewModel : ViewModel() {
     }
 
     fun onRegisterClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(RegistrationNavigationEvent.NavigateToMain)
+        val validationErrors = validationUseCase()
+
+        _state.update {
+            it.copy(fieldErrors = validationErrors)
+        }
+
+        if (validationErrors == null) {
+            viewModelScope.launch {
+                registerUseCase()
+                    .onSuccess {
+                        _navigationEvent.emit(RegistrationNavigationEvent.NavigateToMain)
+                    }
+                    .onFailure {
+                        if (it.code == 400) {
+                            _state.update {
+                                it.copy(
+                                    fieldErrors = RegistrationFrontErrors(
+                                        phoneNumberFieldError =
+                                        "Пользователь с таким номером уже существует",
+                                    )
+                                )
+                            }
+                        }
+                    }
+            }
         }
     }
 
     fun onBackClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(RegistrationNavigationEvent.NavigateBack)
-        }
-    }
-
-    private fun validateFields() {
-        _state.update {
-            it.copy(
-                areFieldsValid = _state.value.name.isNotBlank() &&
-                        _state.value.email.isNotBlank() &&
-                        _state.value.password.isNotBlank() &&
-                        _state.value.repeatPassword.isNotBlank()
-            )
         }
     }
 

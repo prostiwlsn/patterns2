@@ -2,33 +2,80 @@ package com.example.h_bank.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.h_bank.data.utils.NetworkUtils.onFailure
+import com.example.h_bank.data.utils.NetworkUtils.onSuccess
+import com.example.h_bank.domain.useCase.LoginUseCase
+import com.example.h_bank.domain.useCase.LoginValidationUseCase
+import com.example.h_bank.domain.useCase.storage.GetCredentialsFlowUseCase
+import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
+import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bank.presentation.login.LoginNavigationEvent
+import com.example.h_bank.presentation.login.LoginState
+import com.example.h_bank.presentation.login.model.LoginFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val updateCredentialsUseCase: UpdateCredentialsUseCase,
+    private val validationUseCase: LoginValidationUseCase,
+    private val loginUseCase: LoginUseCase,
+    getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
+    resetCredentialsUseCase: ResetCredentialsUseCase,
+) : ViewModel() {
+
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state
 
     private val _navigationEvent = MutableSharedFlow<LoginNavigationEvent>()
     val navigationEvent: SharedFlow<LoginNavigationEvent> = _navigationEvent
 
-    fun onLoginChange(login: String) {
-        _state.update { it.copy(login = login) }
-        validateFields()
+    init {
+        resetCredentialsUseCase()
+        getCredentialsFlowUseCase().onEach { credentials ->
+            _state.update {
+                it.copy(
+                    login = credentials.phoneNumber.orEmpty(),
+                    password = credentials.password.orEmpty(),
+                    areFieldsValid = !credentials.phoneNumber.isNullOrBlank() &&
+                            !credentials.password.isNullOrBlank()
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun onPasswordChange(password: String) {
-        _state.update { it.copy(password = password) }
-        validateFields()
-    }
+    fun onLoginChange(login: String) = updateCredentialsUseCase { copy(phoneNumber = login) }
+
+    fun onPasswordChange(password: String) = updateCredentialsUseCase { copy(password = password) }
 
     fun onLoginClicked() {
-        viewModelScope.launch {
-            _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
+        val validationErrors = validationUseCase()
+        _state.update { it.copy(fieldErorrs = validationErrors) }
+
+        if (validationErrors == null) {
+            viewModelScope.launch {
+                loginUseCase()
+                    .onSuccess {
+                        _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
+                    }
+                    .onFailure {
+                        if (it.code == 400) {
+                            _state.update {
+                                it.copy(
+                                    fieldErorrs = LoginFrontErrors(
+                                        loginFieldError = "",
+                                        passwordFieldError = "Неверный логин или пароль",
+                                    )
+                                )
+                            }
+                        }
+                    }
+            }
         }
     }
 
@@ -41,15 +88,6 @@ class LoginViewModel : ViewModel() {
     fun onRegisterClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(LoginNavigationEvent.NavigateToRegister)
-        }
-    }
-
-    private fun validateFields() {
-        _state.update {
-            it.copy(
-                areFieldsValid = _state.value.login.isNotBlank() &&
-                        _state.value.password.isNotBlank()
-            )
         }
     }
 

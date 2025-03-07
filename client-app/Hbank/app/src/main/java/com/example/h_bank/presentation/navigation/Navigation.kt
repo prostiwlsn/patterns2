@@ -1,12 +1,21 @@
 package com.example.h_bank.presentation.navigation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.repository.ITokenStorage
+import com.example.h_bank.domain.useCase.RefreshTokenUseCase
 import com.example.h_bank.presentation.loan.LoanScreen
 import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
@@ -28,8 +37,38 @@ import com.example.h_bank.presentation.withdrawal.WithdrawalScreen
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshTokenUseCase) {
     val navController = rememberNavController()
+
+    var isAuthorized by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        val currentToken = tokenStorage.getTokenState()
+        Log.d("AppNavigation", "Current token: $currentToken")
+        if (currentToken.accessToken != null) {
+            if (tokenStorage.isTokenValid()) {
+                Log.d("AppNavigation", "Token is valid")
+                isAuthorized = true
+            } else {
+                when (val result = refreshTokenUseCase()) {
+                    is RequestResult.Success<*> -> {
+                        isAuthorized = true
+                    }
+
+                    is RequestResult.Error<*> -> {
+                        tokenStorage.clearToken()
+                        isAuthorized = false
+                    }
+
+                    is RequestResult.NoInternetConnection<*> -> {
+                        isAuthorized = false
+                    }
+                }
+            }
+        } else {
+            isAuthorized = false
+        }
+    }
     NavHost(navController = navController, startDestination = "welcome") {
         composable("welcome") {
             WelcomeScreen(navController)
