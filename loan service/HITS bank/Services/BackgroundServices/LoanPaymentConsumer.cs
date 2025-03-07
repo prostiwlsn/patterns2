@@ -18,6 +18,7 @@ public class LoanPaymentConsumer : BackgroundService
     private string _queueName;
     private readonly string _loanPaymentExchange;
     private readonly string _loanPaymentResultExchange;
+    private readonly string _amqpConnectionString;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private string? _correlationId;
     
@@ -31,9 +32,10 @@ public class LoanPaymentConsumer : BackgroundService
         
         _loanPaymentExchange = configurationRoot.GetSection("Exchanges")["LoanPayment"] ?? throw new InvalidOperationException();
         _loanPaymentResultExchange = configurationRoot.GetSection("Exchanges")["LoanPaymentResponse"] ?? throw new InvalidOperationException();
-        
+        _amqpConnectionString = configurationRoot.GetSection("ConnectionStrings")["BusConnection"] ?? throw new InvalidOperationException();
+
         // Создание очереди сообщений
-        var factory = new ConnectionFactory { HostName = "194.59.186.122" };
+        var factory = new ConnectionFactory { HostName = _amqpConnectionString };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
         _channel.ExchangeDeclare(exchange: _loanPaymentExchange, type: ExchangeType.Direct, durable: true);
@@ -96,9 +98,18 @@ public class LoanPaymentConsumer : BackgroundService
             
             answer = await loanService.PayForLoan(loanPayment);
         }
-        
+
+        LoanPaymentResultMessage answerMessage = new LoanPaymentResultMessage 
+        { 
+            Success = answer.ErrorMessage == null,
+            Data = answer.ErrorMessage != null ? null : new LoanPaymentResultData 
+                { ReturnedAmount = answer.ReturnedAmount, SenderAccountId = answer.SenderAccountId },
+            ErrorMessage = answer.ErrorMessage,
+            ErrorStatusCode = answer.ErrorStatusCode
+        };
+
         // Отправка ответа
-        var factory = new ConnectionFactory{ HostName = "194.59.186.122" };
+        var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
         
         _channel.ExchangeDeclare(exchange: _loanPaymentResultExchange, type: ExchangeType.Direct, durable: true);
         _channel.QueueDeclare(queue: "LoanPaymentResponse", durable: true, exclusive: false, autoDelete: false);
@@ -109,7 +120,7 @@ public class LoanPaymentConsumer : BackgroundService
         using (var connection = factory.CreateConnection())
         using (var channel = connection.CreateModel())
         {
-            var message = JsonSerializer.Serialize(answer);
+            var message = JsonSerializer.Serialize(answerMessage);
             var body = Encoding.UTF8.GetBytes(message);
             
             var properties = channel.CreateBasicProperties();
