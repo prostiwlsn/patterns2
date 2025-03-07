@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using patterns2_infoauth.Interfaces;
@@ -43,6 +44,10 @@ namespace patterns2_infoauth.Controllers
             catch (ArgumentException argEx)
             {
                 return BadRequest("This user doesn't exist");
+            }
+            catch (InvalidOperationException invEx)
+            {
+                return Forbid();
             }
         }
 
