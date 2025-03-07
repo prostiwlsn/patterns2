@@ -13,7 +13,10 @@ interface OperationApi {
         @Path("accountId") accountId: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("sort") sort: List<String>
+        @Query("sort") sort: List<String>,
+        @Query("timeStart") timeStart: String? = null,
+        @Query("timeEnd") timeEnd: String? = null,
+        @Query("operationType") operationType: String? = null
     ): PageResponse<OperationShortDto>
 
     @GET("operation/{operationId}")

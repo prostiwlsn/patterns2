@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -88,26 +89,40 @@ fun MainScreen(
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
-            if (state.users.isNotEmpty()) {
-                UsersBlock(
-                    users = state.users,
-                    onItemClick = { viewModel.onUserClicked(it) },
-                    onSeeAllClick = { viewModel.showUsersSheet() }
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = Color(0xFF5C49E0)
+                    )
+                }
+            } else {
+                if (state.users.isNotEmpty()) {
+                    UsersBlock(
+                        users = state.users,
+                        onItemClick = { viewModel.onUserClicked(it) },
+                        onSeeAllClick = { viewModel.showUsersSheet() }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+                ActionBlock(
+                    onCreateRateClick = { viewModel.onCreateRateClicked() },
+                    onCreateUserClick = { viewModel.onCreateUserClicked() }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-            }
-            ActionBlock(
-                onCreateRateClick = { viewModel.onCreateRateClicked() },
-                onCreateUserClick = { viewModel.onCreateUserClicked() }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            if (state.rates.isNotEmpty()) {
-                RatesBlock(
-                    rates = state.rates,
-                    onItemClick = { viewModel.onRateClicked(it) },
-                    onSeeAllClick = { viewModel.showRatesSheet() }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+                if (state.rates.isNotEmpty()) {
+                    RatesBlock(
+                        rates = state.rates,
+                        onItemClick = { viewModel.onRateClicked(it) },
+                        onSeeAllClick = { viewModel.showRatesSheet() }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
             Spacer(modifier = Modifier.height(32.dp))
         }

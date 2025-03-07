@@ -10,7 +10,7 @@ import com.example.h_bankpro.presentation.rateEditing.RateEditingViewModel
 import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateCreationViewModel
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingViewModel
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationViewModel
-import com.example.h_bankpro.presentation.transactionInfo.TransactionInfoViewModel
+import com.example.h_bankpro.presentation.operationInfo.OperationInfoViewModel
 import com.example.h_bankpro.presentation.user.UserViewModel
 import com.example.h_bankpro.presentation.userCreation.UserCreationViewModel
 import com.example.h_bankpro.presentation.welcome.WelcomeViewModel
@@ -29,7 +29,7 @@ val appModule = module {
     viewModel { UserCreationViewModel(get()) }
     viewModel { SuccessfulUserCreationViewModel() }
     viewModel { AccountViewModel(get(), get()) }
-    viewModel { TransactionInfoViewModel(get(), get()) }
+    viewModel { OperationInfoViewModel(get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         UserViewModel(
             savedStateHandle,

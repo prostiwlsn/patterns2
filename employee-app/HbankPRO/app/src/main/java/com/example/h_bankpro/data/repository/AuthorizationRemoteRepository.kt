@@ -10,11 +10,9 @@ import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.entity.TokenEntity
 import com.example.h_bankpro.domain.repository.IAuthorizationLocalRepository
 import com.example.h_bankpro.domain.repository.IAuthorizationRemoteRepository
-import com.example.h_bankpro.domain.repository.ITokenStorage
 
 class AuthorizationRemoteRepository(
     private val storageRepository: IAuthorizationLocalRepository,
-    private val tokenStorage: ITokenStorage,
     private val api: AuthorizationApi,
 ) : IAuthorizationRemoteRepository {
     override suspend fun login(): RequestResult<TokenDto> {
@@ -26,13 +24,7 @@ class AuthorizationRemoteRepository(
 
         return when (result) {
             is RequestResult.Success -> {
-                tokenStorage.saveToken(
-                    TokenEntity(
-                        accessToken = result.data.accessToken,
-                        refreshToken = result.data.refreshToken,
-                        expiresAt = result.data.expiresIn?.let { System.currentTimeMillis() + it * 1000L }
-                    )
-                )
+                storageRepository.saveToken(TokenEntity.fromTokenDto(result.data))
                 result
             }
 
@@ -48,13 +40,7 @@ class AuthorizationRemoteRepository(
 
         return when (result) {
             is RequestResult.Success -> {
-                tokenStorage.saveToken(
-                    TokenEntity(
-                        accessToken = result.data.accessToken,
-                        refreshToken = result.data.refreshToken,
-                        expiresAt = result.data.expiresIn?.let { System.currentTimeMillis() + it * 1000L }
-                    )
-                )
+                storageRepository.saveToken(TokenEntity.fromTokenDto(result.data))
                 result
             }
 
@@ -64,19 +50,18 @@ class AuthorizationRemoteRepository(
     }
 
     override suspend fun refreshToken(request: RefreshRequestDto): RequestResult<TokenDto> {
-        val result = runResultCatching { api.refreshToken(request) }
+        val result = runResultCatching {
+            api.refreshToken(request)
+        }
+
         return when (result) {
             is RequestResult.Success -> {
-                tokenStorage.saveToken(
-                    TokenEntity(
-                        accessToken = result.data.accessToken,
-                        refreshToken = result.data.refreshToken,
-                        expiresAt = result.data.expiresIn?.let { System.currentTimeMillis() + it * 1000L }
-                    )
-                )
+                storageRepository.saveToken(TokenEntity.fromTokenDto(result.data))
                 result
             }
-            else -> result
+
+            is RequestResult.Error -> result
+            is RequestResult.NoInternetConnection -> result
         }
     }
 }

@@ -39,20 +39,11 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val color = when (operation.operationType) {
-            OperationType.REPLENISHMENT -> Color(0xFF188133)
-            OperationType.WITHDRAWAL -> Color(0xFFA62828)
-            OperationType.TRANSFER -> if (operation.directionToMe) Color(0xFF188133) else Color(
-                0xFFA62828
-            )
-
-            OperationType.LOAN_REPAYMENT -> Color(0xFFA62828)
-        }
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = color,
+                    color = Color(0xFF5C49E0),
                     shape = RoundedCornerShape(8.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -60,7 +51,9 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
             val iconResId = when (operation.operationType) {
                 OperationType.REPLENISHMENT -> R.drawable.add
                 OperationType.WITHDRAWAL -> R.drawable.arrow_downward
-                OperationType.TRANSFER -> R.drawable.transfer
+                OperationType.TRANSFER -> if (operation.directionToMe) R.drawable.incoming_arrow
+                else R.drawable.outgoing_arrow
+
                 OperationType.LOAN_REPAYMENT -> R.drawable.dollar
             }
             Icon(

@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -61,37 +63,51 @@ fun UserScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(40.dp))
-            UserHeader(
-                name = state.user?.name ?: "",
-                onBackClick = { viewModel.onBackClicked() },
-                onBlockClick = { viewModel.onBlockUserClicked() },
-                onUnblockClick = { viewModel.onUnblockUserClicked() },
-                roles = state.user?.roles ?: emptyList(),
-                isBlocked = state.user?.isBlocked == true
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            if (state.user?.isBlocked == true) {
-                Text(
-                    text = stringResource(R.string.blocked),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
-                )
-            }
-            if (state.accounts.isNotEmpty()) {
-                AccountsBlock(
-                    accounts = state.accounts,
-                    onItemClick = { viewModel.onAccountClicked(it) },
-                    onSeeAllClick = { viewModel.showAccountsSheet() }
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = Color(0xFF5C49E0)
+                    )
+                }
+            } else {
+                UserHeader(
+                    name = state.user?.name ?: "",
+                    onBackClick = { viewModel.onBackClicked() },
+                    onBlockClick = { viewModel.onBlockUserClicked() },
+                    onUnblockClick = { viewModel.onUnblockUserClicked() },
+                    roles = state.user?.roles ?: emptyList(),
+                    isBlocked = state.user?.isBlocked == true
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-            }
-            if (state.loans.isNotEmpty()) {
-                LoansBlock(
-                    loans = state.loans,
-                    onItemClick = { viewModel.onLoanClicked() },
-                    onSeeAllClick = { viewModel.showLoansSheet() }
-                )
+                if (state.user?.isBlocked == true) {
+                    Text(
+                        text = stringResource(R.string.blocked),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
+                    )
+                }
+                if (state.accounts.isNotEmpty()) {
+                    AccountsBlock(
+                        accounts = state.accounts,
+                        onItemClick = { viewModel.onAccountClicked(it) },
+                        onSeeAllClick = { viewModel.showAccountsSheet() }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+                if (state.loans.isNotEmpty()) {
+                    LoansBlock(
+                        loans = state.loans,
+                        onItemClick = { viewModel.onLoanClicked() },
+                        onSeeAllClick = { viewModel.showLoansSheet() }
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(32.dp))
         }

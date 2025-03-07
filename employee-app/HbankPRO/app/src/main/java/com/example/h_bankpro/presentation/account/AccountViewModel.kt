@@ -9,15 +9,18 @@ import androidx.compose.material3.SelectableDates
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.example.h_bankpro.data.OperationTypeFilter
 import com.example.h_bankpro.data.dto.Pageable
-import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.model.OperationShort
 import com.example.h_bankpro.domain.useCase.GetOperationsByAccountUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -38,6 +41,7 @@ class AccountViewModel(
 
     private val accountId: String = checkNotNull(savedStateHandle["accountId"])
     private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+    private val _filters = MutableStateFlow(OperationsFilters())
 
     private val defaultPageable = Pageable(
         page = 0,
@@ -73,90 +77,138 @@ class AccountViewModel(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
-        _state.update { it.copy(accountId = accountId) }
-        _state.update { it.copy(accountNumber = accountNumber) }
-        loadInitialOperations()
-    }
-
-    private fun loadInitialOperations() {
+        _state.update { it.copy(accountId = accountId, accountNumber = accountNumber) }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            val accountId = state.value.accountId ?: return@launch
-            when (val result = getOperationsByAccountUseCase(accountId, defaultPageable)) {
-                is RequestResult.Success -> {
-                    _state.update {
-                        val operations = result.data.content
-                        it.copy(
-                            allOperations = operations,
-                            filteredOperations = filterOperations(operations),
-                            currentPage = result.data.number,
-                            totalPages = result.data.totalPages,
-                            isLoading = false
+            _filters.collectLatest { filters ->
+                val pager = Pager(
+                    config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                    pagingSourceFactory = {
+                        OperationsPagingSource(
+                            accountId = accountId,
+                            filters = filters,
+                            getOperationsByAccountUseCase = getOperationsByAccountUseCase
                         )
                     }
-                }
-
-                is RequestResult.Error -> {
-                    _state.update { it.copy(isLoading = false) }
-                }
-
-                is RequestResult.NoInternetConnection -> {
-                    _state.update { it.copy(isLoading = false) }
-                }
-            }
-        }
-    }
-
-    fun loadNextPage() {
-        viewModelScope.launch {
-            val currentPage = state.value.currentPage
-            val totalPages = state.value.totalPages
-            if (currentPage + 1 >= totalPages || state.value.isLoading) return@launch
-
-            _state.update { it.copy(isLoading = true) }
-            val accountId = state.value.accountId ?: return@launch
-            val nextPageable = defaultPageable.copy(page = currentPage + 1)
-            when (val result = getOperationsByAccountUseCase(accountId, nextPageable)) {
-                is RequestResult.Success -> {
-                    _state.update {
-                        val newOperations = it.allOperations + result.data.content
-                        it.copy(
-                            allOperations = newOperations,
-                            filteredOperations = filterOperations(newOperations),
-                            currentPage = result.data.number,
-                            isLoading = false
-                        )
-                    }
-                }
-
-                is RequestResult.Error -> {
-                    _state.update { it.copy(isLoading = false) }
-                }
-
-                is RequestResult.NoInternetConnection -> {
-                    _state.update { it.copy(isLoading = false) }
+                ).flow.cachedIn(viewModelScope)
+                _state.update {
+                    it.copy(
+                        operations = pager,
+                        selectedOperationType = filters.operationType,
+                        selectedDateRange = filters.dateRange
+                    )
                 }
             }
         }
     }
 
-    private fun filterOperations(operations: List<OperationShort>): List<OperationShort> {
-        return operations.filter { operation ->
-            val typeMatch = when (val selectedType = state.value.selectedOperationType) {
-                is OperationTypeFilter.All -> true
-                is OperationTypeFilter.Specific -> operation.operationType == selectedType.type
-            }
-            val dateMatch = state.value.selectedDateRange.let { (start, end) ->
-                if (start == null || end == null) true
-                else {
-                    val operationDate = operation.transactionDateTime.date
-                        .toJavaLocalDate()
-                    operationDate in start..end
-                }
-            }
-            typeMatch && dateMatch
-        }
-    }
+//    val operationsPager: Flow<PagingData<OperationShort>> = Pager(
+//        config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+//        pagingSourceFactory = {
+//            OperationsPagingSource(
+//                accountId = accountId,
+//                getOperationsByAccountUseCase = getOperationsByAccountUseCase
+//            )
+//        }
+//    ).flow
+
+//    private fun loadInitialOperations() {
+//        viewModelScope.launch {
+//            _state.update { it.copy(isLoading = true) }
+//            val accountId = state.value.accountId
+//            val timeStart =
+//                state.value.selectedDateRange.first?.atStartOfDay(ZoneId.systemDefault())
+//                    ?.toInstant()?.toString()
+//            val timeEnd = state.value.selectedDateRange.second?.atTime(23, 59, 59)
+//                ?.atZone(ZoneId.systemDefault())?.toInstant()?.toString()
+//            val operationType = when (val type = state.value.selectedOperationType) {
+//                is OperationTypeFilter.All -> null
+//                is OperationTypeFilter.Specific -> when (type.type) {
+//                    OperationType.REPLENISHMENT -> "replenishment"
+//                    OperationType.WITHDRAWAL -> "withdrawal"
+//                    OperationType.TRANSFER -> "transfer"
+//                    OperationType.LOAN_REPAYMENT -> "loan_payment"
+//                }
+//            }
+//            when (val result = getOperationsByAccountUseCase(
+//                accountId,
+//                defaultPageable,
+//                timeStart,
+//                timeEnd,
+//                operationType
+//            )) {
+//                is RequestResult.Success -> {
+//                    _state.update {
+//                        it.copy(
+//                            operations = result.data.content,
+//                            currentPage = result.data.number,
+//                            totalPages = result.data.totalPages,
+//                            isLoading = false
+//                        )
+//                    }
+//                }
+//
+//                is RequestResult.Error -> {
+//                    _state.update { it.copy(isLoading = false) }
+//                }
+//
+//                is RequestResult.NoInternetConnection -> {
+//                    _state.update { it.copy(isLoading = false) }
+//                }
+//            }
+//        }
+//    }
+
+//    fun loadNextPage() {
+//        viewModelScope.launch {
+//            val currentPage = state.value.currentPage
+//            val totalPages = state.value.totalPages
+//            if (currentPage + 1 >= totalPages || state.value.isLoading) return@launch
+//
+//            _state.update { it.copy(isLoading = true) }
+//            val accountId = state.value.accountId
+//            val nextPageable = defaultPageable.copy(page = currentPage + 1)
+//            val timeStart =
+//                state.value.selectedDateRange.first?.atStartOfDay(ZoneId.systemDefault())
+//                    ?.toInstant()?.toString()
+//            val timeEnd = state.value.selectedDateRange.second?.atTime(23, 59, 59)
+//                ?.atZone(ZoneId.systemDefault())?.toInstant()?.toString()
+//            val operationType = when (val type = state.value.selectedOperationType) {
+//                is OperationTypeFilter.All -> null
+//                is OperationTypeFilter.Specific -> when (type.type) {
+//                    OperationType.REPLENISHMENT -> "replenishment"
+//                    OperationType.WITHDRAWAL -> "withdrawal"
+//                    OperationType.TRANSFER -> "transfer"
+//                    OperationType.LOAN_REPAYMENT -> "loan_payment"
+//                }
+//            }
+//            when (val result = getOperationsByAccountUseCase(
+//                accountId,
+//                nextPageable,
+//                timeStart,
+//                timeEnd,
+//                operationType
+//            )) {
+//                is RequestResult.Success -> {
+//                    _state.update {
+//                        val newOperations = it.operations + result.data.content
+//                        it.copy(
+//                            operations = newOperations,
+//                            currentPage = result.data.number,
+//                            isLoading = false
+//                        )
+//                    }
+//                }
+//
+//                is RequestResult.Error -> {
+//                    _state.update { it.copy(isLoading = false) }
+//                }
+//
+//                is RequestResult.NoInternetConnection -> {
+//                    _state.update { it.copy(isLoading = false) }
+//                }
+//            }
+//        }
+//    }
 
     fun showTypesSheet() {
         _state.update { it.copy(isTypesSheetVisible = true) }
@@ -192,32 +244,21 @@ class AccountViewModel(
                 .toJavaLocalDate()
         }
         _state.update { it.copy(selectedDateRange = startDate to endDate) }
-        _state.update { it.copy(filteredOperations = filterOperations(it.allOperations)) }
+        _filters.update { it.copy(dateRange = startDate to endDate) }
     }
 
     fun resetFilters() {
-        _state.update {
-            it.copy(
-                selectedOperationType = OperationTypeFilter.All,
-                selectedDateRange = null to null,
-                filteredOperations = it.allOperations
-            )
-        }
+        _filters.update { OperationsFilters() }
     }
 
     fun onOperationClicked(operation: OperationShort) {
         viewModelScope.launch {
-            _navigationEvent.emit(
-                AccountNavigationEvent.NavigateToTransactionInfo(
-                    operation.id
-                )
-            )
+            _navigationEvent.emit(AccountNavigationEvent.NavigateToOperationInfo(operation.id))
         }
     }
 
     fun onTypeClicked(type: OperationTypeFilter) {
-        _state.update { it.copy(selectedOperationType = type) }
-        _state.update { it.copy(filteredOperations = filterOperations(it.allOperations)) }
+        _filters.update { it.copy(operationType = type) }
     }
 
     fun onBackClicked() {

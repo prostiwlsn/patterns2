@@ -63,7 +63,7 @@
     <string name="confirm">Подтвердить</string>
     <string name="cancel">Отмена</string>
     <string name="choose_period">Выберите период</string>
-    <string name="transaction_info">Информация об операции</string>
+    <string name="operation">Операция</string>
     <string name="replenishment_account">Счёт пополнения</string>
     <string name="withdrawal_account">Счёт снятия</string>
     <string name="sender_account">Счёт отправителя</string>
@@ -74,4 +74,5 @@
     <string name="incoming_transfer">Входящий перевод</string>
     <string name="outgoing_transfer">Исходящий перевод</string>
     <string name="manager">Менеджер</string>
+    <string name="loading_error">Ошибка загрузки</string>
 </resources>

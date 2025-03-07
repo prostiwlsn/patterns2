@@ -7,7 +7,6 @@ import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.domain.model.User
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.domain.useCase.GetCurrentUserUseCase
-import com.example.h_bankpro.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bankpro.domain.useCase.GetUsersUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +27,6 @@ class MainViewModel(
 
     init {
         getCurrentUserId()
-        loadUsers()
     }
 
     fun showUsersSheet() {
@@ -54,30 +52,24 @@ class MainViewModel(
                     val filteredUsers = result.data.filter { user ->
                         user.id != state.value.currentUserId
                     }
-                    _state.update { it.copy(users = filteredUsers) }
+                    _state.update { it.copy(users = filteredUsers, isLoading = false) }
                 }
                 .onFailure {
-//                    _state.update { state ->
-//                        state.copy(
-//                            errorMessage = when (it.code) {
-//                                400 -> "Ошибка запроса. Проверьте введённые данные."
-//                                401 -> "Неавторизованный доступ. Войдите в систему."
-//                                500 -> "Ошибка сервера. Попробуйте позже."
-//                                else -> "Произошла неизвестная ошибка."
-//                            }
-//                        )
-//                    }
+                    _state.update { it.copy(isLoading = false) }
                 }
         }
     }
 
     private fun getCurrentUserId() {
+        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             getCurrentUserUseCase()
                 .onSuccess { result ->
                     _state.update { it.copy(currentUserId = result.data.id) }
+                    loadUsers()
                 }
                 .onFailure {
+                    _state.update { it.copy(isLoading = false) }
                 }
         }
     }

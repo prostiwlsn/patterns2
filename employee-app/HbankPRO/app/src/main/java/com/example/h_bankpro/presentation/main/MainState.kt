@@ -34,5 +34,6 @@ data class MainState(
         ),
     ),
     val isUsersSheetVisible: Boolean = false,
-    val isRatesSheetVisible: Boolean = false
+    val isRatesSheetVisible: Boolean = false,
+    val isLoading: Boolean = false
 )

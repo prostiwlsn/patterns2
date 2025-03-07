@@ -15,14 +15,11 @@ import com.example.h_bankpro.di.authorizationModule
 import com.example.h_bankpro.di.networkModule
 import com.example.h_bankpro.di.operationModule
 import com.example.h_bankpro.di.userModule
-import com.example.h_bankpro.domain.repository.ITokenStorage
-import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
 import com.example.h_bankpro.presentation.navigation.AppNavigation
 import com.example.h_bankpro.ui.theme.HbankPROTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
-import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
@@ -42,9 +39,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HbankPROTheme {
-                val tokenStorage: ITokenStorage by inject()
-                val refreshTokenUseCase: RefreshTokenUseCase by inject()
-                AppNavigation(tokenStorage, refreshTokenUseCase)
+                AppNavigation()
             }
         }
     }

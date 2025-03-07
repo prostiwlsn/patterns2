@@ -34,16 +34,18 @@ class UserViewModel(
 
     init {
         loadUser()
-        loadUserAccounts()
     }
 
     private fun loadUser() {
+        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             getUserByIdUseCase(userId)
                 .onSuccess { result ->
                     _state.update { it.copy(user = result.data) }
+                    loadUserAccounts()
                 }
                 .onFailure {
+                    _state.update { it.copy(isLoading = false) }
                 }
         }
     }
@@ -52,9 +54,10 @@ class UserViewModel(
         viewModelScope.launch {
             getUserAccountsUseCase(userId)
                 .onSuccess { result ->
-                    _state.update { it.copy(accounts = result.data) }
+                    _state.update { it.copy(accounts = result.data, isLoading = false) }
                 }
                 .onFailure {
+                    _state.update { it.copy(isLoading = false) }
                 }
         }
     }

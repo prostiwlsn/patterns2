@@ -57,7 +57,7 @@ val userModule = module {
     }
 
     factory<UserApi> {
-        val retrofit = get<Retrofit>(named("firstApi"))
+        val retrofit = get<Retrofit>(named("firstApiWithAuth"))
         retrofit.create(UserApi::class.java)
     }
 }

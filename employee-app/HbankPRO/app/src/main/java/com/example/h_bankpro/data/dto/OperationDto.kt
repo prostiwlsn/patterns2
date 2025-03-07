@@ -11,7 +11,9 @@ import kotlinx.serialization.Serializable
 data class OperationDto(
     val id: String,
     val senderAccountId: String?,
+    val senderAccountNumber: String?,
     val recipientAccountId: String,
+    val recipientAccountNumber: String?,
     val directionToMe: Boolean,
     val amount: Float,
     val transactionDateTime: Instant,
@@ -23,7 +25,9 @@ internal fun OperationDto.toDomain(): Operation =
     Operation(
         id = id,
         senderAccountId = senderAccountId,
+        senderAccountNumber = senderAccountNumber,
         recipientAccountId = recipientAccountId,
+        recipientAccountNumber = recipientAccountNumber,
         directionToMe = directionToMe,
         amount = amount,
         transactionDateTime = transactionDateTime.toLocalDateTime(TimeZone.currentSystemDefault()),

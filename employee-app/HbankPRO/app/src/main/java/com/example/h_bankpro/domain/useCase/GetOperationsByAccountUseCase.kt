@@ -14,9 +14,18 @@ class GetOperationsByAccountUseCase(
 ) {
     suspend operator fun invoke(
         accountId: String,
-        pageable: Pageable = Pageable()
+        pageable: Pageable = Pageable(),
+        timeStart: String? = null,
+        timeEnd: String? = null,
+        operationType: String? = null
     ): RequestResult<PageResponse<OperationShort>> {
-        return operationRepository.getOperationsByAccount(accountId, pageable)
+        return operationRepository.getOperationsByAccount(
+            accountId,
+            pageable,
+            timeStart,
+            timeEnd,
+            operationType
+        )
             .mapSuccess { pageResponse: PageResponse<OperationShortDto> ->
                 PageResponse(
                     content = pageResponse.content.map { it.toDomain() },

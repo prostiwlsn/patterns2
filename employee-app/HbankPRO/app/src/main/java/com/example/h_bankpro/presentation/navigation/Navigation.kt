@@ -1,22 +1,14 @@
 package com.example.h_bankpro.presentation.navigation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.h_bankpro.data.utils.RequestResult
-import com.example.h_bankpro.domain.repository.ITokenStorage
-import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
 import com.example.h_bankpro.presentation.account.AccountScreen
+import com.example.h_bankpro.presentation.launch.LaunchScreen
 import com.example.h_bankpro.presentation.loan.LoanScreen
 import com.example.h_bankpro.presentation.login.LoginScreen
 import com.example.h_bankpro.presentation.main.MainScreen
@@ -27,48 +19,20 @@ import com.example.h_bankpro.presentation.registration.RegistrationScreen
 import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateCreationScreen
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingScreen
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationScreen
-import com.example.h_bankpro.presentation.transactionInfo.TransactionInfoScreen
+import com.example.h_bankpro.presentation.operationInfo.OperationInfoScreen
 import com.example.h_bankpro.presentation.user.UserScreen
 import com.example.h_bankpro.presentation.userCreation.UserCreationScreen
 import com.example.h_bankpro.presentation.welcome.WelcomeScreen
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshTokenUseCase) {
+fun AppNavigation() {
     val navController = rememberNavController()
-    var isAuthorized by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        val currentToken = tokenStorage.getTokenState()
-        Log.d("AppNavigation", "Current token: $currentToken")
-        if (currentToken.accessToken != null) {
-            if (tokenStorage.isTokenValid()) {
-                Log.d("AppNavigation", "Token is valid")
-                isAuthorized = true
-            } else {
-                when (val result = refreshTokenUseCase()) {
-                    is RequestResult.Success -> {
-                        isAuthorized = true
-                    }
-
-                    is RequestResult.Error -> {
-                        tokenStorage.clearToken()
-                        isAuthorized = false
-                    }
-
-                    is RequestResult.NoInternetConnection -> {
-                        isAuthorized = false
-                    }
-                }
-            }
-        } else {
-            isAuthorized = false
-        }
-    }
     NavHost(
         navController = navController,
-        startDestination = if (isAuthorized) "main" else "welcome"
+        startDestination = "launch"
     ) {
+        composable("launch") { LaunchScreen(navController) }
         composable("welcome") {
             WelcomeScreen(navController)
         }
@@ -123,12 +87,12 @@ fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshToken
             AccountScreen(navController)
         }
         composable(
-            route = "transaction_info/{operationId}",
+            route = "operation_info/{operationId}",
             arguments = listOf(
                 navArgument("operationId") { type = NavType.StringType }
             )
         ) {
-            TransactionInfoScreen(navController)
+            OperationInfoScreen(navController)
         }
     }
 }

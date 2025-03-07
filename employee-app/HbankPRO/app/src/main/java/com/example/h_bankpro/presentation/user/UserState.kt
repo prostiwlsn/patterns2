@@ -66,5 +66,6 @@ data class UserState(
         ),
     ),
     val isAccountsSheetVisible: Boolean = false,
-    val isLoansSheetVisible: Boolean = false
+    val isLoansSheetVisible: Boolean = false,
+    val isLoading: Boolean = false
 )

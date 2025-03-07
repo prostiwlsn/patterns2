@@ -14,10 +14,21 @@ class OperationRepository(
 ) : IOperationRepository {
     override suspend fun getOperationsByAccount(
         accountId: String,
-        pageable: Pageable
+        pageable: Pageable,
+        timeStart: String?,
+        timeEnd: String?,
+        operationType: String?
     ): RequestResult<PageResponse<OperationShortDto>> {
         return runResultCatching {
-            api.getOperationsByAccount(accountId, pageable.page, pageable.size, pageable.sort)
+            api.getOperationsByAccount(
+                accountId,
+                pageable.page,
+                pageable.size,
+                pageable.sort,
+                timeStart,
+                timeEnd,
+                operationType
+            )
         }
     }
 

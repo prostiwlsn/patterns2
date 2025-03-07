@@ -7,8 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerDialog
@@ -29,6 +27,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.h_bankpro.R
 import com.example.h_bankpro.data.OperationTypeFilter
 import com.example.h_bankpro.presentation.account.components.AccountHeader
@@ -36,8 +36,6 @@ import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.presentation.account.components.OperationItem
 import com.example.h_bankpro.presentation.account.components.FilterButton
 import com.example.h_bankpro.presentation.account.components.TypeBottomSheetContent
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -52,24 +50,13 @@ fun AccountScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale("ru"))
-    val lazyListState = rememberLazyListState()
-
-    LaunchedEffect(lazyListState) {
-        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
-            .map { info -> info.lastOrNull()?.index }
-            .distinctUntilChanged()
-            .collect { lastVisibleIndex ->
-                if (lastVisibleIndex != null && lastVisibleIndex >= state.filteredOperations.size - 5) {
-                    viewModel.loadNextPage()
-                }
-            }
-    }
+    val lazyPagingItems = state.operations.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is AccountNavigationEvent.NavigateToTransactionInfo ->
-                    navController.navigate("transaction_info/${event.operationId}")
+                is AccountNavigationEvent.NavigateToOperationInfo ->
+                    navController.navigate("operation_info/${event.operationId}")
 
                 is AccountNavigationEvent.NavigateBack -> navController.popBackStack()
             }
@@ -81,11 +68,24 @@ fun AccountScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(46.dp))
         AccountHeader(
             accountNumber = state.accountNumber,
             onBackClick = { viewModel.onBackClicked() }
         )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.transaction_history),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color(0xFF9B9CA1),
+                modifier = Modifier
+                    .align(Alignment.Center)
+            )
+        }
         Spacer(modifier = Modifier.height(10.dp))
         LazyRow(
             modifier = Modifier
@@ -127,33 +127,76 @@ fun AccountScreen(
                 fontWeight = FontWeight.Medium
             )
         }
-        LazyColumn(
-            state = lazyListState,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-        ) {
-            items(state.filteredOperations) { operation ->
-                OperationItem(
-                    operation,
-                    onClick = { viewModel.onOperationClicked(operation) }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color(0xFFD9D9D9)
-                )
-            }
-            if (state.isLoading) {
-                item {
+
+        when (lazyPagingItems.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.CenterHorizontally)
+                        modifier = Modifier.size(48.dp),
+                        color = Color(0xFF5C49E0)
                     )
+                }
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    items(lazyPagingItems.itemCount) { index ->
+                        val operation = lazyPagingItems[index]
+                        if (operation != null) {
+                            OperationItem(
+                                operation = operation,
+                                onClick = { viewModel.onOperationClicked(operation) }
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = Color(0xFFD9D9D9)
+                            )
+                        } else {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+
+                    when (lazyPagingItems.loadState.append) {
+                        is LoadState.Loading -> {
+                            item {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .align(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
+
+                        is LoadState.Error -> {
+                            item {
+                                Text(
+                                    text = stringResource(R.string.loading_error),
+                                    color = Color.Red,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
                 }
             }
         }
     }
+
     if (state.isTypesSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideTypesSheet() },
