@@ -106,8 +106,8 @@ public class RpcClientService {
         var responseMap = sendRequest("LoanPayment", "LoanPaymentResponse", requestBytes);
 
         if (responseMap.containsKey("Success") && responseMap.get("Success").equals(false)) {
-            var response = parseLoanPaymentErrorResponse((Map<String, Object>) responseMap.get("Data"));
-            throw new RuntimeException(response.getErrorMessage());
+            var response = (String) responseMap.get("ErrorMessage");
+            throw new RuntimeException(response.toString());
         }
 
         return parseLoanPaymentSuccessResponse((Map<String, Object>) responseMap.get("Data"));
