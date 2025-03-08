@@ -1,6 +1,6 @@
 package com.example.h_bank.domain.repository
 
-import com.example.h_bank.domain.entity.TokenEntity
+import TokenEntity
 import kotlinx.coroutines.flow.Flow
 
 interface ITokenStorage {

@@ -17,14 +17,22 @@ class LoanProcessingViewModel : ViewModel() {
     private val _navigationEvent = MutableSharedFlow<LoanProcessingNavigationEvent>()
     val navigationEvent: SharedFlow<LoanProcessingNavigationEvent> = _navigationEvent
 
-    fun onAmountChange(amount: Int) {
-        _state.update { it.copy(amount = amount) }
-        validateFields()
+    fun onAmountChange(amountInput: String) {
+        val amountValue = amountInput.toIntOrNull()
+
+        if (amountValue != null || amountInput.isEmpty()) {
+            _state.update { it.copy(amount = amountValue) }
+            validateFields()
+        }
     }
 
-    fun onTermChange(term: Int) {
-        _state.update { it.copy(term = term) }
-        validateFields()
+    fun onTermChange(termInput: String) {
+        val termValue = termInput.toIntOrNull()
+
+        if (termValue != null || termInput.isEmpty()) {
+            _state.update { it.copy(term = termValue) }
+            validateFields()
+        }
     }
 
     fun onRateClicked(selectedRate: Rate) {

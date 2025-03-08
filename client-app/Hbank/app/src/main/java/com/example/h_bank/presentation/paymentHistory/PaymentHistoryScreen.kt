@@ -75,7 +75,7 @@ fun PaymentHistoryScreen(
         ) {
             item {
                 FilterButton(
-                    text = state.selectedAccount?.name ?: stringResource(R.string.all_accounts),
+                    text = state.selectedAccount?.accountNumber ?: stringResource(R.string.all_accounts),
                     onClick = { viewModel.showAccountsSheet() },
                     isActive = state.selectedAccount != null
                 )

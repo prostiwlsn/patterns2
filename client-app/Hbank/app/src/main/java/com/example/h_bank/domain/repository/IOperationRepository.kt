@@ -1,5 +1,9 @@
 package com.example.h_bank.domain.repository
 
+import com.example.h_bank.data.dto.OperationDto
+import com.example.h_bank.data.dto.OperationShortDto
+import com.example.h_bank.data.dto.PageResponse
+import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.utils.RequestResult
 
 interface IOperationRepository {

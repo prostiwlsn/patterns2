@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,38 +22,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.h_bank.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NumberInputField(
     @StringRes labelRes: Int,
     value: String,
+    suffix: String = "",
+    defaultValue: String = "",
     onValueChange: (String) -> Unit,
     @StringRes errorMessageRes: Int? = null
-//    modifier: Modifier = Modifier
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(labelRes),
-            fontSize = 13.sp,
-            color = Color(0xFF282A31).copy(alpha = 0.6f),
-            fontWeight = FontWeight.Normal
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        BasicTextField(
+        OutlinedTextField(
             value = value,
             onValueChange = { text ->
                 onValueChange(text.filter { it.isDigit() })
             },
+            suffix = { Text(suffix) },
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 color = Color(0xFF282A31),
                 fontWeight = FontWeight.Medium
             ),
+            placeholder = { Text(defaultValue) },
+            label = { Text(stringResource(labelRes)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            shape = RoundedCornerShape(8.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF5C49E0),
+                unfocusedBorderColor = Color(0xFFBCBFCD)
+            )
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        HorizontalDivider(color = Color(0xFF282A31).copy(alpha = 0.06f))
         if (errorMessageRes != null) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(

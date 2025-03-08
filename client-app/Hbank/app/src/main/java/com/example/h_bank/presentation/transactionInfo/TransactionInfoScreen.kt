@@ -24,6 +24,9 @@ import com.example.h_bank.data.OperationType
 import com.example.h_bank.presentation.common.SuccessIcon
 import com.example.h_bank.presentation.common.TextField
 import com.example.h_bank.presentation.successfulTransfer.components.SuccessfulTransferHeader
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -111,7 +114,7 @@ fun TransactionInfoScreen(
                 Spacer(modifier = Modifier.height(6.dp))
                 TextField(
                     labelRes = R.string.comment,
-                    value = state.operation.message,
+                    value = state.operation.message.orEmpty(),
                 )
             }
 

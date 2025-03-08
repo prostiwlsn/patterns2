@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,6 +30,8 @@ import com.example.h_bank.presentation.common.IconButtonField
 import com.example.h_bank.presentation.loanProcessing.components.RatesBottomSheetContent
 import com.example.h_bank.presentation.common.NumberInputField
 import com.example.h_bank.presentation.common.TextField
+import com.example.h_bank.presentation.common.utils.Keyboard
+import com.example.h_bank.presentation.common.utils.keyboardAsState
 import com.example.h_bank.presentation.loanProcessing.components.LoanProcessingHeader
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,16 +55,34 @@ fun LoanProcessingScreen(
         }
     }
 
-    Box(
+    val keyboardState by keyboardAsState()
+
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-    ) {
+            .padding(16.dp),
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .imePadding()
+            ) {
+                CustomDisablableButton(
+                    enabled = state.areFieldsValid,
+                    onClick = viewModel::onProcessLoanClicked,
+                    textRes = R.string.process_loan
+                )
+                if (keyboardState == Keyboard.Closed) {
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .background(Color.White),
+                .background(Color.White)
+                .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -76,14 +98,16 @@ fun LoanProcessingScreen(
             Spacer(modifier = Modifier.height(6.dp))
             NumberInputField(
                 labelRes = R.string.loan_amount,
-                value = state.amount.toString() + " ₽",
-                onValueChange = { viewModel.onAmountChange(it.toInt()) }
+                value = state.amount?.toString().orEmpty(),
+                suffix = " ₽",
+                onValueChange = { viewModel.onAmountChange(it) }
             )
             Spacer(modifier = Modifier.height(6.dp))
             NumberInputField(
                 labelRes = R.string.term,
-                value = state.term.toString() + " лет",
-                onValueChange = { viewModel.onTermChange(it.toInt()) }
+                value = state.term?.toString().orEmpty(),
+                suffix = " лет",
+                onValueChange = { viewModel.onTermChange(it) }
             )
             Spacer(modifier = Modifier.height(6.dp))
             TextField(
@@ -96,12 +120,6 @@ fun LoanProcessingScreen(
                 value = state.dailyPayment.toString() + " ₽",
             )
             Spacer(modifier = Modifier.weight(1f))
-            CustomDisablableButton(
-                enabled = state.areFieldsValid,
-                onClick = viewModel::onProcessLoanClicked,
-                textRes = R.string.process_loan
-            )
-            Spacer(modifier = Modifier.height(32.dp))
         }
         if (state.isRatesSheetVisible) {
             ModalBottomSheet(

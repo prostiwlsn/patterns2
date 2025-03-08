@@ -1,10 +1,10 @@
 package com.example.h_bank.domain.repository
 
+import TokenEntity
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.auth0.android.jwt.JWT
-import com.example.h_bank.domain.entity.TokenEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

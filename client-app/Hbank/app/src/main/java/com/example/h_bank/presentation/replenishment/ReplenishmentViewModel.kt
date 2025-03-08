@@ -53,7 +53,7 @@ class ReplenishmentViewModel : ViewModel() {
         viewModelScope.launch {
             _navigationEvent.emit(
                 ReplenishmentNavigationEvent.NavigateToSuccessfulReplenishment(
-                    accountId = _state.value.selectedAccount.name,
+                    accountId = _state.value.selectedAccount.accountNumber,
                     amount = _state.value.amount
                 )
             )

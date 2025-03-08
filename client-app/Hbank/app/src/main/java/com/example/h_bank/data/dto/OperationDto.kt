@@ -6,6 +6,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
 
 @Serializable
 data class OperationDto(
@@ -26,7 +27,7 @@ internal fun OperationDto.toDomain(): Operation =
         recipientAccountId = recipientAccountId,
         directionToMe = directionToMe,
         amount = amount,
-        transactionDateTime = transactionDateTime.toLocalDateTime(TimeZone.currentSystemDefault()),
+        transactionDateTime = LocalDateTime.now(),
         message = message,
         operationType = operationType
     )

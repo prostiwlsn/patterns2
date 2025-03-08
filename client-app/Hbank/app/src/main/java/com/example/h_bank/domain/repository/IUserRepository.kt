@@ -1,5 +1,7 @@
 package com.example.h_bank.domain.repository
 
+import com.example.h_bank.data.dto.UserCreationDto
+import com.example.h_bank.data.dto.UserDto
 import com.example.h_bank.data.utils.RequestResult
 
 

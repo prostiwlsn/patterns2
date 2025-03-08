@@ -1,15 +1,22 @@
 package com.example.h_bank.presentation.login
 
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.h_bank.R
 import com.example.h_bank.presentation.common.CustomDisablableButton
+import com.example.h_bank.presentation.common.utils.Keyboard
+import com.example.h_bank.presentation.common.utils.keyboardAsState
 import com.example.h_bank.presentation.login.components.LoginBottomText
 import com.example.h_bank.presentation.login.components.LoginForm
 import com.example.h_bank.presentation.login.components.LoginHeader
@@ -51,31 +60,48 @@ fun LoginScreen(
         }
     }
 
-    Column(
+    val keyboardState by keyboardAsState()
+
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.height(40.dp))
-        LoginHeader(onBackClick = { viewModel.onBackClicked() })
-        Spacer(modifier = Modifier.weight(1f))
-        LoginForm(
-            state = state.value,
-            onLoginChange = viewModel::onLoginChange,
-            onPasswordChange = viewModel::onPasswordChange,
-            onChangePasswordVisibility = viewModel::onChangePasswordVisibility,
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        CustomDisablableButton(
-            enabled = state.value.areFieldsValid,
-            onClick = viewModel::onLoginClicked,
-            textRes = R.string.login
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        LoginBottomText(onRegisterClick = viewModel::onRegisterClicked)
-        Spacer(modifier = Modifier.height(32.dp))
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .imePadding()
+            ) {
+                CustomDisablableButton(
+                    enabled = state.value.areFieldsValid,
+                    onClick = viewModel::onLoginClicked,
+                    textRes = R.string.login
+                )
+                if (keyboardState == Keyboard.Closed) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LoginBottomText(onRegisterClick = viewModel::onRegisterClicked)
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+        },
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Spacer(modifier = Modifier.height(40.dp))
+            LoginHeader(onBackClick = { viewModel.onBackClicked() })
+            Spacer(modifier = Modifier.weight(1f))
+            LoginForm(
+                state = state.value,
+                onLoginChange = viewModel::onLoginChange,
+                onPasswordChange = viewModel::onPasswordChange,
+                onChangePasswordVisibility = viewModel::onChangePasswordVisibility,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
 }

@@ -74,7 +74,7 @@ fun LoanPaymentScreen(
             Spacer(modifier = Modifier.height(37.dp))
             IconButtonField(
                 labelRes = R.string.payment_account,
-                value = state.selectedAccount.name,
+                value = state.selectedAccount?.accountNumber.orEmpty(),
                 icon = Icons.Default.Edit,
                 onIconClick = { viewModel.showAccountsSheet() },
             )

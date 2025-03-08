@@ -53,7 +53,7 @@ class WithdrawalViewModel : ViewModel() {
         viewModelScope.launch {
             _navigationEvent.emit(
                 WithdrawalNavigationEvent.NavigateToSuccessfulWithdrawal(
-                    accountId = _state.value.selectedAccount.name,
+                    accountId = _state.value.selectedAccount.accountNumber,
                     amount = _state.value.amount
                 )
             )

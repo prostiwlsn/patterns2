@@ -1,6 +1,6 @@
 package com.example.h_bank.data
 
-import kotlinx.datetime.LocalDateTime
+import java.time.LocalDateTime
 
 data class Account(
     val id: String,

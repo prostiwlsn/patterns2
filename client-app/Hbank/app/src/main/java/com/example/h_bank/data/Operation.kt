@@ -1,7 +1,6 @@
 package com.example.h_bank.data
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class Operation(
     val id: String,
@@ -9,7 +8,7 @@ data class Operation(
     val recipientAccountId: String,
     val directionToMe: Boolean,
     val amount: Float,
-    val transactionDateTime: kotlinx.datetime.LocalDateTime,
+    val transactionDateTime: LocalDateTime,
     val message: String?,
     val operationType: OperationType,
 )

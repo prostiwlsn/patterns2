@@ -7,13 +7,14 @@ import java.util.UUID
 
 data class TransactionInfoState(
     val operation: Operation = Operation(
-        id = UUID.randomUUID(),
-        senderAccountId = UUID.randomUUID(),
-        recipientAccountId = UUID.randomUUID(),
+        id = UUID.randomUUID().toString(),
+        senderAccountId = UUID.randomUUID().toString(),
+        recipientAccountId = UUID.randomUUID().toString(),
         transactionDateTime = LocalDateTime.now(),
         amount = 1000.0f,
         message = "Перевод на карту",
-        operationType = OperationType.TRANSFER
+        operationType = OperationType.TRANSFER,
+        directionToMe = false,
     )
 )
 
