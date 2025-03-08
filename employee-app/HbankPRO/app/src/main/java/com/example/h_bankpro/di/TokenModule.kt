@@ -24,7 +24,7 @@ val tokenModule = module {
     }
 
     factory<TokenApi> {
-        val retrofit = get<Retrofit>(named("firstApi"))
+        val retrofit = get<Retrofit>(named("infoAuthApi"))
         retrofit.create(TokenApi::class.java)
     }
 }

@@ -28,7 +28,7 @@ val networkModule = module {
             .build()
     }
 
-    single<Retrofit>(named("firstApi")) {
+    single<Retrofit>(named("infoAuthApi")) {
         Retrofit.Builder()
             .client(get(named("baseClient")))
             .baseUrl("http://194.59.186.122:8080/")
@@ -36,7 +36,7 @@ val networkModule = module {
             .build()
     }
 
-    single<Retrofit>(named("firstApiWithAuth")) {
+    single<Retrofit>(named("infoAuthApiWithAuth")) {
         Retrofit.Builder()
             .client(get(named("authClient")))
             .baseUrl("http://194.59.186.122:8080/")
@@ -44,11 +44,21 @@ val networkModule = module {
             .build()
     }
 
-    single<Retrofit>(named("yuraApi")) {
+    single<Retrofit>(named("accountApi")) {
         Retrofit.Builder()
             .client(get(named("authClient")))
             .baseUrl("http://31.129.110.211:8080/api/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
+
+    single<Retrofit>(named("loanApi")) {
+        Retrofit.Builder()
+            .client(get(named("authClient")))
+            .baseUrl("http://194.59.186.122:8040/api/")
+            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
+
 }

@@ -2,12 +2,18 @@ package com.example.h_bankpro.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.h_bankpro.data.Rate
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.domain.model.User
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.data.utils.RequestResult
+import com.example.h_bankpro.domain.model.Tariff
 import com.example.h_bankpro.domain.useCase.GetCurrentUserUseCase
+import com.example.h_bankpro.domain.useCase.GetTariffListUseCase
 import com.example.h_bankpro.domain.useCase.GetUsersUseCase
+import com.example.h_bankpro.domain.useCase.LogoutUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +23,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val getUsersUseCase: GetUsersUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getTariffListUseCase: GetTariffListUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
@@ -27,6 +35,8 @@ class MainViewModel(
 
     init {
         getCurrentUserId()
+        loadInitialTariffs()
+        setupTariffPager()
     }
 
     fun showUsersSheet() {
@@ -38,11 +48,11 @@ class MainViewModel(
     }
 
     fun showRatesSheet() {
-        _state.update { it.copy(isRatesSheetVisible = true) }
+        _state.update { it.copy(isTariffsSheetVisible = true) }
     }
 
     fun hideRatesSheet() {
-        _state.update { it.copy(isRatesSheetVisible = false) }
+        _state.update { it.copy(isTariffsSheetVisible = false) }
     }
 
     private fun loadUsers() {
@@ -58,6 +68,32 @@ class MainViewModel(
                     _state.update { it.copy(isLoading = false) }
                 }
         }
+    }
+
+    private fun loadInitialTariffs() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when (val result = getTariffListUseCase(pageNumber = 1, pageSize = 3)) {
+                is RequestResult.Success -> {
+                    _state.update { it.copy(isLoading = false, initialTariffs = result.data) }
+                }
+                is RequestResult.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+                is RequestResult.NoInternetConnection -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    private fun setupTariffPager() {
+        val pager = Pager(
+            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+            pagingSourceFactory = { TariffPagingSource(getTariffListUseCase) }
+        ).flow.cachedIn(viewModelScope)
+
+        _state.update { it.copy(tariffsFlow = pager) }
     }
 
     private fun getCurrentUserId() {
@@ -76,11 +112,11 @@ class MainViewModel(
 
     fun onUserClicked(user: User) {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToUser(user.id.toString()))
+            _navigationEvent.emit(MainNavigationEvent.NavigateToUser(user.id))
         }
     }
 
-    fun onRateClicked(rate: Rate) {
+    fun onTariffClicked(tariff: Tariff) {
         viewModelScope.launch {
             _navigationEvent.emit(MainNavigationEvent.NavigateToRate)
         }
@@ -95,6 +131,20 @@ class MainViewModel(
     fun onCreateUserClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(MainNavigationEvent.NavigateToUserCreation)
+        }
+    }
+
+    fun onLogoutClicked() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            logoutUseCase()
+                .onSuccess {
+                    _state.update { it.copy(isLoading = false) }
+                    _navigationEvent.emit(MainNavigationEvent.NavigateToWelcome)
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
         }
     }
 }

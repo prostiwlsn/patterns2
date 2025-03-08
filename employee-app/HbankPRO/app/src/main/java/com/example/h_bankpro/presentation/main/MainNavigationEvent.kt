@@ -5,4 +5,5 @@ sealed class MainNavigationEvent {
     data object NavigateToRate : MainNavigationEvent()
     data object NavigateToRateCreation : MainNavigationEvent()
     data object NavigateToUserCreation : MainNavigationEvent()
+    data object NavigateToWelcome : MainNavigationEvent()
 }

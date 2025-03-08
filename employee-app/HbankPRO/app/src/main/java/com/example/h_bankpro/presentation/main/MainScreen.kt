@@ -21,12 +21,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.R
 import com.example.h_bankpro.presentation.main.components.UsersBottomSheetContent
 import com.example.h_bankpro.presentation.main.components.ActionBlock
-import com.example.h_bankpro.presentation.main.components.RatesBlock
-import com.example.h_bankpro.presentation.main.components.RatesBottomSheetContent
+import com.example.h_bankpro.presentation.main.components.TariffsBlock
+import com.example.h_bankpro.presentation.main.components.TariffsBottomSheetContent
 import com.example.h_bankpro.presentation.main.components.UsersBlock
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,6 +37,7 @@ fun MainScreen(
     viewModel: MainViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val lazyPagingItems = state.tariffsFlow.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
@@ -51,6 +53,13 @@ fun MainScreen(
 
                 is MainNavigationEvent.NavigateToRate ->
                     navController.navigate("rate")
+
+                MainNavigationEvent.NavigateToWelcome ->
+                    navController.navigate("welcome") {
+                        popUpTo(
+                            "welcome"
+                        ) { inclusive = true }
+                    }
             }
         }
     }
@@ -79,9 +88,11 @@ fun MainScreen(
                     letterSpacing = 0.05.sp,
                     color = Color.Black
                 )
-                IconButton(onClick = { }) {
+                IconButton(
+                    onClick = { viewModel.onLogoutClicked() }
+                ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.profile),
+                        painter = painterResource(id = R.drawable.logout),
                         contentDescription = "Profile",
                         modifier = Modifier.size(24.dp),
                         tint = Color.Black
@@ -115,10 +126,10 @@ fun MainScreen(
                     onCreateUserClick = { viewModel.onCreateUserClicked() }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                if (state.rates.isNotEmpty()) {
-                    RatesBlock(
-                        rates = state.rates,
-                        onItemClick = { viewModel.onRateClicked(it) },
+                if (state.initialTariffs.isNotEmpty()) {
+                    TariffsBlock(
+                        tariffs = state.initialTariffs,
+                        onItemClick = { viewModel.onTariffClicked(it) },
                         onSeeAllClick = { viewModel.showRatesSheet() }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
@@ -141,16 +152,16 @@ fun MainScreen(
                 )
             }
         }
-        if (state.isRatesSheetVisible) {
+        if (state.isTariffsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideRatesSheet() },
                 containerColor = Color(0xFFF9F9F9),
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
-                RatesBottomSheetContent(
-                    rates = state.rates,
-                    onItemClick = { rate ->
-                        viewModel.onRateClicked(rate)
+                TariffsBottomSheetContent(
+                    lazyPagingItems = lazyPagingItems,
+                    onItemClick = { tariff ->
+                        viewModel.onTariffClicked(tariff)
                         viewModel.hideRatesSheet()
                     }
                 )

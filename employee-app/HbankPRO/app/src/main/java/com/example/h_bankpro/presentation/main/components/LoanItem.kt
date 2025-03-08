@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.h_bankpro.data.Loan
+import com.example.h_bankpro.domain.model.Loan
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -32,7 +32,8 @@ fun LoanItem(
     ) {
         Column {
             Text(
-                text = "Договор № " + loan.documentNumber.toString(),
+//                text = "Договор № " + loan.documentNumber.toString(),
+                text = "",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -40,7 +41,8 @@ fun LoanItem(
             Text(text = loan.amount.toString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
         Text(
-            text = "до " + loan.endDate.format(formatter),
+//            text = "до " + loan.endDate.format(formatter),
+            text = "",
             fontSize = 12.sp,
             color = Color.Gray,
             modifier = Modifier

@@ -1,5 +1,7 @@
 package com.example.h_bankpro.presentation.welcome
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,6 +42,10 @@ fun WelcomeScreen(
                 WelcomeNavigationEvent.NavigateToRegister -> navController.navigate("registration")
             }
         }
+    }
+
+    BackHandler(enabled = true) {
+        (navController.context as? Activity)?.finish()
     }
     Column(
         modifier = Modifier
@@ -85,7 +91,7 @@ fun WelcomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedButton(
-                onClick = {viewModel.onRegister()},
+                onClick = { viewModel.onRegister() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -101,7 +107,7 @@ fun WelcomeScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = {viewModel.onLogin()},
+                onClick = { viewModel.onLogin() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),

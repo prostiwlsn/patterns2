@@ -12,6 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.h_bankpro.di.accountModule
 import com.example.h_bankpro.di.appModule
 import com.example.h_bankpro.di.authorizationModule
+import com.example.h_bankpro.di.loanModule
+import com.example.h_bankpro.di.logoutModule
 import com.example.h_bankpro.di.networkModule
 import com.example.h_bankpro.di.operationModule
 import com.example.h_bankpro.di.tokenModule
@@ -32,8 +34,10 @@ class MainActivity : ComponentActivity() {
             androidContext(this@MainActivity)
             modules(networkModule)
             modules(tokenModule)
+            modules(logoutModule)
             modules(authorizationModule)
             modules(appModule)
+            modules(loanModule)
             modules(userModule)
             modules(accountModule)
             modules(operationModule)

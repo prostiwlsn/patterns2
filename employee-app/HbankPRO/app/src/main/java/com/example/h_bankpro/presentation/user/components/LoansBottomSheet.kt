@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.h_bankpro.data.Loan
+import com.example.h_bankpro.domain.model.Loan
 
 @Composable
 fun LoansBottomSheetContent(

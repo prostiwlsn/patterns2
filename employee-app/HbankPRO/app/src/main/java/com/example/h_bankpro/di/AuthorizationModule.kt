@@ -46,15 +46,16 @@ val authorizationModule = module {
     }
 
     factory<AuthorizationApi> {
-        val retrofit = get<Retrofit>(named("firstApi"))
+        val retrofit = get<Retrofit>(named("infoAuthApi"))
         retrofit.create(AuthorizationApi::class.java)
     }
 
     single<IAuthorizationRemoteRepository> {
         AuthorizationRemoteRepository(
             storageRepository = get(),
-            api = get(),
+            authApi = get(),
             tokenRepository = get(),
+            logoutApi = get(),
         )
     }
 

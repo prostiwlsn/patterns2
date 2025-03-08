@@ -22,7 +22,7 @@ val accountModule = module {
     }
 
     factory<AccountApi> {
-        val retrofit = get<Retrofit>(named("yuraApi"))
+        val retrofit = get<Retrofit>(named("accountApi"))
         retrofit.create(AccountApi::class.java)
     }
 }

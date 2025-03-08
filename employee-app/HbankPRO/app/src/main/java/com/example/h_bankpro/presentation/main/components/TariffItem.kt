@@ -14,11 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.h_bankpro.data.Rate
+import com.example.h_bankpro.domain.model.Tariff
 
 @Composable
-fun RateItem(
-    rate: Rate,
+fun TariffItem(
+    tariff: Tariff,
     onClick: () -> Unit
 ) {
     Box(
@@ -29,13 +29,13 @@ fun RateItem(
     ) {
         Column {
             Text(
-                text = rate.name,
+                text = tariff.name,
                 fontSize = 14.sp,
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = rate.interestRate.toString() + " %",
+                text = tariff.ratePercent.toString() + " %",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )

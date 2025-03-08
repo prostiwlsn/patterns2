@@ -26,14 +26,10 @@ class TokenRepository(
     }
 
     override suspend fun refreshToken(refreshToken: String): RequestResult<TokenDto> {
-        val currentToken = localRepository.getToken()
-        val accessToken =
-            currentToken?.accessToken ?: return RequestResult.Error(-1, "No access token available")
-
         val result = runResultCatching {
             tokenApi.refreshToken(
                 request = RefreshRequestDto(refreshToken),
-                accessToken = "Bearer $accessToken"
+                accessToken = "Bearer $refreshToken"
             )
         }
         return when (result) {

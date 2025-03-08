@@ -22,12 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
-import com.example.h_bankpro.data.Rate
+import com.example.h_bankpro.domain.model.Tariff
 
 @Composable
-fun RatesBlock(
-    rates: List<Rate>,
-    onItemClick: (Rate) -> Unit,
+fun TariffsBlock(
+    tariffs: List<Tariff>,
+    onItemClick: (Tariff) -> Unit,
     onSeeAllClick: () -> Unit
 ) {
     Column {
@@ -58,9 +58,9 @@ fun RatesBlock(
             border = BorderStroke(1.dp, Color(0xFFD9D9D9))
         ) {
             Column {
-                val itemsToShow = rates.take(2)
-                itemsToShow.forEachIndexed { index, rate ->
-                    RateItem(rate = rate, onClick = { onItemClick(rate) })
+                val itemsToShow = tariffs.take(2)
+                itemsToShow.forEachIndexed { index, tariff ->
+                    TariffItem(tariff = tariff, onClick = { onItemClick(tariff) })
                     if (index < itemsToShow.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
