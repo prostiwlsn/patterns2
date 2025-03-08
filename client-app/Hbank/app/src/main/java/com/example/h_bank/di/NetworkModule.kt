@@ -1,4 +1,6 @@
-import com.example.h_bankpro.data.network.AuthInterceptor
+package com.example.h_bank.di
+
+import com.example.h_bank.data.network.AuthInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType

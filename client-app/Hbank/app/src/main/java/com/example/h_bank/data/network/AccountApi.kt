@@ -1,12 +1,23 @@
 package com.example.h_bank.data.network
 
 import com.example.h_bank.data.dto.AccountDto
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AccountApi {
     @GET("account/{userId}/list")
     suspend fun getUserAccounts(
         @Path("userId") userId: String,
     ): List<AccountDto>
+
+    @POST("account")
+    suspend fun openAccount()
+
+    @DELETE("account")
+    suspend fun closeAccount(
+        @Query("accountId") accountId: String,
+    )
 }

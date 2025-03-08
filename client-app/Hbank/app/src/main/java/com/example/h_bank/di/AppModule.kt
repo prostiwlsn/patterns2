@@ -1,12 +1,13 @@
 package com.example.h_bank.di
 
 import androidx.lifecycle.SavedStateHandle
+import com.example.h_bank.presentation.launch.LaunchViewModel
 import com.example.h_bank.presentation.loan.LoanViewModel
 import com.example.h_bank.presentation.loanPayment.LoanPaymentViewModel
-import com.example.h_bank.presentation.loanProcessing.LoanProcessingViewModel
 import com.example.h_bank.presentation.main.MainViewModel
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryViewModel
 import com.example.h_bank.presentation.replenishment.ReplenishmentViewModel
+import com.example.h_bank.presentation.successfulAccountClosure.SuccessfulAccountClosureViewModel
 import com.example.h_bank.presentation.successfulAccountOpening.SuccessfulAccountOpeningViewModel
 import com.example.h_bank.presentation.successfulLoanPayment.SuccessfulLoanPaymentViewModel
 import com.example.h_bank.presentation.successfulLoanProcessing.SuccessfulLoanProcessingViewModel
@@ -22,11 +23,20 @@ import org.koin.dsl.module
 
 val appModule = module {
     viewModel { WelcomeViewModel() }
-    viewModel { MainViewModel() }
-    viewModel { (savedStateHandle: SavedStateHandle) -> LoanPaymentViewModel(savedStateHandle) }
-    viewModel { SuccessfulAccountOpeningViewModel() }
+    viewModel { LaunchViewModel(get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        LoanPaymentViewModel(
+            savedStateHandle,
+            get(),
+            get()
+        )
+    }
+    viewModel { SuccessfulAccountClosureViewModel() }
     viewModel { SuccessfulLoanProcessingViewModel() }
     viewModel { SuccessfulLoanPaymentViewModel() }
+    viewModel { SuccessfulAccountOpeningViewModel() }
+    viewModel { SuccessfulAccountClosureViewModel() }
     viewModel { PaymentHistoryViewModel() }
     viewModel { TransferViewModel() }
     viewModel { (savedStateHandle: SavedStateHandle) -> TransactionInfoViewModel(savedStateHandle) }

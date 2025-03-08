@@ -11,7 +11,7 @@ import com.example.h_bank.domain.repository.ITokenRepository
 
 class TokenRepository(
     private val localRepository: IAuthorizationLocalRepository,
-    private val tokenApi: TokenApi,
+    private val tokenApi: TokenApi
 ) : ITokenRepository {
     override suspend fun getToken(): TokenEntity? {
         return localRepository.getToken()

@@ -13,12 +13,9 @@ import com.example.h_bank.di.logoutModule
 import com.example.h_bank.di.operationModule
 import com.example.h_bank.di.tokenModule
 import com.example.h_bank.di.userModule
-import com.example.h_bank.domain.repository.ITokenStorage
-import com.example.h_bank.domain.useCase.RefreshTokenUseCase
 import com.example.h_bank.presentation.navigation.AppNavigation
 import com.example.h_bank.ui.theme.HbankTheme
-import networkModule
-import org.koin.android.ext.android.inject
+import com.example.h_bank.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -43,9 +40,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HbankTheme {
-                val tokenStorage: ITokenStorage by inject()
-                val refreshTokenUseCase: RefreshTokenUseCase by inject()
-                AppNavigation(tokenStorage, refreshTokenUseCase)
+                AppNavigation()
             }
         }
     }

@@ -4,6 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.Account
+import com.example.h_bank.data.utils.NetworkUtils.onFailure
+import com.example.h_bank.data.utils.NetworkUtils.onSuccess
+import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
+import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -11,7 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoanPaymentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class LoanPaymentViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getUserAccountsUseCase: GetUserAccountsUseCase,
+) : ViewModel() {
     private val loanId: String = checkNotNull(savedStateHandle["loanId"])
 
     private val _state = MutableStateFlow(LoanPaymentState())
@@ -19,6 +27,10 @@ class LoanPaymentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val _navigationEvent = MutableSharedFlow<LoanPaymentNavigationEvent>()
     val navigationEvent: SharedFlow<LoanPaymentNavigationEvent> = _navigationEvent
+
+    init {
+        loadCurrentUser()
+    }
 
     fun showAccountsSheet() {
         _state.update { it.copy(isAccountsSheetVisible = true) }
@@ -35,6 +47,35 @@ class LoanPaymentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     fun onAmountChange(amount: Int) {
         _state.update { it.copy(amount = amount) }
         validateFields()
+    }
+
+    private fun loadCurrentUser() {
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            getCurrentUserUseCase().onSuccess { result ->
+                _state.update { it.copy(currentUserId = result.data.id) }
+                loadUserAccounts()
+            }
+                .onFailure { }
+        }
+    }
+
+    private fun loadUserAccounts() {
+        viewModelScope.launch {
+            getUserAccountsUseCase(state.value.currentUserId)
+                .onSuccess { result ->
+                    _state.update {
+                        it.copy(
+                            accounts = result.data,
+                            isLoading = false,
+                            selectedAccount = result.data.first()
+                        )
+                    }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
     }
 
     fun onPayClicked() {

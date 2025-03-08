@@ -1,14 +1,13 @@
 package com.example.h_bank.data
 
-import java.time.LocalDateTime
-import java.util.UUID
+import java.time.LocalDate
 
 data class Loan(
-    val id: UUID,
+    val id: String,
     val documentNumber: Int,
-    val amount: Int,
-    val debt: Int,
+    val amount: Double,
+    val debt: Double,
     val ratePercent: Double,
-    val issueDate: LocalDateTime,
-    val endDate: LocalDateTime
+    val issueDate: LocalDate,
+    val endDate: LocalDate
 )

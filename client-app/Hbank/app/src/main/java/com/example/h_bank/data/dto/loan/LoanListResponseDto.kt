@@ -1,6 +1,8 @@
 package com.example.h_bank.data.dto.loan
 
+import com.example.h_bank.data.Loan
 import com.example.h_bank.data.dto.common.PaginationDto
+import com.example.h_bank.domain.entity.loan.LoansPageResponse
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,7 +11,7 @@ data class LoanListResponseDto(
     val pagination: PaginationDto,
 )
 
-/*
+
 internal fun LoanListResponseDto.toDomain(): LoansPageResponse<Loan> {
     return LoansPageResponse(
         items = loans.map { it.toDomain() },
@@ -17,4 +19,4 @@ internal fun LoanListResponseDto.toDomain(): LoansPageResponse<Loan> {
         pageNumber = pagination.pageNumber,
         pagesCount = pagination.pagesCount
     )
-}*/
+}

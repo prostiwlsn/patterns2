@@ -1,10 +1,10 @@
 package com.example.h_bank.data.dto
 
 import com.example.h_bank.data.Account
-import com.example.h_bank.data.utils.InstantSerializer
 import kotlinx.datetime.Instant
+import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Serializable
 data class AccountDto(
@@ -13,7 +13,6 @@ data class AccountDto(
     val balance: Float,
     val userId: String,
     val isDeleted: Boolean,
-    @Serializable(with = InstantSerializer::class)
     val createDateTime: Instant
 )
 
@@ -24,6 +23,8 @@ internal fun AccountDto.toDomain(): Account {
         balance = balance,
         userId = userId,
         isDeleted = isDeleted,
-        createDateTime = LocalDateTime.now()
+        createDateTime = createDateTime.toJavaInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
     )
 }

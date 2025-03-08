@@ -3,6 +3,7 @@ package com.example.h_bank.di
 import com.example.h_bank.data.network.OperationApi
 import com.example.h_bank.data.repository.OperationRepository
 import com.example.h_bank.domain.repository.IOperationRepository
+import com.example.h_bank.domain.useCase.CreateOperationUseCase
 import com.example.h_bank.domain.useCase.GetOperationInfoUseCase
 import com.example.h_bank.domain.useCase.GetOperationsByAccountUseCase
 import org.koin.core.qualifier.named
@@ -28,8 +29,14 @@ val operationModule = module {
         )
     }
 
+    factory<CreateOperationUseCase> {
+        CreateOperationUseCase(
+            operationRepository = get()
+        )
+    }
+
     factory<OperationApi> {
-        val retrofit = get<Retrofit>(named("yuraApi"))
+        val retrofit = get<Retrofit>(named("accountApi"))
         retrofit.create(OperationApi::class.java)
     }
 }

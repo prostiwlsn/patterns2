@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
@@ -23,17 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.h_bank.R
-import com.example.h_bank.presentation.common.CustomButton
 import com.example.h_bank.presentation.common.CustomDisablableButton
 import com.example.h_bank.presentation.common.IconButtonField
 import com.example.h_bank.presentation.common.NumberInputField
-import com.example.h_bank.presentation.common.TextField
-import com.example.h_bank.presentation.loan.components.LoanHeader
 import com.example.h_bank.presentation.loanPayment.components.LoanPaymentBottomSheetContent
 import com.example.h_bank.presentation.loanPayment.components.LoanPaymentHeader
-import com.example.h_bank.presentation.main.components.AccountsBottomSheetContent
 import org.koin.androidx.compose.koinViewModel
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +51,7 @@ fun LoanPaymentScreen(
             }
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,31 +65,46 @@ fun LoanPaymentScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-            LoanPaymentHeader(
-                onBackClick = { viewModel.onBackClicked() }
-            )
-            Spacer(modifier = Modifier.height(37.dp))
-            IconButtonField(
-                labelRes = R.string.payment_account,
-                value = state.selectedAccount?.accountNumber.orEmpty(),
-                icon = Icons.Default.Edit,
-                onIconClick = { viewModel.showAccountsSheet() },
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            NumberInputField(
-                labelRes = R.string.amount,
-                value = state.amount.toString() + " ₽",
-                onValueChange = { viewModel.onAmountChange(it.toInt()) }
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            CustomDisablableButton(
-                onClick = viewModel::onPayClicked,
-                textRes = R.string.pay,
-                enabled = state.areFieldsValid
-            )
-            Spacer(modifier = Modifier.height(32.dp))
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = Color(0xFF5C49E0)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(40.dp))
+                LoanPaymentHeader(
+                    onBackClick = { viewModel.onBackClicked() }
+                )
+                Spacer(modifier = Modifier.height(37.dp))
+                IconButtonField(
+                    labelRes = R.string.payment_account,
+                    value = state.selectedAccount?.accountNumber.orEmpty(),
+                    icon = Icons.Default.Edit,
+                    onIconClick = { viewModel.showAccountsSheet() },
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                NumberInputField(
+                    labelRes = R.string.amount,
+                    value = state.amount.toString() + " ₽",
+                    onValueChange = { viewModel.onAmountChange(it.toInt()) }
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                CustomDisablableButton(
+                    onClick = viewModel::onPayClicked,
+                    textRes = R.string.pay,
+                    enabled = state.areFieldsValid
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
+
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideAccountsSheet() },

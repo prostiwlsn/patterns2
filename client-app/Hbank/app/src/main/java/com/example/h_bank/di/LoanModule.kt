@@ -7,10 +7,10 @@ import com.example.h_bank.domain.repository.loan.ILoanRemoteRepository
 import com.example.h_bank.domain.repository.loan.ILoanStorageRepository
 import com.example.h_bank.domain.useCase.loan.GetLoanFlowUseCase
 import com.example.h_bank.domain.useCase.loan.GetTariffListUseCase
+import com.example.h_bank.domain.useCase.loan.GetUserLoansUseCase
 import com.example.h_bank.domain.useCase.loan.LoanProcessingValidationUseCase
 import com.example.h_bank.domain.useCase.loan.UpdateLoanUseCase
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingViewModel
-import com.example.h_bank.presentation.loanProcessing.model.LoanProcessingErrorModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -30,6 +30,12 @@ val loanModule = module {
     factory<GetLoanFlowUseCase> {
         GetLoanFlowUseCase(
             storageRepository = get()
+        )
+    }
+
+    factory<GetUserLoansUseCase> {
+        GetUserLoansUseCase(
+            loanRepository = get()
         )
     }
 
@@ -62,6 +68,7 @@ val loanModule = module {
             updateLoanUseCase = get(),
             getLoanFlowUseCase = get(),
             loanProcessingValidationUseCase = get(),
+            getTariffListUseCase = get()
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.h_bankpro.data.network
+package com.example.h_bank.data.network
 
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.repository.ITokenRepository

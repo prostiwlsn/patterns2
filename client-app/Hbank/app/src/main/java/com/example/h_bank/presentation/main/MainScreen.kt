@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bank.R
@@ -36,6 +38,7 @@ fun MainScreen(
     viewModel: MainViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val lazyPagingItems = state.loansFlow.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
@@ -44,25 +47,43 @@ fun MainScreen(
                     navController.navigate("account/${event.accountId}")
 
                 is MainNavigationEvent.NavigateToLoan ->
-                    navController.navigate("loan/${event.loanId}")
+                    navController.navigate(
+                        "loan" +
+                                "/${event.loanId}" +
+                                "/${event.documentNumber}" +
+                                "/${event.amount}" +
+                                "/${event.endDate}" +
+                                "/${event.ratePercent}" +
+                                "/${event.debt}"
+                    )
 
-                is MainNavigationEvent.NavigateToTransfer ->
+                MainNavigationEvent.NavigateToTransfer ->
                     navController.navigate("transfer")
 
-                is MainNavigationEvent.NavigateToReplenishment ->
+                MainNavigationEvent.NavigateToReplenishment ->
                     navController.navigate("replenishment")
 
-                is MainNavigationEvent.NavigateToWithdrawal ->
+                MainNavigationEvent.NavigateToWithdrawal ->
                     navController.navigate("withdrawal")
 
-                is MainNavigationEvent.NavigateToPaymentHistory ->
+                MainNavigationEvent.NavigateToPaymentHistory ->
                     navController.navigate("payment_history")
 
-                is MainNavigationEvent.NavigateToLoanProcessing ->
+                MainNavigationEvent.NavigateToLoanProcessing ->
                     navController.navigate("loan_processing")
 
-                is MainNavigationEvent.NavigateToSuccessfulAccountOpening ->
+                MainNavigationEvent.NavigateToSuccessfulAccountOpening ->
                     navController.navigate("successful_account_opening")
+
+                MainNavigationEvent.NavigateToSuccessfulAccountClosure ->
+                    navController.navigate("successful_account_closure")
+
+                MainNavigationEvent.NavigateToWelcome ->
+                    navController.navigate("welcome") {
+                        popUpTo(
+                            "welcome"
+                        ) { inclusive = true }
+                    }
             }
         }
     }
@@ -78,57 +99,72 @@ fun MainScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
         ) {
-            Spacer(modifier = Modifier.height(36.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.good_day),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 0.05.sp,
-                    color = Color.Black
-                )
-                IconButton(onClick = { }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = "Profile",
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Black
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = Color(0xFF5C49E0)
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            if (state.accounts.isNotEmpty()) {
-                AccountsBlock(
-                    accounts = state.accounts,
-                    onItemClick = { viewModel.onAccountClicked(it) },
-                    onSeeAllClick = { viewModel.showAccountsSheet() }
+            } else {
+                Spacer(modifier = Modifier.height(36.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.good_day),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.05.sp,
+                        color = Color.Black
+                    )
+                    IconButton(onClick = { viewModel.onLogoutClicked() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.logout),
+                            contentDescription = "Profile",
+                            modifier = Modifier.size(24.dp),
+                            tint = Color.Black
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+                if (state.accounts.isNotEmpty()) {
+                    AccountsBlock(
+                        accounts = state.accounts,
+                        onCloseAccountClick = { viewModel.onCloseAccountClicked(it) },
+                        onSeeAllClick = { viewModel.showAccountsSheet() }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+                if (state.initialLoans.isNotEmpty()) {
+                    LoansBlock(
+                        loans = state.initialLoans,
+                        onItemClick = { viewModel.onLoanClicked(it) },
+                        onSeeAllClick = { viewModel.showLoansSheet() }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+                TransfersBlock(
+                    onTransferClick = { viewModel.onTransferClicked() },
+                    onHistoryClick = { viewModel.onHistoryClicked() },
+                    onReplenishmentClick = { viewModel.onReplenishmentClicked() },
+                    onWithdrawalClick = { viewModel.onWithdrawalClicked() }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-            }
-            if (state.loans.isNotEmpty()) {
-                LoansBlock(
-                    loans = state.loans,
-                    onItemClick = { viewModel.onLoanClicked(it) },
-                    onSeeAllClick = { viewModel.showLoansSheet() }
+                ApplicationsBlock(
+                    onProcessLoanClick = { viewModel.onProcessLoanClicked() },
+                    onOpenAccountClick = { viewModel.onOpenAccountClicked() }
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
-            TransfersBlock(
-                onTransferClick = { viewModel.onTransferClicked() },
-                onHistoryClick = { viewModel.onHistoryClicked() },
-                onReplenishmentClick = { viewModel.onReplenishmentClicked() },
-                onWithdrawalClick = { viewModel.onWithdrawalClicked() }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            ApplicationsBlock(
-                onProcessLoanClick = { viewModel.onProcessLoanClicked() },
-                onOpenAccountClick = { viewModel.onOpenAccountClicked() }
-            )
-            Spacer(modifier = Modifier.height(32.dp))
+
         }
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
@@ -153,9 +189,9 @@ fun MainScreen(
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 LoansBottomSheetContent(
-                    loans = state.loans,
-                    onItemClick = { loan ->
-                        viewModel.onLoanClicked(loan)
+                    lazyPagingItems = lazyPagingItems,
+                    onItemClick = {
+                        viewModel.onLoanClicked(it)
                         viewModel.hideLoansSheet()
                     },
                     onProcessLoanClick = { viewModel.onProcessLoanClicked() }

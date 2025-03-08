@@ -2,10 +2,9 @@ package com.example.h_bank.presentation.loanProcessing
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.h_bank.data.Rate
-import com.example.h_bank.domain.entity.loan.LoanEntity
 import com.example.h_bank.domain.useCase.loan.GetLoanFlowUseCase
+import com.example.h_bank.domain.useCase.loan.GetTariffListUseCase
 import com.example.h_bank.domain.useCase.loan.LoanProcessingValidationUseCase
 import com.example.h_bank.domain.useCase.loan.UpdateLoanUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,6 +19,7 @@ import kotlinx.coroutines.launch
 class LoanProcessingViewModel(
     private val updateLoanUseCase: UpdateLoanUseCase,
     private val loanProcessingValidationUseCase: LoanProcessingValidationUseCase,
+    private val getTariffListUseCase: GetTariffListUseCase,
     getLoanFlowUseCase: GetLoanFlowUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(LoanProcessingState())

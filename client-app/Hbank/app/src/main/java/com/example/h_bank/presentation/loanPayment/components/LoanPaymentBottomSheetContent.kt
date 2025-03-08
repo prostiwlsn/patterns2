@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.h_bank.R
 import com.example.h_bank.data.Account
-import com.example.h_bank.presentation.common.AccountItem
 
 @Composable
 fun LoanPaymentBottomSheetContent(
@@ -39,7 +38,9 @@ fun LoanPaymentBottomSheetContent(
             Spacer(modifier = Modifier.height(16.dp))
         }
         items(accounts) { account ->
-            AccountItem(account = account, onClick = { onItemClick(account) })
+            LoanPaymentAccountItem(
+                account = account,
+                onClick = { onItemClick(account) })
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 thickness = 1.dp,

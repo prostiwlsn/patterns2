@@ -28,7 +28,7 @@ import com.example.h_bank.presentation.common.AccountItem
 @Composable
 fun AccountsBlock(
     accounts: List<Account>,
-    onItemClick: (Account) -> Unit,
+    onCloseAccountClick: (Account) -> Unit,
     onSeeAllClick: () -> Unit
 ) {
     Column {
@@ -61,7 +61,9 @@ fun AccountsBlock(
             Column {
                 val itemsToShow = accounts.take(2)
                 itemsToShow.forEachIndexed { index, account ->
-                    AccountItem(account = account, onClick = { onItemClick(account) })
+                    AccountItem(
+                        account = account,
+                        onCloseAccountClick = { onCloseAccountClick(account) })
                     if (index < itemsToShow.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),

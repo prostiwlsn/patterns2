@@ -42,6 +42,7 @@
     <string name="all_rates">Все тарифы</string>
     <string name="all_accounts">Все счета</string>
     <string name="success_account">Счёт успешно открыт</string>
+    <string name="success_account_closure">Счёт успешно закрыт</string>
     <string name="success_loan_payment">Платёж успешно
         внесён</string>
     <string name="success_loan">Кредит успешно оформлен</string>

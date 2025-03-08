@@ -1,21 +1,13 @@
 package com.example.h_bank.presentation.navigation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.h_bank.data.utils.RequestResult
-import com.example.h_bank.domain.repository.ITokenStorage
-import com.example.h_bank.domain.useCase.RefreshTokenUseCase
+import com.example.h_bank.presentation.launch.LaunchScreen
 import com.example.h_bank.presentation.loan.LoanScreen
 import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
@@ -24,6 +16,7 @@ import com.example.h_bank.presentation.main.MainScreen
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryScreen
 import com.example.h_bank.presentation.registration.RegistrationScreen
 import com.example.h_bank.presentation.replenishment.ReplenishmentScreen
+import com.example.h_bank.presentation.successfulAccountClosure.SuccessfulAccountClosureScreen
 import com.example.h_bank.presentation.successfulAccountOpening.SuccessfulAccountOpeningScreen
 import com.example.h_bank.presentation.successfulLoanPayment.SuccessfulLoanPaymentScreen
 import com.example.h_bank.presentation.successfulLoanProcessing.SuccessfulLoanProcessingScreen
@@ -37,39 +30,12 @@ import com.example.h_bank.presentation.withdrawal.WithdrawalScreen
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshTokenUseCase) {
+fun AppNavigation() {
     val navController = rememberNavController()
-
-    var isAuthorized by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        val currentToken = tokenStorage.getTokenState()
-        Log.d("AppNavigation", "Current token: $currentToken")
-        if (currentToken.accessToken != null) {
-            if (tokenStorage.isTokenValid()) {
-                Log.d("AppNavigation", "Token is valid")
-                isAuthorized = true
-            } else {
-                when (val result = refreshTokenUseCase()) {
-                    is RequestResult.Success<*> -> {
-                        isAuthorized = true
-                    }
-
-                    is RequestResult.Error<*> -> {
-                        tokenStorage.clearToken()
-                        isAuthorized = false
-                    }
-
-                    is RequestResult.NoInternetConnection<*> -> {
-                        isAuthorized = false
-                    }
-                }
-            }
-        } else {
-            isAuthorized = false
+    NavHost(navController = navController, startDestination = "launch") {
+        composable("launch") {
+            LaunchScreen(navController)
         }
-    }
-    NavHost(navController = navController, startDestination = "welcome") {
         composable("welcome") {
             WelcomeScreen(navController)
         }
@@ -83,8 +49,15 @@ fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshToken
             MainScreen(navController)
         }
         composable(
-            route = "loan/{loanId}",
-            arguments = listOf(navArgument("loanId") { type = NavType.StringType }),
+            route = "loan/{loanId}/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
+            arguments = listOf(
+                navArgument("loanId") { type = NavType.StringType },
+                navArgument("documentNumber") { type = NavType.StringType },
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("endDate") { type = NavType.StringType },
+                navArgument("ratePercent") { type = NavType.StringType },
+                navArgument("debt") { type = NavType.StringType },
+            )
         ) {
             LoanScreen(navController)
         }
@@ -111,6 +84,9 @@ fun AppNavigation(tokenStorage: ITokenStorage, refreshTokenUseCase: RefreshToken
         }
         composable("successful_account_opening") {
             SuccessfulAccountOpeningScreen(navController)
+        }
+        composable("successful_account_closure") {
+            SuccessfulAccountClosureScreen(navController)
         }
         composable("successful_loan_payment") {
             SuccessfulLoanPaymentScreen(navController)

@@ -1,12 +1,9 @@
 package com.example.h_bank.di
 
 import com.example.h_bank.data.network.AuthorizationApi
-import com.example.h_bank.data.network.TokenApi
 import com.example.h_bank.data.repository.AuthorizationRemoteRepository
-import com.example.h_bank.data.repository.TokenRepository
 import com.example.h_bank.domain.repository.IAuthorizationLocalRepository
 import com.example.h_bank.domain.repository.IAuthorizationRemoteRepository
-import com.example.h_bank.domain.repository.ITokenRepository
 import com.example.h_bank.domain.repository.ITokenStorage
 import com.example.h_bank.domain.repository.TokenLocalStorage
 import com.example.h_bank.domain.useCase.LoginUseCase
@@ -20,7 +17,7 @@ import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
 import com.example.h_bank.presentation.login.LoginViewModel
 import com.example.h_bank.presentation.registration.RegistrationViewModel
-import com.example.h_bankpro.data.repository.AuthorizationLocalStorage
+import com.example.h_bank.data.repository.AuthorizationLocalStorage
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

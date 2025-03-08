@@ -16,4 +16,16 @@ class AccountRepository(
             api.getUserAccounts(userId)
         }
     }
+
+    override suspend fun openAccount(): RequestResult<Unit> {
+        return runResultCatching {
+            api.openAccount()
+        }
+    }
+
+    override suspend fun closeAccount(accountId: String): RequestResult<Unit> {
+        return runResultCatching {
+            api.closeAccount(accountId)
+        }
+    }
 }

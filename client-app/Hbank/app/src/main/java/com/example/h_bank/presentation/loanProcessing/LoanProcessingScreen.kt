@@ -2,7 +2,6 @@ package com.example.h_bank.presentation.loanProcessing
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +41,7 @@ fun LoanProcessingScreen(
     viewModel: LoanProcessingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+//    val lazyPagingItems = state.tariffsFlow.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->

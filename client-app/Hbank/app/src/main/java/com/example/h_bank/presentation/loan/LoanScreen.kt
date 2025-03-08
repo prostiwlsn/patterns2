@@ -2,7 +2,6 @@ package com.example.h_bank.presentation.loan
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,27 +54,27 @@ fun LoanScreen(
         Spacer(modifier = Modifier.height(40.dp))
         LoanHeader(
             onBackClick = { viewModel.onBackClicked() },
-            documentNumber = state.loan.documentNumber.toString()
+            documentNumber = state.documentNumber
         )
         Spacer(modifier = Modifier.height(37.dp))
         TextField(
             labelRes = R.string.loan_amount,
-            value = state.loan.amount.toString() + " ₽",
+            value = state.amount + " ₽",
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.due_date,
-            value = state.loan.endDate.format(formatter).toString(),
+            value = state.endDate.format(formatter),
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.interest_rate,
-            value = state.loan.ratePercent.toString() + " %",
+            value = state.ratePercent + " %",
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.debt,
-            value = state.loan.debt.toString() + " ₽",
+            value = state.debt + " ₽",
         )
         Spacer(modifier = Modifier.weight(1f))
         CustomButton(

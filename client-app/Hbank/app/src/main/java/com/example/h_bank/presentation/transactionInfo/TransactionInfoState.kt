@@ -11,7 +11,7 @@ data class TransactionInfoState(
         senderAccountId = UUID.randomUUID().toString(),
         recipientAccountId = UUID.randomUUID().toString(),
         transactionDateTime = LocalDateTime.now(),
-        amount = 1000.0f,
+        amount = 1000.0,
         message = "Перевод на карту",
         operationType = OperationType.TRANSFER,
         directionToMe = false,

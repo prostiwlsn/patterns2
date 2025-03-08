@@ -20,7 +20,7 @@ interface LoanApi {
         @Body request: TariffRequestDto
     )*/
 
-    @DELETE("/api/loan/tariff")
+    @DELETE("loan/tariff")
     suspend fun deleteTariff(
         @Query("tariffId") tariffId: String
     )
@@ -31,7 +31,7 @@ interface LoanApi {
         @Body request: TariffRequestDto
     )*/
 
-    @GET("/api/loan/{userId}/list")
+    @GET("loan/{userId}/list")
     suspend fun getUserLoans(
         @Path("userId") userId: String,
         @Query("pageNumber") pageNumber: Int = 1,

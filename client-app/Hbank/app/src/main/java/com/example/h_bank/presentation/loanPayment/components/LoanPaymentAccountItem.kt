@@ -1,5 +1,6 @@
-package com.example.h_bank.presentation.common
+package com.example.h_bank.presentation.loanPayment.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,13 +22,14 @@ import com.example.h_bank.R
 import com.example.h_bank.data.Account
 
 @Composable
-fun AccountItem(
+fun LoanPaymentAccountItem(
     account: Account,
-    onCloseAccountClick: (Account) -> Unit
+    onClick: (Account) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = { onClick(account) })
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -37,13 +38,11 @@ fun AccountItem(
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = account.balance.toString(), fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
-        IconButton(onClick = { onCloseAccountClick(account) }) {
-            Icon(
-                painter = painterResource(id = R.drawable.delete),
-                contentDescription = "Back",
-                modifier = Modifier.size(24.dp),
-                tint = Color.Red
-            )
-        }
+        Icon(
+            painter = painterResource(id = R.drawable.credit_card),
+            contentDescription = "Credit Card Icon",
+            modifier = Modifier.size(24.dp),
+            tint = Color.Black
+        )
     }
 }

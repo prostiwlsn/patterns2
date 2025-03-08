@@ -1,5 +1,6 @@
 package com.example.h_bank.domain.repository
 
+import com.example.h_bank.data.dto.OperationCreationRequestDto
 import com.example.h_bank.data.dto.OperationDto
 import com.example.h_bank.data.dto.OperationShortDto
 import com.example.h_bank.data.dto.PageResponse
@@ -13,4 +14,6 @@ interface IOperationRepository {
     ): RequestResult<PageResponse<OperationShortDto>>
 
     suspend fun getOperationInfo(operationId: String): RequestResult<OperationDto>
+
+    suspend fun createOperation(request: OperationCreationRequestDto): RequestResult<Unit>
 }

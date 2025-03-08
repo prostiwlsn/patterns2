@@ -25,6 +25,7 @@ import com.example.h_bank.R
 import com.example.h_bank.presentation.common.CustomButton
 import com.example.h_bank.presentation.common.SuccessIcon
 import com.example.h_bank.presentation.common.SuccessMessage
+import com.example.h_bank.presentation.successfulAccountClosure.SuccessfulAccountClosureNavigationEvent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -35,7 +36,7 @@ fun SuccessfulAccountOpeningScreen(
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                SuccessfulAccountOpeningNavigationEvent.NavigateToMain ->
+                SuccessfulAccountClosureNavigationEvent.NavigateToMain ->
                     navController.navigate("main") {
                         popUpTo(
                             "main"

@@ -14,7 +14,7 @@ data class OperationDto(
     val senderAccountId: String?,
     val recipientAccountId: String,
     val directionToMe: Boolean,
-    val amount: Float,
+    val amount: Double,
     val transactionDateTime: Instant,
     val message: String?,
     val operationType: OperationType,
