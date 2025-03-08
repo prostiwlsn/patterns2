@@ -15,5 +15,8 @@ interface IOperationRepository {
         operationType: String? = null
     ): RequestResult<PageResponse<OperationShortDto>>
 
-    suspend fun getOperationInfo(operationId: String): RequestResult<OperationDto>
+    suspend fun getOperationInfo(
+        accountId: String,
+        operationId: String
+    ): RequestResult<OperationDto>
 }

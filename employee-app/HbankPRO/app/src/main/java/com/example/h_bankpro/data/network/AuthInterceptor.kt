@@ -1,24 +1,23 @@
 package com.example.h_bankpro.data.network
 
-import com.example.h_bankpro.data.dto.RefreshRequestDto
 import com.example.h_bankpro.data.utils.RequestResult
-import com.example.h_bankpro.domain.repository.IAuthorizationLocalRepository
-import com.example.h_bankpro.domain.repository.IAuthorizationRemoteRepository
+import com.example.h_bankpro.domain.repository.ITokenRepository
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
 
 class AuthInterceptor(
-    private val localRepository: IAuthorizationLocalRepository,
-    private val remoteRepository: IAuthorizationRemoteRepository
+    private val tokenRepository: ITokenRepository
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        val tokens = runBlocking { localRepository.getToken() }
+        val tokens = runBlocking { tokenRepository.getToken() }
 
-        val accessToken = tokens?.accessToken ?: return chain.proceed(originalRequest)
+        val accessToken = tokens?.accessToken
+        if (accessToken == null || !requiresAuth(originalRequest.url.toString())) {
+            return chain.proceed(originalRequest)
+        }
 
         val authenticatedRequest = originalRequest.newBuilder()
             .header("Authorization", "Bearer $accessToken")
@@ -26,14 +25,12 @@ class AuthInterceptor(
 
         val response = chain.proceed(authenticatedRequest)
 
-        if (response.code == 401) {
+        if (response.code == 401 && !originalRequest.url.toString().contains("/refresh")) {
             response.close()
 
             val refreshToken = tokens.refreshToken
             if (refreshToken != null) {
-                val refreshResult = runBlocking {
-                    remoteRepository.refreshToken(RefreshRequestDto(refreshToken))
-                }
+                val refreshResult = runBlocking { tokenRepository.refreshToken(refreshToken) }
 
                 when (refreshResult) {
                     is RequestResult.Success -> {
@@ -44,12 +41,12 @@ class AuthInterceptor(
                         return chain.proceed(newRequest)
                     }
                     else -> {
-                        runBlocking { localRepository.clearToken() }
+                        runBlocking { tokenRepository.clearToken() }
                         return response
                     }
                 }
             } else {
-                runBlocking { localRepository.clearToken() }
+                runBlocking { tokenRepository.clearToken() }
                 return response
             }
         }
@@ -57,9 +54,7 @@ class AuthInterceptor(
         return response
     }
 
-    private fun Request.Builder.header(name: String, value: String): Request.Builder {
-        removeHeader(name)
-        addHeader(name, value)
-        return this
+    private fun requiresAuth(url: String): Boolean {
+        return !url.contains("/login") && !url.contains("/register") && !url.contains("/refresh")
     }
 }

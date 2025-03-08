@@ -32,9 +32,12 @@ class OperationRepository(
         }
     }
 
-    override suspend fun getOperationInfo(operationId: String): RequestResult<OperationDto> {
+    override suspend fun getOperationInfo(
+        accountId: String,
+        operationId: String
+    ): RequestResult<OperationDto> {
         return runResultCatching {
-            api.getOperationInfo(operationId)
+            api.getOperationInfo(accountId, operationId)
         }
     }
 }

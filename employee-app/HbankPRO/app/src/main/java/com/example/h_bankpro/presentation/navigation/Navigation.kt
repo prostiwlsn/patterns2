@@ -87,8 +87,9 @@ fun AppNavigation() {
             AccountScreen(navController)
         }
         composable(
-            route = "operation_info/{operationId}",
+            route = "operation_info/{accountId}/{operationId}",
             arguments = listOf(
+                navArgument("accountId") { type = NavType.StringType },
                 navArgument("operationId") { type = NavType.StringType }
             )
         ) {

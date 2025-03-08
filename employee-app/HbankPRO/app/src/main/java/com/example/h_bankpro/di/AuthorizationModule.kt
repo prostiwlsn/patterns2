@@ -8,7 +8,6 @@ import com.example.h_bankpro.domain.repository.IAuthorizationRemoteRepository
 import com.example.h_bankpro.domain.useCase.LoginUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
-import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
 import com.example.h_bankpro.domain.useCase.RegisterUseCase
 import com.example.h_bankpro.domain.useCase.RegistrationValidationUseCase
 import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
@@ -23,12 +22,6 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val authorizationModule = module {
-    factory<RefreshTokenUseCase> {
-        RefreshTokenUseCase(
-            localRepository = get(),
-            remoteRepository = get()
-        )
-    }
 
     single<IAuthorizationLocalRepository> {
         AuthorizationLocalStorage(androidContext())
@@ -61,6 +54,7 @@ val authorizationModule = module {
         AuthorizationRemoteRepository(
             storageRepository = get(),
             api = get(),
+            tokenRepository = get(),
         )
     }
 

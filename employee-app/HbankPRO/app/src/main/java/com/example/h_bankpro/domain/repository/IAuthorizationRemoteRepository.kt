@@ -8,5 +8,4 @@ import com.example.h_bankpro.data.utils.RequestResult
 interface IAuthorizationRemoteRepository {
     suspend fun login(): RequestResult<TokenDto>
     suspend fun register(request: RegisterDto): RequestResult<TokenDto>
-    suspend fun refreshToken(request: RefreshRequestDto): RequestResult<TokenDto>
 }

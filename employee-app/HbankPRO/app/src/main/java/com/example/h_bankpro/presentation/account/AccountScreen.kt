@@ -56,7 +56,9 @@ fun AccountScreen(
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is AccountNavigationEvent.NavigateToOperationInfo ->
-                    navController.navigate("operation_info/${event.operationId}")
+                    navController.navigate(
+                        "operation_info/${event.accountId}/${event.operationId}"
+                    )
 
                 is AccountNavigationEvent.NavigateBack -> navController.popBackStack()
             }

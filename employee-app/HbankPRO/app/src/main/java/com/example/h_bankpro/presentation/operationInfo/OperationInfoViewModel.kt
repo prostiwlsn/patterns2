@@ -27,6 +27,7 @@ class OperationInfoViewModel(
     private val _navigationEvent = MutableSharedFlow<OperationInfoNavigationEvent>()
     val navigationEvent: SharedFlow<OperationInfoNavigationEvent> = _navigationEvent
 
+    private val accountId: String = checkNotNull(savedStateHandle["accountId"])
     private val operationId: String = checkNotNull(savedStateHandle["operationId"])
 
     private val dateFormatter = DateTimeFormatter.ofPattern(
@@ -45,7 +46,7 @@ class OperationInfoViewModel(
     private fun loadOperationInfo() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            getOperationInfoUseCase(operationId)
+            getOperationInfoUseCase(accountId, operationId)
                 .onSuccess { result ->
                     val operation = result.data
                     val displayTitle = when {

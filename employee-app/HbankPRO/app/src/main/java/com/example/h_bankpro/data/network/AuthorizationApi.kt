@@ -17,7 +17,4 @@ interface AuthorizationApi {
     suspend fun register(
         @Body request: RegisterDto
     ): TokenDto
-
-    @POST("refresh")
-    suspend fun refreshToken(@Body request: RefreshRequestDto): TokenDto
 }

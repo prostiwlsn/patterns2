@@ -9,8 +9,8 @@ import com.example.h_bankpro.domain.repository.IOperationRepository
 class GetOperationInfoUseCase(
     private val operationRepository: IOperationRepository,
 ) {
-    suspend operator fun invoke(operationId: String): RequestResult<Operation> {
-        return operationRepository.getOperationInfo(operationId)
+    suspend operator fun invoke(accountId: String, operationId: String): RequestResult<Operation> {
+        return operationRepository.getOperationInfo(accountId, operationId)
             .mapSuccess { operation -> operation.toDomain() }
     }
 }

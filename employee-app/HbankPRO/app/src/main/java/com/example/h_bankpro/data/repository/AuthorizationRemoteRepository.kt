@@ -1,6 +1,5 @@
 package com.example.h_bankpro.data.repository
 
-import com.example.h_bankpro.data.dto.RefreshRequestDto
 import com.example.h_bankpro.data.dto.RegisterDto
 import com.example.h_bankpro.data.dto.TokenDto
 import com.example.h_bankpro.data.mapper.toLoginRequestDto
@@ -10,10 +9,12 @@ import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.entity.TokenEntity
 import com.example.h_bankpro.domain.repository.IAuthorizationLocalRepository
 import com.example.h_bankpro.domain.repository.IAuthorizationRemoteRepository
+import com.example.h_bankpro.domain.repository.ITokenRepository
 
 class AuthorizationRemoteRepository(
     private val storageRepository: IAuthorizationLocalRepository,
     private val api: AuthorizationApi,
+    private val tokenRepository: ITokenRepository
 ) : IAuthorizationRemoteRepository {
     override suspend fun login(): RequestResult<TokenDto> {
         val loginRequest = storageRepository.getCredentialsState().toLoginRequestDto()
@@ -24,7 +25,7 @@ class AuthorizationRemoteRepository(
 
         return when (result) {
             is RequestResult.Success -> {
-                storageRepository.saveToken(TokenEntity.fromTokenDto(result.data))
+                tokenRepository.saveToken(TokenEntity.fromTokenDto(result.data))
                 result
             }
 
@@ -40,23 +41,7 @@ class AuthorizationRemoteRepository(
 
         return when (result) {
             is RequestResult.Success -> {
-                storageRepository.saveToken(TokenEntity.fromTokenDto(result.data))
-                result
-            }
-
-            is RequestResult.Error -> result
-            is RequestResult.NoInternetConnection -> result
-        }
-    }
-
-    override suspend fun refreshToken(request: RefreshRequestDto): RequestResult<TokenDto> {
-        val result = runResultCatching {
-            api.refreshToken(request)
-        }
-
-        return when (result) {
-            is RequestResult.Success -> {
-                storageRepository.saveToken(TokenEntity.fromTokenDto(result.data))
+                tokenRepository.saveToken(TokenEntity.fromTokenDto(result.data))
                 result
             }
 

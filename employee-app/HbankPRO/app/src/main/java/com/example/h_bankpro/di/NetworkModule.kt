@@ -11,7 +11,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val networkModule = module {
-    single {
+    single(named("baseClient")) {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
@@ -19,9 +19,26 @@ val networkModule = module {
             .build()
     }
 
+    single(named("authClient")) {
+        OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.HEADERS
+            })
+            .addInterceptor(AuthInterceptor(get()))
+            .build()
+    }
+
     single<Retrofit>(named("firstApi")) {
         Retrofit.Builder()
-            .client(get())
+            .client(get(named("baseClient")))
+            .baseUrl("http://194.59.186.122:8080/")
+            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
+    single<Retrofit>(named("firstApiWithAuth")) {
+        Retrofit.Builder()
+            .client(get(named("authClient")))
             .baseUrl("http://194.59.186.122:8080/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
@@ -31,20 +48,6 @@ val networkModule = module {
         Retrofit.Builder()
             .client(get(named("authClient")))
             .baseUrl("http://31.129.110.211:8080/api/")
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-            .build()
-    }
-
-    single(qualifier = named("authClient")) {
-        get<OkHttpClient>().newBuilder()
-            .addInterceptor(AuthInterceptor(get(), get()))
-            .build()
-    }
-
-    single<Retrofit>(named("firstApiWithAuth")) {
-        Retrofit.Builder()
-            .client(get(named("authClient")))
-            .baseUrl("http://194.59.186.122:8080/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
     }

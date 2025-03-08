@@ -13,7 +13,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bankpro.data.OperationTypeFilter
-import com.example.h_bankpro.data.dto.Pageable
 import com.example.h_bankpro.domain.model.OperationShort
 import com.example.h_bankpro.domain.useCase.GetOperationsByAccountUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,12 +41,6 @@ class AccountViewModel(
     private val accountId: String = checkNotNull(savedStateHandle["accountId"])
     private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
     private val _filters = MutableStateFlow(OperationsFilters())
-
-    private val defaultPageable = Pageable(
-        page = 0,
-        size = 20,
-        sort = listOf("transactionDateTime,desc")
-    )
 
     @OptIn(ExperimentalMaterial3Api::class)
     val dateRangePickerState = DateRangePickerState(
@@ -101,115 +94,6 @@ class AccountViewModel(
         }
     }
 
-//    val operationsPager: Flow<PagingData<OperationShort>> = Pager(
-//        config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-//        pagingSourceFactory = {
-//            OperationsPagingSource(
-//                accountId = accountId,
-//                getOperationsByAccountUseCase = getOperationsByAccountUseCase
-//            )
-//        }
-//    ).flow
-
-//    private fun loadInitialOperations() {
-//        viewModelScope.launch {
-//            _state.update { it.copy(isLoading = true) }
-//            val accountId = state.value.accountId
-//            val timeStart =
-//                state.value.selectedDateRange.first?.atStartOfDay(ZoneId.systemDefault())
-//                    ?.toInstant()?.toString()
-//            val timeEnd = state.value.selectedDateRange.second?.atTime(23, 59, 59)
-//                ?.atZone(ZoneId.systemDefault())?.toInstant()?.toString()
-//            val operationType = when (val type = state.value.selectedOperationType) {
-//                is OperationTypeFilter.All -> null
-//                is OperationTypeFilter.Specific -> when (type.type) {
-//                    OperationType.REPLENISHMENT -> "replenishment"
-//                    OperationType.WITHDRAWAL -> "withdrawal"
-//                    OperationType.TRANSFER -> "transfer"
-//                    OperationType.LOAN_REPAYMENT -> "loan_payment"
-//                }
-//            }
-//            when (val result = getOperationsByAccountUseCase(
-//                accountId,
-//                defaultPageable,
-//                timeStart,
-//                timeEnd,
-//                operationType
-//            )) {
-//                is RequestResult.Success -> {
-//                    _state.update {
-//                        it.copy(
-//                            operations = result.data.content,
-//                            currentPage = result.data.number,
-//                            totalPages = result.data.totalPages,
-//                            isLoading = false
-//                        )
-//                    }
-//                }
-//
-//                is RequestResult.Error -> {
-//                    _state.update { it.copy(isLoading = false) }
-//                }
-//
-//                is RequestResult.NoInternetConnection -> {
-//                    _state.update { it.copy(isLoading = false) }
-//                }
-//            }
-//        }
-//    }
-
-//    fun loadNextPage() {
-//        viewModelScope.launch {
-//            val currentPage = state.value.currentPage
-//            val totalPages = state.value.totalPages
-//            if (currentPage + 1 >= totalPages || state.value.isLoading) return@launch
-//
-//            _state.update { it.copy(isLoading = true) }
-//            val accountId = state.value.accountId
-//            val nextPageable = defaultPageable.copy(page = currentPage + 1)
-//            val timeStart =
-//                state.value.selectedDateRange.first?.atStartOfDay(ZoneId.systemDefault())
-//                    ?.toInstant()?.toString()
-//            val timeEnd = state.value.selectedDateRange.second?.atTime(23, 59, 59)
-//                ?.atZone(ZoneId.systemDefault())?.toInstant()?.toString()
-//            val operationType = when (val type = state.value.selectedOperationType) {
-//                is OperationTypeFilter.All -> null
-//                is OperationTypeFilter.Specific -> when (type.type) {
-//                    OperationType.REPLENISHMENT -> "replenishment"
-//                    OperationType.WITHDRAWAL -> "withdrawal"
-//                    OperationType.TRANSFER -> "transfer"
-//                    OperationType.LOAN_REPAYMENT -> "loan_payment"
-//                }
-//            }
-//            when (val result = getOperationsByAccountUseCase(
-//                accountId,
-//                nextPageable,
-//                timeStart,
-//                timeEnd,
-//                operationType
-//            )) {
-//                is RequestResult.Success -> {
-//                    _state.update {
-//                        val newOperations = it.operations + result.data.content
-//                        it.copy(
-//                            operations = newOperations,
-//                            currentPage = result.data.number,
-//                            isLoading = false
-//                        )
-//                    }
-//                }
-//
-//                is RequestResult.Error -> {
-//                    _state.update { it.copy(isLoading = false) }
-//                }
-//
-//                is RequestResult.NoInternetConnection -> {
-//                    _state.update { it.copy(isLoading = false) }
-//                }
-//            }
-//        }
-//    }
-
     fun showTypesSheet() {
         _state.update { it.copy(isTypesSheetVisible = true) }
     }
@@ -253,7 +137,12 @@ class AccountViewModel(
 
     fun onOperationClicked(operation: OperationShort) {
         viewModelScope.launch {
-            _navigationEvent.emit(AccountNavigationEvent.NavigateToOperationInfo(operation.id))
+            _navigationEvent.emit(
+                AccountNavigationEvent.NavigateToOperationInfo(
+                    accountId,
+                    operation.id
+                )
+            )
         }
     }
 

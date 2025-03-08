@@ -14,6 +14,7 @@ import com.example.h_bankpro.di.appModule
 import com.example.h_bankpro.di.authorizationModule
 import com.example.h_bankpro.di.networkModule
 import com.example.h_bankpro.di.operationModule
+import com.example.h_bankpro.di.tokenModule
 import com.example.h_bankpro.di.userModule
 import com.example.h_bankpro.presentation.navigation.AppNavigation
 import com.example.h_bankpro.ui.theme.HbankPROTheme
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
             androidLogger()
             androidContext(this@MainActivity)
             modules(networkModule)
+            modules(tokenModule)
             modules(authorizationModule)
             modules(appModule)
             modules(userModule)

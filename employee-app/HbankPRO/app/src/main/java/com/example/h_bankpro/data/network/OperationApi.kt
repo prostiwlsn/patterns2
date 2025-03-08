@@ -19,8 +19,9 @@ interface OperationApi {
         @Query("operationType") operationType: String? = null
     ): PageResponse<OperationShortDto>
 
-    @GET("operation/{operationId}")
+    @GET("operation/{accountId}/{operationId}")
     suspend fun getOperationInfo(
+        @Path("accountId") accountId: String,
         @Path("operationId") operationId: String,
     ): OperationDto
 }
