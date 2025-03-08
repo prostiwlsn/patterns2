@@ -83,7 +83,7 @@ public class LoanPaymentConsumer : BackgroundService
         if (loanPayment == null)
             return;
         
-        LoanPaymentResultDto answer;
+        LoanPaymentResultMessage answer;
         
         using (var scope = _serviceScopeFactory.CreateScope())
         {
@@ -92,21 +92,9 @@ public class LoanPaymentConsumer : BackgroundService
             var loanService = new LoanService(
                 new LoanRepository(context),
                 mapper);
-
-            
-            //var loanService = scope.ServiceProvider.GetRequiredService<ILoanService>();
             
             answer = await loanService.PayForLoan(loanPayment);
         }
-
-        LoanPaymentResultMessage answerMessage = new LoanPaymentResultMessage 
-        { 
-            Success = answer.ErrorMessage == null,
-            Data = answer.ErrorMessage != null ? null : new LoanPaymentResultData 
-                { ReturnedAmount = answer.ReturnedAmount, SenderAccountId = answer.SenderAccountId },
-            ErrorMessage = answer.ErrorMessage,
-            ErrorStatusCode = answer.ErrorStatusCode
-        };
 
         // Отправка ответа
         var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
@@ -120,7 +108,7 @@ public class LoanPaymentConsumer : BackgroundService
         using (var connection = factory.CreateConnection())
         using (var channel = connection.CreateModel())
         {
-            var message = JsonSerializer.Serialize(answerMessage);
+            var message = JsonSerializer.Serialize(answer);
             var body = Encoding.UTF8.GetBytes(message);
             
             var properties = channel.CreateBasicProperties();

@@ -1,15 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Json;
-using HITS_bank.Controllers.Dto;
-using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Services;
-using HITS_bank.Services.idk;
 using HITS_bank.Utils;
 using Microsoft.AspNetCore.Mvc;
-using RabbitMQ.Client;
 using IResult = HITS_bank.Utils.IResult;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

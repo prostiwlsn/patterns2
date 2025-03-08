@@ -45,5 +45,5 @@ public interface ILoanService
     /// <summary>
     /// Оплатить кредит
     /// </summary>
-    Task<LoanPaymentResultDto> PayForLoan(LoanPaymentDto loanPayment);
+    Task<LoanPaymentResultMessage> PayForLoan(LoanPaymentDto loanPayment);
 }

@@ -12,6 +12,8 @@ public class CreateLoanRequestDto
     
     public Guid UserId { get; set; }
     
+    public Guid AccountId { get; set; }
+    
     [Range(1, 5)]
     public int DurationInYears { get; set; }
     

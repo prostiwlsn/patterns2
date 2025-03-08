@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using System.Text.Json;
+using AutoMapper;
 using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
 using HITS_bank.Controllers.Dto.Message;
@@ -8,6 +10,7 @@ using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
 using HITS_bank.Utils;
 using Microsoft.Extensions.Logging.Abstractions;
+using RabbitMQ.Client;
 using IResult = HITS_bank.Utils.IResult;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -21,11 +24,20 @@ public class LoanService : ILoanService
 {
     private readonly ILoanRepository _loanRepository;
     private readonly IMapper _mapper;
-
+    private readonly string _amqpConnectionString;
+    private readonly string _getLoanExchange;
+    
     public LoanService(ILoanRepository loanRepository, IMapper mapper)
     {
         _loanRepository = loanRepository;
         _mapper = mapper;
+        
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        
+        _amqpConnectionString = configurationRoot.GetSection("ConnectionStrings")["BusConnection"] ?? throw new InvalidOperationException();
+        _getLoanExchange = configurationRoot.GetSection("Exchanges")["GetLoan"] ?? throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -104,9 +116,48 @@ public class LoanService : ILoanService
 
         await _loanRepository.AddLoan(loanEntity);
 
+        // Отправка суммы кредита на счет
+        SendMoney(new GetLoanDto
+        {
+            Amount = loanEntity.Amount,
+            AccountId = createLoanRequest.AccountId,
+        });
+        
         return new Success();
     }
 
+    /// <summary>
+    /// Отправка суммы кредита на счет
+    /// </summary>
+    private void SendMoney(GetLoanDto getLoanMessage)
+    {
+        var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
+        
+        using (var connection = factory.CreateConnection())
+        using (var channel = connection.CreateModel())
+        {
+            channel.ExchangeDeclare(exchange: _getLoanExchange, type: ExchangeType.Direct, durable: true);
+
+            var queueName = "GetLoan";
+            var routingKey = "GetLoan";
+            channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false);
+            channel.QueueBind(queue: queueName,
+                exchange: _getLoanExchange,
+                routingKey: routingKey);
+            
+            var message = JsonSerializer.Serialize(getLoanMessage);
+            var body = Encoding.UTF8.GetBytes(message);
+            
+            var properties = channel.CreateBasicProperties();
+            properties.Persistent = true;
+
+            channel.BasicPublish(exchange: _getLoanExchange,
+                routingKey: routingKey,
+                basicProperties: properties,
+                body: body);
+        }
+    }
+    
     /// <summary>
     /// Получение списка кредитов пользователя
     /// </summary>
@@ -144,16 +195,20 @@ public class LoanService : ILoanService
     /// <summary>
     /// Оплатить кредит
     /// </summary>
-    public async Task<LoanPaymentResultDto> PayForLoan(LoanPaymentDto loanPayment)
+    public async Task<LoanPaymentResultMessage> PayForLoan(LoanPaymentDto loanPayment)
     {
         // Получение кредита
         LoanEntity? loan = await _loanRepository.GetLoan(loanPayment.RecipientAccountId);
 
         if (loan == null)
-            return new LoanPaymentResultDto
+            return new LoanPaymentResultMessage
             {
-                SenderAccountId = loanPayment.SenderAccountId,
-                ReturnedAmount = loanPayment.Amount,
+                Success = false,
+                Data = new LoanPaymentResultData
+                {
+                    SenderAccountId = loanPayment.SenderAccountId,
+                    ReturnedAmount = loanPayment.Amount,
+                },
                 ErrorMessage = "Loan not found",
                 ErrorStatusCode = StatusCodes.Status404NotFound,
             };
@@ -169,23 +224,39 @@ public class LoanService : ILoanService
         {
             var returnAmount = loanPayment.Amount - debtPayment;
 
-            return new LoanPaymentResultDto
+            return new LoanPaymentResultMessage
             {
-                SenderAccountId = loanPayment.SenderAccountId,
-                ReturnedAmount = returnAmount,
+                Success = true,
+                Data = new LoanPaymentResultData
+                {
+                    SenderAccountId = loanPayment.SenderAccountId,
+                    ReturnedAmount = returnAmount,
+                },
             };
         }
         if (result is Error error)
         {
-            return new LoanPaymentResultDto
+            return new LoanPaymentResultMessage
             {
+                Success = false,
+                Data = new LoanPaymentResultData
+                {
+                    SenderAccountId = loanPayment.SenderAccountId,
+                    ReturnedAmount = loanPayment.Amount,
+                },
                 ErrorMessage = error.Message,
                 ErrorStatusCode = error.StatusCode,
             };
         }
         
-        return new LoanPaymentResultDto
+        return new LoanPaymentResultMessage
         {
+            Success = false,
+            Data = new LoanPaymentResultData
+            {
+                SenderAccountId = loanPayment.SenderAccountId,
+                ReturnedAmount = loanPayment.Amount,
+            },
             ErrorMessage = "Что-то пошло не так",
             ErrorStatusCode = StatusCodes.Status500InternalServerError,
         };
