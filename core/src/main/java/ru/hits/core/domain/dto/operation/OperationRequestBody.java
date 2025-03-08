@@ -2,12 +2,14 @@ package ru.hits.core.domain.dto.operation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.hits.core.domain.enums.OperationTypeEnum;
 
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
 public class OperationRequestBody {
 
     @Schema(description = "Идентификатор счёта отправителя (может быть null, если это пополнение)",
