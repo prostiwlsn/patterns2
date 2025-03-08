@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FloatInputField(
     @StringRes labelRes: Int,
@@ -27,39 +31,24 @@ fun FloatInputField(
     @StringRes errorMessageRes: Int? = null
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(labelRes),
-            fontSize = 13.sp,
-            color = Color(0xFF282A31).copy(alpha = 0.6f),
-            fontWeight = FontWeight.Normal
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        BasicTextField(
+        OutlinedTextField(
             value = value,
             onValueChange = { text ->
-                val filteredText = text.filter { char ->
-                    char.isDigit() || char == '.'
-                }.let { filtered ->
-                    if (filtered.count { it == '.' } <= 1) filtered else filtered.replaceAfterLast(
-                        '.',
-                        ""
-                    )
-                }
-                val floatValue = filteredText.toFloatOrNull()
-                if (floatValue == null || floatValue in 0.0f..100.0f) {
-                    onValueChange(filteredText)
-                }
+                onValueChange(text)
             },
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 color = Color(0xFF282A31),
                 fontWeight = FontWeight.Medium
             ),
+            label = { Text(stringResource(id = labelRes)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = Color(0xFF282A31).copy(alpha = 0.6f),
+                unfocusedLabelColor = Color(0xFF282A31).copy(alpha = 0.6f),
+            )
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        HorizontalDivider(color = Color(0xFF282A31).copy(alpha = 0.06f))
         if (errorMessageRes != null) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(

@@ -2,10 +2,12 @@ package com.example.h_bankpro.presentation.rateCreation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,29 +59,35 @@ fun RateCreationScreen(
         TextInputField(
             labelRes = R.string.title,
             value = state.name,
+            isNumberInput = false,
             onValueChange = { viewModel.onNameChange(it) }
         )
         Spacer(modifier = Modifier.height(6.dp))
         FloatInputField(
             labelRes = R.string.rate_in_percent,
-            value = if (state.interestRate != 0.0f) state.interestRate.toString() else "",
+            value = state.interestRate,
             onValueChange = { text ->
-                val floatValue = text.toFloatOrNull() ?: 0.0f
-                viewModel.onRateChange(floatValue)
+                viewModel.onRateChange(text)
             }
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextInputField(
             labelRes = R.string.description,
             value = state.description,
+            isNumberInput = false,
             onValueChange = { viewModel.onDescriptionChange(it) }
         )
         Spacer(modifier = Modifier.weight(1f))
-        CustomDisablableButton(
-            onClick = viewModel::onCreateClicked,
-            textRes = R.string.create,
-            enabled = state.areFieldsValid
-        )
-        Spacer(modifier = Modifier.height(32.dp))
+
+        Box(
+            modifier = Modifier.imePadding()
+        ) {
+            CustomDisablableButton(
+                onClick = viewModel::onCreateClicked,
+                textRes = R.string.create,
+                enabled = state.areFieldsValid
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+        }
     }
 }

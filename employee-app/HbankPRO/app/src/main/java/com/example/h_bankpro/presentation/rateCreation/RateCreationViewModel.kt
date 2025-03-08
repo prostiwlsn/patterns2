@@ -16,9 +16,13 @@ class RateCreationViewModel : ViewModel() {
     private val _navigationEvent = MutableSharedFlow<RateCreationNavigationEvent>()
     val navigationEvent: SharedFlow<RateCreationNavigationEvent> = _navigationEvent
 
-    fun onRateChange(rate: Float) {
-        _state.update { it.copy(interestRate = rate) }
-        validateFields()
+    fun onRateChange(rate: String) {
+        val rateValue = rate.toDoubleOrNull()
+
+        if (rateValue != null && rateValue < 100 || rate.isEmpty()) {
+            _state.update { it.copy(interestRate = rate) }
+            validateFields()
+        }
     }
 
     fun onNameChange(name: String) {
@@ -38,7 +42,7 @@ class RateCreationViewModel : ViewModel() {
     private fun validateFields() {
         _state.update {
             it.copy(
-                areFieldsValid = _state.value.interestRate > 0 &&
+                areFieldsValid = _state.value.interestRate.isNotBlank() &&
                         _state.value.name.isNotBlank() &&
                         _state.value.description.isNotBlank()
             )
