@@ -99,6 +99,7 @@ fun LoanProcessingScreen(
             NumberInputField(
                 labelRes = R.string.loan_amount,
                 value = state.amount?.toString().orEmpty(),
+                error = state.fieldErrors?.amountError,
                 suffix = " ₽",
                 onValueChange = { viewModel.onAmountChange(it) }
             )
@@ -106,6 +107,7 @@ fun LoanProcessingScreen(
             NumberInputField(
                 labelRes = R.string.term,
                 value = state.term?.toString().orEmpty(),
+                error = state.fieldErrors?.durationError,
                 suffix = " лет",
                 onValueChange = { viewModel.onTermChange(it) }
             )

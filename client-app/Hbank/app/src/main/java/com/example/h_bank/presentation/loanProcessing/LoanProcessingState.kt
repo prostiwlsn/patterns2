@@ -1,6 +1,7 @@
 package com.example.h_bank.presentation.loanProcessing
 
 import com.example.h_bank.data.Rate
+import com.example.h_bank.presentation.loanProcessing.model.LoanProcessingErrorModel
 
 data class LoanProcessingState(
     val rateName: String = "",
@@ -12,8 +13,9 @@ data class LoanProcessingState(
     val selectedRate: Rate = Rate("1", "Тариф  1",10f),
     val amount: Int? = null,
     val term: Int? = null,
-    val interestRate: Float = 0f,
-    val dailyPayment: Int = 1,
+    val interestRate: Float? = null,
+    val dailyPayment: Int? = null,
     val areFieldsValid: Boolean = false,
-    val isRatesSheetVisible: Boolean = false
+    val isRatesSheetVisible: Boolean = false,
+    val fieldErrors: LoanProcessingErrorModel? = null,
 )

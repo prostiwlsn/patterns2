@@ -31,6 +31,7 @@ fun NumberInputField(
     value: String,
     suffix: String = "",
     defaultValue: String = "",
+    error: String? = null,
     onValueChange: (String) -> Unit,
     @StringRes errorMessageRes: Int? = null
 ) {
@@ -46,6 +47,8 @@ fun NumberInputField(
                 color = Color(0xFF282A31),
                 fontWeight = FontWeight.Medium
             ),
+            isError = error != null,
+            supportingText = { Text(error.orEmpty()) },
             placeholder = { Text(defaultValue) },
             label = { Text(stringResource(labelRes)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

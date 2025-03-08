@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import com.example.h_bank.di.accountModule
 import com.example.h_bank.di.appModule
 import com.example.h_bank.di.authorizationModule
+import com.example.h_bank.di.loanModule
 import com.example.h_bank.di.logoutModule
 import com.example.h_bank.di.operationModule
 import com.example.h_bank.di.tokenModule
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
             modules(userModule)
             modules(tokenModule)
             modules(logoutModule)
+            modules(loanModule)
         }
         enableEdgeToEdge()
         setContent {
