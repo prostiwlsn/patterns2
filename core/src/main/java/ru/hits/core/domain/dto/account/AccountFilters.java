@@ -13,4 +13,6 @@ public class AccountFilters {
     @Schema(name = "Идентификатор пользователя")
     private UUID userId;
 
+    private Boolean isDeleted;
+
 }

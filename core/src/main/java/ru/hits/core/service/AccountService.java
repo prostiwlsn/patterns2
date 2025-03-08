@@ -15,7 +15,7 @@ public interface AccountService {
 
     AccountDTO deleteAccount(UUID userId, UUID accountId);
 
-    List<AccountDTO> getAccounts(UUID myUserId, UUID userId) throws JsonProcessingException;
+    List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted) throws JsonProcessingException;
 
     List<AccountDTO> getAccounts(AccountFilters request);
 
