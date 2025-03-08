@@ -59,8 +59,8 @@ fun LoansBlock(
         ) {
             Column {
                 val itemsToShow = loans.take(2)
-                itemsToShow.forEachIndexed { index, credit ->
-                    LoanItem(loan = credit, onClick = { onItemClick(credit) })
+                itemsToShow.forEachIndexed { index, loan ->
+                    LoanItem(loan = loan, onClick = { onItemClick(loan) })
                     if (index < itemsToShow.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),

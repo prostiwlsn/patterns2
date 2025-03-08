@@ -52,7 +52,13 @@ fun MainScreen(
                     navController.navigate("user_creation")
 
                 is MainNavigationEvent.NavigateToRate ->
-                    navController.navigate("rate")
+                    navController.navigate(
+                        "rate" +
+                                "/${event.rateId}" +
+                                "/${event.name}" +
+                                "/${event.interestRate}" +
+                                "/${event.description}"
+                    )
 
                 MainNavigationEvent.NavigateToWelcome ->
                     navController.navigate("welcome") {

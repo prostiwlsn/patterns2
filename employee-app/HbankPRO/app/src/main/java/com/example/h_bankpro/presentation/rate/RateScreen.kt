@@ -32,7 +32,13 @@ fun RateScreen(
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is RateNavigationEvent.NavigateToRateEditing ->
-                    navController.navigate("rate_editing")
+                    navController.navigate(
+                        "rate_editing" +
+                                "/${event.rateId}" +
+                                "/${event.name}" +
+                                "/${event.interestRate}" +
+                                "/${event.description}"
+                    )
 
                 RateNavigationEvent.NavigateBack -> navController.popBackStack()
             }

@@ -32,7 +32,9 @@ fun AppNavigation() {
         navController = navController,
         startDestination = "launch"
     ) {
-        composable("launch") { LaunchScreen(navController) }
+        composable("launch") {
+            LaunchScreen(navController)
+        }
         composable("welcome") {
             WelcomeScreen(navController)
         }
@@ -45,10 +47,27 @@ fun AppNavigation() {
         composable("main") {
             MainScreen(navController)
         }
-        composable("rate") {
+        composable(
+            route = "rate/{rateId}/{name}/{interestRate}/{description}",
+            arguments = listOf(
+                navArgument("rateId") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType },
+                navArgument("interestRate") { type = NavType.StringType },
+                navArgument("description") { type = NavType.StringType },
+            )
+        ) {
             RateScreen(navController)
         }
-        composable("loan") {
+        composable(
+            route = "loan/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
+            arguments = listOf(
+                navArgument("documentNumber") { type = NavType.StringType },
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("endDate") { type = NavType.StringType },
+                navArgument("ratePercent") { type = NavType.StringType },
+                navArgument("debt") { type = NavType.StringType },
+            )
+        ) {
             LoanScreen(navController)
         }
         composable(
@@ -71,10 +90,20 @@ fun AppNavigation() {
         composable("successful_rate_creation") {
             SuccessfulRateCreationScreen(navController)
         }
-        composable("successful_rate_editing") {
+        composable(
+            "successful_rate_editing"
+        ) {
             SuccessfulRateEditingScreen(navController)
         }
-        composable("rate_editing") {
+        composable(
+            route = "rate_editing/{rateId}/{name}/{interestRate}/{description}",
+            arguments = listOf(
+                navArgument("rateId") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType },
+                navArgument("interestRate") { type = NavType.StringType },
+                navArgument("description") { type = NavType.StringType },
+            )
+        ) {
             RateEditingScreen(navController)
         }
         composable(

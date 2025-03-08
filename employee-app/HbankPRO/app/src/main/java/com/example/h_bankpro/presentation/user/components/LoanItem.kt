@@ -34,17 +34,19 @@ fun LoanItem(
     ) {
         Column {
             Text(
-//                text = "Договор № " + loan.documentNumber.toString(),
-                text = "",
+                text = "Договор № " + loan.documentNumber.toString(),
                 fontSize = 14.sp,
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = loan.amount.toString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = loan.amount.toString() + " ₽",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
         Text(
-//            text = "до " + loan.endDate.format(formatter),
-            text = "",
+            text = "до " + loan.endDate.format(formatter),
             fontSize = 12.sp,
             color = Color.Gray,
             modifier = Modifier

@@ -22,7 +22,7 @@ interface LoanApi {
     @POST("/api/loan/tariff")
     suspend fun createTariff(
         @Body request: TariffRequestDto
-    ): TariffDto
+    )
 
     @DELETE("/api/loan/tariff")
     suspend fun deleteTariff(
@@ -33,7 +33,7 @@ interface LoanApi {
     suspend fun updateTariff(
         @Query("tariffId") tariffId: String,
         @Body request: TariffRequestDto
-    ): TariffDto
+    )
 
     @GET("/api/loan/{userId}/list")
     suspend fun getUserLoans(

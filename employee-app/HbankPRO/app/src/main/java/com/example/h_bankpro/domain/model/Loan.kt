@@ -1,12 +1,13 @@
 package com.example.h_bankpro.domain.model
 
-import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
-@Serializable
 data class Loan(
     val id: String,
-    val userId: String,
-    val tariffId: String,
+    val documentNumber: Int,
     val amount: Double,
-    val status: String
+    val debt: Double,
+    val ratePercent: Double,
+    val issueDate: LocalDate,
+    val endDate: LocalDate
 )

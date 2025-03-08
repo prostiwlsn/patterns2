@@ -1,23 +1,34 @@
 package com.example.h_bankpro.data.dto
 
 import com.example.h_bankpro.domain.model.Loan
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
+import java.time.ZoneId
 
 @Serializable
 data class LoanDto(
     val id: String,
-    val userId: String,
-    val tariffId: String,
+    val documentNumber: Int,
     val amount: Double,
-    val status: String
+    val debt: Double,
+    val ratePercent: Double,
+    val issueDate: Instant,
+    val endDate: Instant,
 )
 
 internal fun LoanDto.toDomain(): Loan {
     return Loan(
         id = id,
-        userId = userId,
-        tariffId = tariffId,
+        documentNumber = documentNumber,
         amount = amount,
-        status = status
+        debt = debt,
+        ratePercent = ratePercent,
+        issueDate = issueDate.toJavaInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate(),
+        endDate = endDate.toJavaInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
     )
 }

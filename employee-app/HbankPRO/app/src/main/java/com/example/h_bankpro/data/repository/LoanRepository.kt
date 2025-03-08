@@ -8,12 +8,11 @@ import com.example.h_bankpro.data.network.LoanApi
 import com.example.h_bankpro.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.repository.ILoanRepository
-import com.example.h_bankpro.domain.repository.IOperationRepository
 
 class LoanRepository(
     private val loanApi: LoanApi
 ) : ILoanRepository {
-    override suspend fun createTariff(request: TariffRequestDto): RequestResult<TariffDto> {
+    override suspend fun createTariff(request: TariffRequestDto): RequestResult<Unit> {
         return runResultCatching { loanApi.createTariff(request) }
     }
 
@@ -31,7 +30,7 @@ class LoanRepository(
     override suspend fun updateTariff(
         tariffId: String,
         request: TariffRequestDto
-    ): RequestResult<TariffDto> {
+    ): RequestResult<Unit> {
         return runResultCatching { loanApi.updateTariff(tariffId, request) }
     }
 

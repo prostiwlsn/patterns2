@@ -62,10 +62,9 @@ fun RateEditingScreen(
         Spacer(modifier = Modifier.height(6.dp))
         FloatInputField(
             labelRes = R.string.rate_in_percent,
-            value = if (state.interestRate != 0.0f) state.interestRate.toString() else "",
-            onValueChange = { text ->
-                val floatValue = text.toFloatOrNull() ?: 0.0f
-                viewModel.onRateChange(floatValue)
+            value = state.interestRate.toString(),
+            onValueChange = {
+                viewModel.onRateChange(it.toDouble())
             }
         )
         Spacer(modifier = Modifier.height(6.dp))

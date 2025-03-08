@@ -13,32 +13,6 @@ data class MainState(
     val tariffsFlow: Flow<PagingData<Tariff>> = MutableStateFlow(PagingData.empty()),
     val users: List<User> = emptyList(),
     val currentUserId: String = "",
-    val rates: List<Rate> = listOf(
-        Rate(
-            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-            name = "Ставка А",
-            interestRate = 5.75f,
-            description = "Базовая ставка для новых клиентов"
-        ),
-        Rate(
-            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-            name = "Ставка А",
-            interestRate = 5.75f,
-            description = "Базовая ставка для новых клиентов"
-        ),
-        Rate(
-            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-            name = "Ставка А",
-            interestRate = 5.75f,
-            description = "Базовая ставка для новых клиентов"
-        ),
-        Rate(
-            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-            name = "Ставка А",
-            interestRate = 5.75f,
-            description = "Базовая ставка для новых клиентов"
-        ),
-    ),
     val isUsersSheetVisible: Boolean = false,
     val isTariffsSheetVisible: Boolean = false,
     val isLoading: Boolean = false

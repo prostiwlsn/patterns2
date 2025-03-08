@@ -49,31 +49,27 @@ fun LoanScreen(
         Spacer(modifier = Modifier.height(40.dp))
         LoanHeader(
             onBackClick = { viewModel.onBackClicked() },
-//            documentNumber = state.loan.documentNumber.toString()
-            documentNumber = ""
+            documentNumber = state.documentNumber.toString()
         )
         Spacer(modifier = Modifier.height(37.dp))
         TextField(
             labelRes = R.string.loan_amount,
-            value = state.loan.amount.toString() + " ₽",
+            value = state.amount.toString() + " ₽",
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.due_date,
-//            value = state.loan.endDate.format(formatter).toString(),
-            value = "",
+            value = state.endDate.format(formatter).toString(),
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.interest_rate,
-//            value = state.loan.ratePercent.toString() + " %",
-            value = ""
+            value = state.ratePercent.toString() + " %"
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.debt,
-//            value = state.loan.debt.toString() + " ₽",
-            value = ""
+            value = state.debt.toString() + " ₽"
         )
         Spacer(modifier = Modifier.height(32.dp))
     }

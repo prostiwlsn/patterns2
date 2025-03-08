@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.h_bankpro.R
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.presentation.user.components.AccountsBlock
@@ -33,12 +34,20 @@ fun UserScreen(
     viewModel: UserViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val lazyPagingItems = state.loansFlow.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                UserNavigationEvent.NavigateToLoan ->
-                    navController.navigate("loan")
+                is UserNavigationEvent.NavigateToLoan ->
+                    navController.navigate(
+                        "loan" +
+                                "/${event.documentNumber}" +
+                                "/${event.amount}" +
+                                "/${event.endDate}" +
+                                "/${event.ratePercent}" +
+                                "/${event.debt}"
+                    )
 
                 is UserNavigationEvent.NavigateToAccount ->
                     navController.navigate(
@@ -101,10 +110,10 @@ fun UserScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                 }
-                if (state.loans.isNotEmpty()) {
+                if (state.initialLoans.isNotEmpty()) {
                     LoansBlock(
-                        loans = state.loans,
-                        onItemClick = { viewModel.onLoanClicked() },
+                        loans = state.initialLoans,
+                        onItemClick = { viewModel.onLoanClicked(it) },
                         onSeeAllClick = { viewModel.showLoansSheet() }
                     )
                 }
@@ -133,9 +142,9 @@ fun UserScreen(
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 LoansBottomSheetContent(
-                    loans = state.loans,
+                    lazyPagingItems = lazyPagingItems,
                     onItemClick = {
-                        viewModel.onLoanClicked()
+                        viewModel.onLoanClicked(it)
                         viewModel.hideLoansSheet()
                     }
                 )

@@ -75,11 +75,13 @@ class MainViewModel(
             _state.update { it.copy(isLoading = true) }
             when (val result = getTariffListUseCase(pageNumber = 1, pageSize = 3)) {
                 is RequestResult.Success -> {
-                    _state.update { it.copy(isLoading = false, initialTariffs = result.data) }
+                    _state.update { it.copy(isLoading = false, initialTariffs = result.data.items) }
                 }
+
                 is RequestResult.Error -> {
                     _state.update { it.copy(isLoading = false) }
                 }
+
                 is RequestResult.NoInternetConnection -> {
                     _state.update { it.copy(isLoading = false) }
                 }
@@ -118,7 +120,14 @@ class MainViewModel(
 
     fun onTariffClicked(tariff: Tariff) {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToRate)
+            _navigationEvent.emit(
+                MainNavigationEvent.NavigateToRate(
+                    tariff.id,
+                    tariff.name,
+                    tariff.ratePercent.toString(),
+                    tariff.description
+                )
+            )
         }
     }
 

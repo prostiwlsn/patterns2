@@ -3,12 +3,18 @@ package com.example.h_bankpro.presentation.user
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.example.h_bankpro.data.Account
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.data.utils.RequestResult
+import com.example.h_bankpro.domain.model.Loan
 import com.example.h_bankpro.domain.useCase.BlockUserUseCase
 import com.example.h_bankpro.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bankpro.domain.useCase.GetUserByIdUseCase
+import com.example.h_bankpro.domain.useCase.GetUserLoansUseCase
 import com.example.h_bankpro.domain.useCase.UnblockUserUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,13 +22,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 
 class UserViewModel(
     savedStateHandle: SavedStateHandle,
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val blockUserUseCase: BlockUserUseCase,
-    private val unblockUserUseCase: UnblockUserUseCase
+    private val unblockUserUseCase: UnblockUserUseCase,
+    private val getUserLoansUseCase: GetUserLoansUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _state
@@ -32,8 +40,12 @@ class UserViewModel(
 
     private val userId: String = checkNotNull(savedStateHandle["userId"])
 
+    private val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
+
     init {
         loadUser()
+        loadInitialLoans()
+        setupLoansPager()
     }
 
     private fun loadUser() {
@@ -62,6 +74,34 @@ class UserViewModel(
         }
     }
 
+    private fun loadInitialLoans() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when (val result = getUserLoansUseCase(userId, pageNumber = 1, pageSize = 3)) {
+                is RequestResult.Success -> {
+                    _state.update { it.copy(isLoading = false, initialLoans = result.data.items) }
+                }
+
+                is RequestResult.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+
+                is RequestResult.NoInternetConnection -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+            }
+        }
+    }
+
+    private fun setupLoansPager() {
+        val pager = Pager(
+            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+            pagingSourceFactory = { LoansPagingSource(getUserLoansUseCase, userId) }
+        ).flow.cachedIn(viewModelScope)
+
+        _state.update { it.copy(loansFlow = pager) }
+    }
+
     fun showAccountsSheet() {
         _state.update { it.copy(isAccountsSheetVisible = true) }
     }
@@ -78,9 +118,17 @@ class UserViewModel(
         _state.update { it.copy(isLoansSheetVisible = false) }
     }
 
-    fun onLoanClicked() {
+    fun onLoanClicked(loan: Loan) {
         viewModelScope.launch {
-            _navigationEvent.emit(UserNavigationEvent.NavigateToLoan)
+            _navigationEvent.emit(
+                UserNavigationEvent.NavigateToLoan(
+                    loan.documentNumber.toString(),
+                    loan.amount.toString(),
+                    loan.endDate.format(formatter),
+                    loan.ratePercent.toString(),
+                    loan.debt.toString()
+                )
+            )
         }
     }
 

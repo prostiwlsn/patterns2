@@ -65,9 +65,9 @@ fun RateCreationScreen(
         Spacer(modifier = Modifier.height(6.dp))
         FloatInputField(
             labelRes = R.string.rate_in_percent,
-            value = state.interestRate,
+            value = state.interestRate.toString(),
             onValueChange = { text ->
-                viewModel.onRateChange(text)
+                viewModel.onRateChange(text.toDouble())
             }
         )
         Spacer(modifier = Modifier.height(6.dp))
