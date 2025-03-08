@@ -15,4 +15,12 @@ public final class AccountSpecification {
         return ((root, query, cb) -> cb.equal(root.get("userId"), userId));
     }
 
+    public static Specification<AccountEntity> isDeleted(Boolean isDeleted) {
+        if (isDeleted == null) {
+            return null;
+        }
+
+        return ((root, query, cb) -> cb.equal(root.get("isDeleted"), isDeleted));
+    }
+
 }

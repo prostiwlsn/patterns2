@@ -73,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<AccountDTO> getAccounts(UUID myUserId, UUID userId) throws JsonProcessingException {
+    public List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted) throws JsonProcessingException {
         var myUserEntity = rpcClientService.getUserInfo(
                 new UserInfoRequest(userId)
         );
@@ -84,6 +84,7 @@ public class AccountServiceImpl implements AccountService {
 
         AccountFilters request = AccountFilters.builder()
                 .userId(userId)
+                .isDeleted(isDeleted)
                 .build();
         return getAccounts(request);
     }
@@ -138,6 +139,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Specification<AccountEntity> getSpecByFilters(AccountFilters request) {
-        return Specification.where(AccountSpecification.userIdEqual(request.getUserId()));
+        return Specification.where(AccountSpecification.userIdEqual(request.getUserId()))
+                .and(AccountSpecification.isDeleted(request.getIsDeleted()));
     }
 }
