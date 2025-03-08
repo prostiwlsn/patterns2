@@ -76,7 +76,7 @@ public class AccountController {
     private List<AccountDTO> getAccounts(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("userId") UUID userId,
-            @RequestParam Boolean isDeleted
+            @RequestParam(required = false) Boolean isDeleted
     ) throws JsonProcessingException {
         return accountService.getAccounts(jwtService.getUserId(authHeader), userId, isDeleted);
     }
