@@ -264,8 +264,12 @@ public class OperationServiceImpl implements OperationService {
 
     @Transactional(readOnly = true)
     @Override
-    public OperationDTO getOperation(UUID userId, UUID operationId) throws JsonProcessingException {
-        List<UUID> accountIds = accountService.getMyAccountIds(userId);
+    public OperationDTO getOperation(
+            UUID userId,
+            UUID accountId,
+            UUID operationId
+    ) throws JsonProcessingException {
+        List<UUID> accountIds = List.of(accountId);
 
         OperationEntity operation = operationRepository.findById(operationId)
                         .orElseThrow(() -> new OperationNotFoundException(operationId));

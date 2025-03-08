@@ -24,6 +24,6 @@ public interface OperationService {
             Pageable pageable
     ) throws JsonProcessingException;
 
-    OperationDTO getOperation(UUID userId, UUID operationId) throws JsonProcessingException;
+    OperationDTO getOperation(UUID userId, UUID accountId, UUID operationId) throws JsonProcessingException;
 
 }
