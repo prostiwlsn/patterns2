@@ -78,6 +78,8 @@ public class AccountServiceImpl implements AccountService {
                 new UserInfoRequest(userId)
         );
 
+        isDeleted = isDeleted == null ? false : isDeleted;
+
         if (myUserEntity.getRoles().stream().noneMatch(r -> r.equals(RoleEnum.ADMIN) || r.equals(RoleEnum.MANAGER)) && !myUserId.equals(userId)) {
             throw new ForbiddenException();
         }
