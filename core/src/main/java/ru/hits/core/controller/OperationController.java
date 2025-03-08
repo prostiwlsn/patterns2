@@ -68,12 +68,13 @@ public class OperationController {
             summary = "Полная операция по счету",
             description = "Позволяет пользователю посмотреть полную операцию по счету"
     )
-    @GetMapping("/{operationId}")
+    @GetMapping("/{accountId}/{operationId}")
     private OperationDTO getOperation(
             @RequestHeader("Authorization") String authHeader,
+            @PathVariable("accountId") UUID accountId,
             @PathVariable("operationId") UUID operationId
     ) throws JsonProcessingException {
-        return operationService.getOperation(jwtService.getUserId(authHeader), operationId);
+        return operationService.getOperation(jwtService.getUserId(authHeader), accountId, operationId);
     }
 
 }
