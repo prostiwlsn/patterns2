@@ -9,4 +9,5 @@ sealed class RateNavigationEvent {
     ) : RateNavigationEvent()
 
     data object NavigateBack : RateNavigationEvent()
+    data object NavigateToSuccessfulRateDeletion : RateNavigationEvent()
 }

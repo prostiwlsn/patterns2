@@ -11,6 +11,7 @@ import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateC
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingViewModel
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationViewModel
 import com.example.h_bankpro.presentation.operationInfo.OperationInfoViewModel
+import com.example.h_bankpro.presentation.successfulRateDeletion.SuccessfulRateDeletionViewModel
 import com.example.h_bankpro.presentation.user.UserViewModel
 import com.example.h_bankpro.presentation.userCreation.UserCreationViewModel
 import com.example.h_bankpro.presentation.welcome.WelcomeViewModel
@@ -23,8 +24,9 @@ val appModule = module {
     viewModel { RateCreationViewModel(get()) }
     viewModel { SuccessfulRateCreationViewModel() }
     viewModel { SuccessfulRateEditingViewModel() }
+    viewModel { SuccessfulRateDeletionViewModel() }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        RateViewModel(savedStateHandle)
+        RateViewModel(savedStateHandle, get())
     }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         RateEditingViewModel(savedStateHandle, get())

@@ -20,6 +20,7 @@ import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateC
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingScreen
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationScreen
 import com.example.h_bankpro.presentation.operationInfo.OperationInfoScreen
+import com.example.h_bankpro.presentation.successfulRateDeletion.SuccessfulRateDeletionScreen
 import com.example.h_bankpro.presentation.user.UserScreen
 import com.example.h_bankpro.presentation.userCreation.UserCreationScreen
 import com.example.h_bankpro.presentation.welcome.WelcomeScreen
@@ -83,6 +84,9 @@ fun AppNavigation() {
         }
         composable("successful_user_creation") {
             SuccessfulUserCreationScreen(navController)
+        }
+        composable("successful_rate_deletion") {
+            SuccessfulRateDeletionScreen(navController)
         }
         composable("rate_creation") {
             RateCreationScreen(navController)

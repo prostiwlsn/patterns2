@@ -41,6 +41,9 @@ fun RateScreen(
                     )
 
                 RateNavigationEvent.NavigateBack -> navController.popBackStack()
+                RateNavigationEvent.NavigateToSuccessfulRateDeletion -> navController.navigate(
+                    "successful_rate_deletion"
+                )
             }
         }
     }

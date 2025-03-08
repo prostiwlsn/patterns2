@@ -32,6 +32,8 @@
     <string name="to_main">На главную</string>
     <string name="successful_rate_creation">Тариф успешно
     создан</string>
+    <string name="successful_rate_deletion">Тариф успешно
+    удалён</string>
     <string name="successful_user_creation">Пользователь
         успешно создан</string>
     <string name="successful_rate_editing">Тариф успешно
