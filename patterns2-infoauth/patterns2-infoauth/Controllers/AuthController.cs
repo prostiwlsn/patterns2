@@ -52,7 +52,6 @@ namespace patterns2_infoauth.Controllers
         }
 
         [HttpPost("/refresh")]
-        [Authorize(Policy = "IsBlocked")]
         public async Task<IActionResult> Refresh()
         {
             var type = User.FindFirstValue("type");
