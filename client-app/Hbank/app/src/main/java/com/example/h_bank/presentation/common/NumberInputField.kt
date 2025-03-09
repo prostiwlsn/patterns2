@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
@@ -29,6 +30,7 @@ import com.example.h_bank.R
 fun NumberInputField(
     @StringRes labelRes: Int,
     value: String,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     suffix: String = "",
     defaultValue: String = "",
     error: String? = null,
@@ -38,6 +40,7 @@ fun NumberInputField(
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
             value = value,
+            visualTransformation = visualTransformation,
             onValueChange = { text ->
                 onValueChange(text.filter { it.isDigit() })
             },

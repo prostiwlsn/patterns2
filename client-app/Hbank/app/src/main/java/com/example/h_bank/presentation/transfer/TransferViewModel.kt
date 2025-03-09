@@ -1,8 +1,6 @@
 package com.example.h_bank.presentation.transfer
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
@@ -61,17 +59,17 @@ class TransferViewModel(
         val amountValue = amountInput.toDoubleOrNull()
 
         if (amountValue != null || amountInput.isEmpty()) {
-            _state.update { it.copy(amount = amountValue) }
+            _state.update { it.copy(amount = amountInput) }
         }
-
-        _state.update { it.copy(amount = amountValue) }
         validateFields()
     }
 
     fun onBeneficiaryAccountIdChange(accountNumber: String) {
-        val formattedAccountNumber = formatAccountNumber(accountNumber)
-        _state.update { it.copy(beneficiaryAccountNumber = formattedAccountNumber) }
-        validateFields()
+        if (accountNumber.length <= 16) {
+            //           val formattedAccountNumber = formatAccountNumber(accountNumber)
+            _state.update { it.copy(beneficiaryAccountNumber = accountNumber) }
+            validateFields()
+        }
     }
 
     fun onCommentChange(comment: String) {
@@ -106,7 +104,9 @@ class TransferViewModel(
     }
 
     private suspend fun getBeneficiaryAccountId(): RequestResult<String> {
-        return getAccountIdByNumberUseCase(state.value.beneficiaryAccountNumber)
+        return getAccountIdByNumberUseCase(
+            formatAccountNumber(state.value.beneficiaryAccountNumber)
+        )
     }
 
     fun onPayClicked() {
@@ -122,7 +122,7 @@ class TransferViewModel(
                     transferUseCase(
                         state.value.selectedAccount?.id ?: "",
                         beneficiaryAccountId,
-                        it,
+                        it.toDoubleOrNull() ?: 0.0,
                         state.value.comment
                     ).onSuccess {
                         _navigationEvent.emit(

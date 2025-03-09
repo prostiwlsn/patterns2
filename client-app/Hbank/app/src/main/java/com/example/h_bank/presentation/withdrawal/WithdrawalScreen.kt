@@ -92,10 +92,10 @@ fun WithdrawalScreen(
                 Spacer(modifier = Modifier.height(6.dp))
                 NumberInputField(
                     labelRes = R.string.amount,
-                    value = state.amount.toString(),
+                    value = state.amount.orEmpty(),
                     suffix = " ₽",
                     onValueChange = { viewModel.onAmountChange(it) },
-                    errorMessageRes = if ((state.amount
+                    errorMessageRes = if ((state.amount?.toDoubleOrNull()
                             ?: 0.0) > (state.selectedAccount?.balance ?: 0.0)
                     )
                         R.string.not_enough_money else null

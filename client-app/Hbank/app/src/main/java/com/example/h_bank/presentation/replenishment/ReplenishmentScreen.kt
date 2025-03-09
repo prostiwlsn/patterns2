@@ -92,7 +92,7 @@ fun ReplenishmentScreen(
                 Spacer(modifier = Modifier.height(6.dp))
                 NumberInputField(
                     labelRes = R.string.amount,
-                    value = state.amount.toString(),
+                    value = state.amount.orEmpty(),
                     suffix = " ₽",
                     onValueChange = { viewModel.onAmountChange(it) }
                 )

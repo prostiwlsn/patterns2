@@ -58,10 +58,8 @@ class ReplenishmentViewModel(
         val amountValue = amountInput.toDoubleOrNull()
 
         if (amountValue != null || amountInput.isEmpty()) {
-            _state.update { it.copy(amount = amountValue) }
+            _state.update { it.copy(amount = amountInput) }
         }
-
-        _state.update { it.copy(amount = amountValue) }
         validateFields()
     }
 
@@ -96,7 +94,7 @@ class ReplenishmentViewModel(
             state.value.amount?.let {
                 replenishUseCase(
                     state.value.selectedAccount?.id ?: "",
-                    it
+                    it.toDoubleOrNull() ?: 0.0
                 ).onSuccess {
                     _navigationEvent.emit(
                         ReplenishmentNavigationEvent.NavigateToSuccessfulReplenishment(

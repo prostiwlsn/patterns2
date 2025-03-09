@@ -24,7 +24,7 @@ val networkModule = module {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-            .addInterceptor(AuthInterceptor(get()))
+            .addInterceptor(AuthInterceptor(get(), get()))
             .build()
     }
 

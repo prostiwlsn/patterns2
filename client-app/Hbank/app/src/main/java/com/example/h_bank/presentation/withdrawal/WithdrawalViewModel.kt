@@ -57,11 +57,9 @@ class WithdrawalViewModel(
         val amountValue = amountInput.toDoubleOrNull()
 
         if (amountValue != null || amountInput.isEmpty()) {
-            _state.update { it.copy(amount = amountValue) }
+            _state.update { it.copy(amount = amountInput) }
+            validateFields()
         }
-
-        _state.update { it.copy(amount = amountValue) }
-        validateFields()
     }
 
     fun onBackClicked() {
@@ -95,7 +93,7 @@ class WithdrawalViewModel(
             state.value.amount?.let {
                 withdrawUseCase(
                     state.value.selectedAccount?.id ?: "",
-                    it
+                    it.toDoubleOrNull() ?: 0.0
                 ).onSuccess {
                     _navigationEvent.emit(
                         WithdrawalNavigationEvent.NavigateToSuccessfulWithdrawal(

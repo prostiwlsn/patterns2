@@ -4,7 +4,7 @@ import com.example.h_bank.data.Account
 
 data class TransferState(
     val accounts: List<Account> = emptyList(),
-    val amount: Double? = null,
+    val amount: String? = null,
     val beneficiaryAccountNumber: String = "",
     val beneficiaryAccountId: String = "",
     val comment: String? = null,
