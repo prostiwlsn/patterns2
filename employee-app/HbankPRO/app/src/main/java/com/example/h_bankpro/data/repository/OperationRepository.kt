@@ -8,6 +8,8 @@ import com.example.h_bankpro.data.network.OperationApi
 import com.example.h_bankpro.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.repository.IOperationRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class OperationRepository(
     private val api: OperationApi,
@@ -18,8 +20,8 @@ class OperationRepository(
         timeStart: String?,
         timeEnd: String?,
         operationType: String?
-    ): RequestResult<PageResponse<OperationShortDto>> {
-        return runResultCatching {
+    ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
             api.getOperationsByAccount(
                 accountId,
                 pageable.page,
@@ -35,8 +37,8 @@ class OperationRepository(
     override suspend fun getOperationInfo(
         accountId: String,
         operationId: String
-    ): RequestResult<OperationDto> {
-        return runResultCatching {
+    ): RequestResult<OperationDto> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
             api.getOperationInfo(accountId, operationId)
         }
     }

@@ -6,43 +6,49 @@ import com.example.h_bankpro.data.network.UserApi
 import com.example.h_bankpro.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.repository.IUserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class UserRepository(
     private val api: UserApi,
 ) : IUserRepository {
-    override suspend fun getUsers(): RequestResult<List<UserDto>> {
-        return runResultCatching {
+    override suspend fun getUsers(): RequestResult<List<UserDto>> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
             api.getUsers()
         }
     }
 
-    override suspend fun getCurrentUser(): RequestResult<UserDto> {
-        return runResultCatching {
+    override suspend fun getCurrentUser(): RequestResult<UserDto> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
             api.getCurrentUser()
         }
     }
 
-    override suspend fun getUserById(userId: String): RequestResult<UserDto> {
-        return runResultCatching {
-            api.getUserById(userId)
+    override suspend fun getUserById(userId: String): RequestResult<UserDto> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching {
+                api.getUserById(userId)
+            }
         }
-    }
 
-    override suspend fun blockUser(userId: String): RequestResult<Unit> {
-        return runResultCatching {
-            api.blockUser(userId)
+    override suspend fun blockUser(userId: String): RequestResult<Unit> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching {
+                api.blockUser(userId)
+            }
         }
-    }
 
-    override suspend fun unblockUser(userId: String): RequestResult<Unit> {
-        return runResultCatching {
-            api.unblockUser(userId)
+    override suspend fun unblockUser(userId: String): RequestResult<Unit> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching {
+                api.unblockUser(userId)
+            }
         }
-    }
 
-    override suspend fun createUser(request: UserCreationDto): RequestResult<Unit> {
-        return runResultCatching {
-            api.createUser(request)
+    override suspend fun createUser(request: UserCreationDto): RequestResult<Unit> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching {
+                api.createUser(request)
+            }
         }
-    }
 }
