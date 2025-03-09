@@ -10,7 +10,7 @@ import java.time.ZoneId
 data class AccountDto(
     val id: String,
     val accountNumber: String,
-    val balance: Float,
+    val balance: Double,
     val userId: String,
     val isDeleted: Boolean,
     val createDateTime: Instant

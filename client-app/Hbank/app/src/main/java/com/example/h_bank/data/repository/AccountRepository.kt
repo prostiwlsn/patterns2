@@ -28,4 +28,10 @@ class AccountRepository(
             api.closeAccount(accountId)
         }
     }
+
+    override suspend fun getAccountIdByNumber(accountNumber: String): RequestResult<String> {
+        return runResultCatching {
+            api.getAccountIdByNumber(accountNumber)
+        }
+    }
 }

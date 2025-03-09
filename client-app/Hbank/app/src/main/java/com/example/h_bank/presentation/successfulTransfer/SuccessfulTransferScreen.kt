@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,20 +68,27 @@ fun SuccessfulTransferScreen(
         SuccessIcon()
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = viewModel.amount.toString() + " ₽",
+            text = state.amount + " ₽",
             fontSize = 30.sp,
             color = Color.Black,
             fontWeight = FontWeight.Bold
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.transaction),
+            fontSize = 14.sp,
+            color = Color.Gray,
+            fontWeight = FontWeight.Normal
+        )
         Spacer(modifier = Modifier.weight(1f))
         TextField(
             labelRes = R.string.payment_account,
-            value = viewModel.accountId,
+            value = state.accountNumber,
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.beneficiary_account_id,
-            value = viewModel.beneficiaryAccountId,
+            value = state.beneficiaryAccountNumber,
         )
         Spacer(modifier = Modifier.weight(1f))
         CustomButton(

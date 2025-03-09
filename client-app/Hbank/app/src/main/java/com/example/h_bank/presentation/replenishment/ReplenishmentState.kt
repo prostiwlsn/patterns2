@@ -1,22 +1,12 @@
 package com.example.h_bank.presentation.replenishment
 
 import com.example.h_bank.data.Account
-import java.time.LocalDateTime
 
 data class ReplenishmentState(
-    val accounts: List<Account> = listOf(
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-    ),
-    val amount: Long = 0,
-    val selectedAccount: Account = Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
+    val accounts: List<Account> = emptyList(),
+    val amount: Double? = null,
+    val selectedAccount: Account? = null,
     val isAccountsSheetVisible: Boolean = false,
     val areFieldsValid: Boolean = false,
+    val isLoading: Boolean = false
 )

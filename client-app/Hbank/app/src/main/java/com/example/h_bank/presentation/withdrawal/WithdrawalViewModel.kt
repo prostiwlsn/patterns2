@@ -1,8 +1,13 @@
 package com.example.h_bank.presentation.withdrawal
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.Account
+import com.example.h_bank.data.utils.NetworkUtils.onFailure
+import com.example.h_bank.data.utils.NetworkUtils.onSuccess
+import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
+import com.example.h_bank.domain.useCase.WithdrawUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -10,15 +15,49 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class WithdrawalViewModel : ViewModel() {
+class WithdrawalViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val getUserAccountsUseCase: GetUserAccountsUseCase,
+    private val withdrawUseCase: WithdrawUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(WithdrawalState())
     val state: StateFlow<WithdrawalState> = _state
 
     private val _navigationEvent = MutableSharedFlow<WithdrawalNavigationEvent>()
     val navigationEvent: SharedFlow<WithdrawalNavigationEvent> = _navigationEvent
 
-    fun onAmountChange(amount: Long) {
-        _state.update { it.copy(amount = amount) }
+    private val userId: String = checkNotNull(savedStateHandle["userId"])
+
+    init {
+        loadUserAccounts()
+    }
+
+    private fun loadUserAccounts() {
+        viewModelScope.launch {
+            getUserAccountsUseCase(userId)
+                .onSuccess { result ->
+                    _state.update {
+                        it.copy(
+                            accounts = result.data,
+                            isLoading = false,
+                            selectedAccount = result.data.first()
+                        )
+                    }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+    fun onAmountChange(amountInput: String) {
+        val amountValue = amountInput.toDoubleOrNull()
+
+        if (amountValue != null || amountInput.isEmpty()) {
+            _state.update { it.copy(amount = amountValue) }
+        }
+
+        _state.update { it.copy(amount = amountValue) }
         validateFields()
     }
 
@@ -31,8 +70,7 @@ class WithdrawalViewModel : ViewModel() {
     private fun validateFields() {
         _state.update {
             it.copy(
-                areFieldsValid = _state.value.amount > 0 &&
-                        _state.value.amount <= _state.value.selectedAccount.balance
+                areFieldsValid = _state.value.selectedAccount != null
             )
         }
     }
@@ -51,12 +89,20 @@ class WithdrawalViewModel : ViewModel() {
 
     fun onWithdrawClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(
-                WithdrawalNavigationEvent.NavigateToSuccessfulWithdrawal(
-                    accountId = _state.value.selectedAccount.accountNumber,
-                    amount = _state.value.amount
-                )
-            )
+            state.value.amount?.let {
+                withdrawUseCase(
+                    state.value.selectedAccount?.id ?: "",
+                    it
+                ).onSuccess {
+                    _navigationEvent.emit(
+                        WithdrawalNavigationEvent.NavigateToSuccessfulWithdrawal(
+                            accountNumber = _state.value.selectedAccount?.accountNumber ?: "",
+                            amount = _state.value.amount.toString()
+                        )
+                    )
+                }
+                    .onFailure { }
+            }
         }
     }
 }

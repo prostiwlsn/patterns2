@@ -4,7 +4,7 @@ import com.example.h_bank.data.OperationType
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OperationRquestBody(
+data class OperationRequestBody(
     val senderAccountId: String?,
     val recipientAccountId: String,
     val amount: Double,

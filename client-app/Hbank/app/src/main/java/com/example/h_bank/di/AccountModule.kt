@@ -4,6 +4,7 @@ import com.example.h_bank.data.network.AccountApi
 import com.example.h_bank.data.repository.AccountRepository
 import com.example.h_bank.domain.repository.IAccountRepository
 import com.example.h_bank.domain.useCase.CloseAccountUseCase
+import com.example.h_bank.domain.useCase.GetAccountIdByNumberUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
 import org.koin.core.qualifier.named
@@ -34,6 +35,12 @@ val accountModule = module {
             accountRepository = get()
         )
     }
+    factory<GetAccountIdByNumberUseCase> {
+        GetAccountIdByNumberUseCase(
+            accountRepository = get()
+        )
+    }
+
 
     factory<AccountApi> {
         val retrofit = get<Retrofit>(named("accountApi"))

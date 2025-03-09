@@ -35,7 +35,7 @@ fun LoanScreen(
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is LoanNavigationEvent.NavigateToLoanPayment -> navController.navigate(
-                    "loan_payment/${event.loanId}"
+                    "loan_payment/${event.loanId}/${event.documentNumber}/${event.debt}"
                 )
 
                 is LoanNavigationEvent.NavigateBack -> navController.popBackStack()

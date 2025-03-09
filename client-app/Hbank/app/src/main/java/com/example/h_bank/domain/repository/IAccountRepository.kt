@@ -8,4 +8,5 @@ interface IAccountRepository {
     suspend fun getUserAccounts(userId: String): RequestResult<List<AccountDto>>
     suspend fun openAccount(): RequestResult<Unit>
     suspend fun closeAccount(accountId: String): RequestResult<Unit>
+    suspend fun getAccountIdByNumber(accountNumber: String): RequestResult<String>
 }

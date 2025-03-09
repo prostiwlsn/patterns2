@@ -58,7 +58,7 @@
     <string name="loan_amount">Размер кредита</string>
     <string name="amount">Сумма</string>
     <string name="comment">Комментарий к переводу</string>
-    <string name="beneficiary_account_id">Номер счёта получателя</string>
+    <string name="beneficiary_account_id">Счёт получателя</string>
     <string name="term">Срок</string>
     <string name="due_date">Дата окончания договора</string>
     <string name="interest_rate">Процентная ставка</string>

@@ -11,11 +11,11 @@ sealed class MainNavigationEvent {
         val debt: String
     ) : MainNavigationEvent()
 
-    data object NavigateToTransfer : MainNavigationEvent()
+    data class NavigateToTransfer(val userId: String) : MainNavigationEvent()
     data object NavigateToPaymentHistory : MainNavigationEvent()
     data object NavigateToLoanProcessing : MainNavigationEvent()
-    data object NavigateToWithdrawal : MainNavigationEvent()
-    data object NavigateToReplenishment : MainNavigationEvent()
+    data class NavigateToWithdrawal(val userId: String) : MainNavigationEvent()
+    data class NavigateToReplenishment(val userId: String) : MainNavigationEvent()
     data object NavigateToSuccessfulAccountOpening : MainNavigationEvent()
     data object NavigateToSuccessfulAccountClosure : MainNavigationEvent()
     data object NavigateToWelcome : MainNavigationEvent()

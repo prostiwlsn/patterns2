@@ -68,7 +68,7 @@ fun SuccessfulReplenishmentScreen(
         SuccessIcon()
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = viewModel.amount.toString() + " ₽",
+            text = state.amount + " ₽",
             fontSize = 30.sp,
             color = Color.Black,
             fontWeight = FontWeight.Bold
@@ -83,7 +83,7 @@ fun SuccessfulReplenishmentScreen(
         Spacer(modifier = Modifier.weight(1f))
         TextField(
             labelRes = R.string.replenishment_account,
-            value = viewModel.accountId,
+            value = state.accountNumber,
         )
         Spacer(modifier = Modifier.weight(1f))
         CustomButton(

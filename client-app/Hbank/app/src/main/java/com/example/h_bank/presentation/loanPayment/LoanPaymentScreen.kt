@@ -43,8 +43,11 @@ fun LoanPaymentScreen(
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                LoanPaymentNavigationEvent.NavigateToSuccessfulLoanPayment -> navController.navigate(
-                    "successful_loan_payment"
+                is LoanPaymentNavigationEvent.NavigateToSuccessfulLoanPayment -> navController.navigate(
+                    "successful_loan_payment" +
+                            "/${event.amount}" +
+                            "/${event.documentNumber}" +
+                            "/${event.debt}"
                 )
 
                 LoanPaymentNavigationEvent.NavigateBack -> navController.popBackStack()
@@ -92,8 +95,9 @@ fun LoanPaymentScreen(
                 Spacer(modifier = Modifier.height(6.dp))
                 NumberInputField(
                     labelRes = R.string.amount,
-                    value = state.amount.toString() + " ₽",
-                    onValueChange = { viewModel.onAmountChange(it.toInt()) }
+                    value = state.amount.toString(),
+                    suffix = " ₽",
+                    onValueChange = { viewModel.onAmountChange(it) }
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 CustomDisablableButton(

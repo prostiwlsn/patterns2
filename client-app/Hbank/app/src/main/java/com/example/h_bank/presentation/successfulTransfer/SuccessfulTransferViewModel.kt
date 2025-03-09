@@ -7,18 +7,30 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SuccessfulTransferViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
-    val accountId: String = checkNotNull(savedStateHandle["accountId"])
-    val beneficiaryAccountId: String = checkNotNull(savedStateHandle["beneficiaryAccountId"])
-    val amount: Long = checkNotNull(savedStateHandle["amount"])
-
     private val _state = MutableStateFlow(SuccessfulTransferState())
     val state: StateFlow<SuccessfulTransferState> = _state
 
     private val _navigationEvent = MutableSharedFlow<SuccessfulTransferNavigationEvent>()
     val navigationEvent: SharedFlow<SuccessfulTransferNavigationEvent> = _navigationEvent
+
+    private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+    private val beneficiaryAccountNumber: String =
+        checkNotNull(savedStateHandle["beneficiaryAccountNumber"])
+    private val amount: String = checkNotNull(savedStateHandle["amount"])
+
+    init {
+        _state.update {
+            it.copy(
+                accountNumber = accountNumber,
+                beneficiaryAccountNumber = beneficiaryAccountNumber,
+                amount = amount
+            )
+        }
+    }
 
     fun onToMainClicked() {
         viewModelScope.launch {

@@ -20,4 +20,9 @@ interface AccountApi {
     suspend fun closeAccount(
         @Query("accountId") accountId: String,
     )
+
+    @GET("account/{accountNumber}")
+    suspend fun getAccountIdByNumber(
+        @Path("accountNumber") accountNumber: String,
+    ): String
 }

@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
@@ -43,7 +45,7 @@ fun WithdrawalScreen(
             when (event) {
                 is WithdrawalNavigationEvent.NavigateToSuccessfulWithdrawal ->
                     navController.navigate(
-                        "successful_withdrawal/${event.accountId}/${event.amount}"
+                        "successful_withdrawal/${event.accountNumber}/${event.amount}"
                     )
 
                 WithdrawalNavigationEvent.NavigateBack -> navController.popBackStack()
@@ -63,32 +65,49 @@ fun WithdrawalScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-            WithdrawalHeader(
-                onBackClick = { viewModel.onBackClicked() }
-            )
-            Spacer(modifier = Modifier.height(37.dp))
-            IconButtonField(
-                labelRes = R.string.withdrawal_account,
-                value = state.selectedAccount.accountNumber,
-                icon = Icons.Default.Edit,
-                onIconClick = { viewModel.showAccountsSheet() },
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            NumberInputField(
-                labelRes = R.string.amount,
-                value = state.amount.toString() + " ₽",
-                onValueChange = { viewModel.onAmountChange(it.toLong()) },
-                errorMessageRes = if (state.amount > state.selectedAccount.balance)
-                    R.string.not_enough_money else null
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            CustomDisablableButton(
-                onClick = viewModel::onWithdrawClicked,
-                textRes = R.string.withdraw_button,
-                enabled = state.areFieldsValid
-            )
-            Spacer(modifier = Modifier.height(32.dp))
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = Color(0xFF5C49E0)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(40.dp))
+                WithdrawalHeader(
+                    onBackClick = { viewModel.onBackClicked() }
+                )
+                Spacer(modifier = Modifier.height(37.dp))
+                IconButtonField(
+                    labelRes = R.string.withdrawal_account,
+                    value = state.selectedAccount?.accountNumber ?: "",
+                    icon = Icons.Default.Edit,
+                    onIconClick = { viewModel.showAccountsSheet() },
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                NumberInputField(
+                    labelRes = R.string.amount,
+                    value = state.amount.toString(),
+                    suffix = " ₽",
+                    onValueChange = { viewModel.onAmountChange(it) },
+                    errorMessageRes = if ((state.amount
+                            ?: 0.0) > (state.selectedAccount?.balance ?: 0.0)
+                    )
+                        R.string.not_enough_money else null
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                CustomDisablableButton(
+                    onClick = viewModel::onWithdrawClicked,
+                    textRes = R.string.withdraw_button,
+                    enabled = state.areFieldsValid
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(

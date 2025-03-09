@@ -68,7 +68,7 @@ fun SuccessfulWithdrawalScreen(
         SuccessIcon()
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = viewModel.amount.toString() + " ₽",
+            text = state.amount + " ₽",
             fontSize = 30.sp,
             color = Color.Black,
             fontWeight = FontWeight.Bold
@@ -83,7 +83,7 @@ fun SuccessfulWithdrawalScreen(
         Spacer(modifier = Modifier.weight(1f))
         TextField(
             labelRes = R.string.withdrawal_account,
-            value = viewModel.accountId,
+            value = state.accountNumber,
         )
         Spacer(modifier = Modifier.weight(1f))
         CustomButton(

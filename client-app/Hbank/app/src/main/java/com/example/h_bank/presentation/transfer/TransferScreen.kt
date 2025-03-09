@@ -44,7 +44,9 @@ fun TransferScreen(
             when (event) {
                 is TransferNavigationEvent.NavigateToSuccessfulTransfer ->
                     navController.navigate(
-                        "successful_transfer/${event.accountId}/${event.beneficiaryAccountId}/${event.amount}"
+                        "successful_transfer/${event.accountNumber}" +
+                                "/${event.beneficiaryAccountNumber}" +
+                                "/${event.amount}"
                     )
 
                 TransferNavigationEvent.NavigateBack -> navController.popBackStack()
@@ -72,33 +74,35 @@ fun TransferScreen(
             Spacer(modifier = Modifier.height(37.dp))
             IconButtonField(
                 labelRes = R.string.payment_account,
-                value = state.selectedAccount.accountNumber,
+                value = state.selectedAccount?.accountNumber ?: "",
                 icon = Icons.Default.Edit,
                 onIconClick = { viewModel.showAccountsSheet() },
             )
             Spacer(modifier = Modifier.height(6.dp))
             NumberInputField(
                 labelRes = R.string.beneficiary_account_id,
-                value = state.beneficiaryAccountId,
+                value = state.beneficiaryAccountNumber,
                 onValueChange = { viewModel.onBeneficiaryAccountIdChange(it) }
             )
             Spacer(modifier = Modifier.height(6.dp))
             NumberInputField(
                 labelRes = R.string.amount,
                 value = state.amount.toString() + " ₽",
-                onValueChange = { viewModel.onAmountChange(it.toLong()) },
-                errorMessageRes = if (state.amount > state.selectedAccount.balance)
+                onValueChange = { viewModel.onAmountChange(it) },
+                errorMessageRes = if ((state.amount
+                        ?: 0.0) > (state.selectedAccount?.balance ?: 0.0)
+                )
                     R.string.not_enough_money else null
             )
             Spacer(modifier = Modifier.height(6.dp))
             TextInputField(
                 labelRes = R.string.comment,
-                value = state.comment,
+                value = state.comment ?: "",
                 onValueChange = { viewModel.onCommentChange(it) }
             )
             Spacer(modifier = Modifier.weight(1f))
             CustomDisablableButton(
-                onClick = viewModel::onPayClicked,
+                onClick = { viewModel.onPayClicked() },
                 textRes = R.string.transfer,
                 enabled = state.areFieldsValid
             )

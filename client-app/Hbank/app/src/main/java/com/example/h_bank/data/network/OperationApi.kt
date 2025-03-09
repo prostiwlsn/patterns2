@@ -1,6 +1,6 @@
 package com.example.h_bank.data.network
 
-import com.example.h_bank.data.dto.OperationRquestBody
+import com.example.h_bank.data.dto.OperationRequestBody
 import com.example.h_bank.data.dto.OperationDto
 import com.example.h_bank.data.dto.OperationShortDto
 import com.example.h_bank.data.dto.PageResponse
@@ -26,6 +26,6 @@ interface OperationApi {
 
     @POST("operation")
     suspend fun createOperation(
-        @Body request: OperationRquestBody
+        @Body request: OperationRequestBody
     )
 }

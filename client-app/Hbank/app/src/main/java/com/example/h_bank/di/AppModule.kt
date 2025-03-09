@@ -29,19 +29,26 @@ val appModule = module {
         LoanPaymentViewModel(
             savedStateHandle,
             get(),
+            get(),
             get()
         )
     }
     viewModel { SuccessfulAccountClosureViewModel() }
     viewModel { SuccessfulLoanProcessingViewModel() }
-    viewModel { SuccessfulLoanPaymentViewModel() }
+    viewModel { SuccessfulLoanPaymentViewModel(get()) }
     viewModel { SuccessfulAccountOpeningViewModel() }
     viewModel { SuccessfulAccountClosureViewModel() }
     viewModel { PaymentHistoryViewModel() }
-    viewModel { TransferViewModel() }
+    viewModel { TransferViewModel(get(), get(), get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) -> TransactionInfoViewModel(savedStateHandle) }
-    viewModel { ReplenishmentViewModel() }
-    viewModel { WithdrawalViewModel() }
+    viewModel { ReplenishmentViewModel(get(), get(), get()) }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        WithdrawalViewModel(
+            savedStateHandle,
+            get(),
+            get()
+        )
+    }
     viewModel { (savedStateHandle: SavedStateHandle) -> LoanViewModel(savedStateHandle) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         SuccessfulTransferViewModel(savedStateHandle)

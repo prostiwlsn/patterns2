@@ -39,7 +39,13 @@ class LoanViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     fun onPayClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(LoanNavigationEvent.NavigateToLoanPayment(loanId))
+            _navigationEvent.emit(
+                LoanNavigationEvent.NavigateToLoanPayment(
+                    loanId,
+                    documentNumber,
+                    debt
+                )
+            )
         }
     }
 

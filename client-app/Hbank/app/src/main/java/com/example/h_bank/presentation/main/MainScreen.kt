@@ -57,14 +57,14 @@ fun MainScreen(
                                 "/${event.debt}"
                     )
 
-                MainNavigationEvent.NavigateToTransfer ->
-                    navController.navigate("transfer")
+                is MainNavigationEvent.NavigateToTransfer ->
+                    navController.navigate("transfer/${event.userId}")
 
-                MainNavigationEvent.NavigateToReplenishment ->
-                    navController.navigate("replenishment")
+                is MainNavigationEvent.NavigateToReplenishment ->
+                    navController.navigate("replenishment/${event.userId}")
 
-                MainNavigationEvent.NavigateToWithdrawal ->
-                    navController.navigate("withdrawal")
+                is MainNavigationEvent.NavigateToWithdrawal ->
+                    navController.navigate("withdrawal/${event.userId}")
 
                 MainNavigationEvent.NavigateToPaymentHistory ->
                     navController.navigate("payment_history")
@@ -178,7 +178,7 @@ fun MainScreen(
                         viewModel.onAccountClicked(account)
                         viewModel.hideAccountsSheet()
                     },
-                    onOpenAccountClick = { }
+                    onOpenAccountClick = { viewModel.onOpenAccountClicked() }
                 )
             }
         }

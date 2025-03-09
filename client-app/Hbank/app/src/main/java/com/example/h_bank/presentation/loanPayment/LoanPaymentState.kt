@@ -5,7 +5,7 @@ import com.example.h_bank.data.Account
 data class LoanPaymentState(
     val currentUserId: String = "",
     val accounts: List<Account> = emptyList(),
-    val amount: Int = 0,
+    val amount: Double? = null,
     val selectedAccount: Account? = null,
     val isAccountsSheetVisible: Boolean = false,
     val areFieldsValid: Boolean = false,

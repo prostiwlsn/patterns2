@@ -62,8 +62,12 @@ fun AppNavigation() {
             LoanScreen(navController)
         }
         composable(
-            route = "loan_payment/{loanId}",
-            arguments = listOf(navArgument("loanId") { type = NavType.StringType }),
+            route = "loan_payment/{loanId}/{documentNumber}/{debt}",
+            arguments = listOf(
+                navArgument("loanId") { type = NavType.StringType },
+                navArgument("documentNumber") { type = NavType.StringType },
+                navArgument("debt") { type = NavType.StringType }
+            ),
         ) {
             LoanPaymentScreen(navController)
         }
@@ -73,13 +77,22 @@ fun AppNavigation() {
         composable("payment_history") {
             PaymentHistoryScreen(navController)
         }
-        composable("replenishment") {
+        composable(
+            route = "replenishment/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+        ) {
             ReplenishmentScreen(navController)
         }
-        composable("withdrawal") {
+        composable(
+            route = "withdrawal/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+        ) {
             WithdrawalScreen(navController)
         }
-        composable("transfer") {
+        composable(
+            route = "transfer/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+        ) {
             TransferScreen(navController)
         }
         composable("successful_account_opening") {
@@ -88,7 +101,14 @@ fun AppNavigation() {
         composable("successful_account_closure") {
             SuccessfulAccountClosureScreen(navController)
         }
-        composable("successful_loan_payment") {
+        composable(
+            route = "successful_loan_payment/{amount}/{documentNumber}/{debt}",
+            arguments = listOf(
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("documentNumber") { type = NavType.StringType },
+                navArgument("debt") { type = NavType.StringType }
+            ),
+        ) {
             SuccessfulLoanPaymentScreen(navController)
         }
         composable(
@@ -103,29 +123,29 @@ fun AppNavigation() {
             SuccessfulLoanProcessingScreen(navController)
         }
         composable(
-            route = "successful_transfer/{accountId}/{beneficiaryAccountId}/{amount}",
+            route = "successful_transfer/{accountNumber}/{beneficiaryAccountNumber}/{amount}",
             arguments = listOf(
-                navArgument("accountId") { type = NavType.StringType },
-                navArgument("beneficiaryAccountId") { type = NavType.StringType },
-                navArgument("amount") { type = NavType.LongType }
+                navArgument("accountNumber") { type = NavType.StringType },
+                navArgument("beneficiaryAccountNumber") { type = NavType.StringType },
+                navArgument("amount") { type = NavType.StringType }
             ),
         ) {
             SuccessfulTransferScreen(navController)
         }
         composable(
-            route = "successful_replenishment/{accountId}/{amount}",
+            route = "successful_replenishment/{accountNumber}/{amount}",
             arguments = listOf(
-                navArgument("accountId") { type = NavType.StringType },
-                navArgument("amount") { type = NavType.LongType }
+                navArgument("accountNumber") { type = NavType.StringType },
+                navArgument("amount") { type = NavType.StringType }
             ),
         ) {
             SuccessfulReplenishmentScreen(navController)
         }
         composable(
-            route = "successful_withdrawal/{accountId}/{amount}",
+            route = "successful_withdrawal/{accountNumber}/{amount}",
             arguments = listOf(
-                navArgument("accountId") { type = NavType.StringType },
-                navArgument("amount") { type = NavType.LongType }
+                navArgument("accountNumber") { type = NavType.StringType },
+                navArgument("amount") { type = NavType.StringType }
             ),
         ) {
             SuccessfulWithdrawalScreen(navController)

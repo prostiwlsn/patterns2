@@ -7,17 +7,22 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SuccessfulReplenishmentViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
-    val amount: Double = checkNotNull(savedStateHandle["amount"])
-    val accountId: String = checkNotNull(savedStateHandle["accountId"])
-
     private val _state = MutableStateFlow(SuccessfulReplenishmentState())
     val state: StateFlow<SuccessfulReplenishmentState> = _state
 
     private val _navigationEvent = MutableSharedFlow<SuccessfulReplenishmentNavigationEvent>()
     val navigationEvent: SharedFlow<SuccessfulReplenishmentNavigationEvent> = _navigationEvent
+
+    private val amount: String = checkNotNull(savedStateHandle["amount"])
+    private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+
+    init {
+        _state.update { it.copy(accountNumber = accountNumber, amount = amount) }
+    }
 
     fun onToMainClicked() {
         viewModelScope.launch {

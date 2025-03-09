@@ -140,19 +140,27 @@ class MainViewModel(
 
     fun onTransferClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToTransfer)
+            _navigationEvent.emit(MainNavigationEvent.NavigateToTransfer(state.value.currentUserId))
         }
     }
 
     fun onReplenishmentClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToReplenishment)
+            _navigationEvent.emit(
+                MainNavigationEvent.NavigateToReplenishment(
+                    state.value.currentUserId
+                )
+            )
         }
     }
 
     fun onWithdrawalClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(MainNavigationEvent.NavigateToWithdrawal)
+            _navigationEvent.emit(
+                MainNavigationEvent.NavigateToWithdrawal(
+                    state.value.currentUserId
+                )
+            )
         }
     }
 

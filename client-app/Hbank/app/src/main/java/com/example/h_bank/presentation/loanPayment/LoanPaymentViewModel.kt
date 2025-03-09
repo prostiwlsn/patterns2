@@ -8,6 +8,7 @@ import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
+import com.example.h_bank.domain.useCase.RepayLoanUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,14 +20,17 @@ class LoanPaymentViewModel(
     savedStateHandle: SavedStateHandle,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
+    private val repayLoanUseCase: RepayLoanUseCase
 ) : ViewModel() {
-    private val loanId: String = checkNotNull(savedStateHandle["loanId"])
-
     private val _state = MutableStateFlow(LoanPaymentState())
     val state: StateFlow<LoanPaymentState> = _state
 
     private val _navigationEvent = MutableSharedFlow<LoanPaymentNavigationEvent>()
     val navigationEvent: SharedFlow<LoanPaymentNavigationEvent> = _navigationEvent
+
+    private val loanId: String = checkNotNull(savedStateHandle["loanId"])
+    private val documentNumber: String = checkNotNull(savedStateHandle["documentNumber"])
+    private val debt: String = checkNotNull(savedStateHandle["debt"])
 
     init {
         loadCurrentUser()
@@ -44,8 +48,14 @@ class LoanPaymentViewModel(
         _state.update { it.copy(selectedAccount = selectedAccount) }
     }
 
-    fun onAmountChange(amount: Int) {
-        _state.update { it.copy(amount = amount) }
+    fun onAmountChange(amountInput: String) {
+        val amountValue = amountInput.toDoubleOrNull()
+
+        if (amountValue != null || amountInput.isEmpty()) {
+            _state.update { it.copy(amount = amountValue) }
+        }
+
+        _state.update { it.copy(amount = amountValue) }
         validateFields()
     }
 
@@ -80,14 +90,30 @@ class LoanPaymentViewModel(
 
     fun onPayClicked() {
         viewModelScope.launch {
-            _navigationEvent.emit(LoanPaymentNavigationEvent.NavigateToSuccessfulLoanPayment)
+            state.value.amount?.let {
+                repayLoanUseCase(
+                    state.value.selectedAccount?.id ?: "",
+                    loanId,
+                    it
+                ).onSuccess {
+                    _navigationEvent.emit(
+                        LoanPaymentNavigationEvent.NavigateToSuccessfulLoanPayment(
+                            documentNumber = documentNumber,
+                            amount = _state.value.amount.toString(),
+                            debt = (((debt.toDouble() - (_state.value.amount ?: 0.0)))).toString(),
+                            accountNumber = _state.value.selectedAccount?.accountNumber ?: "",
+                        )
+                    )
+                }
+                    .onFailure { }
+            }
         }
     }
 
     private fun validateFields() {
         _state.update {
             it.copy(
-                areFieldsValid = _state.value.amount != 0
+                areFieldsValid = _state.value.selectedAccount != null
             )
         }
     }
