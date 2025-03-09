@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import ru.hits.core.domain.entity.AccountEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountRepository extends JpaRepository<AccountEntity, UUID>, JpaSpecificationExecutor<AccountEntity> {
@@ -17,5 +18,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, UUID>, J
                     "where a.user_id = :userId", nativeQuery = true
     )
     List<UUID> selectAllIdsByUserId(@Param("userId") UUID userId);
+
+    Optional<AccountEntity> findByAccountNumber(String accountNumber);
 
 }

@@ -127,6 +127,14 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
+    @Override
+    public UUID getAccountId(String accountNumber) {
+        var account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new BadRequestException("Счет с номером " + accountNumber + " не найден"));
+
+        return account.getId();
+    }
+
     private String generateAccountNumber() {
         StringBuilder sb = new StringBuilder(19);
         for (int i = 0; i < 19; i++) {

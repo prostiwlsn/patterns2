@@ -81,4 +81,15 @@ public class AccountController {
         return accountService.getAccounts(jwtService.getUserId(authHeader), userId, isDeleted);
     }
 
+    @Operation(
+            summary = "Получить идентификатор счета по номеру",
+            description = "Позволяет пользователю получить идентификатор счета по номеру"
+    )
+    @GetMapping("/{accountNumber}")
+    private UUID getAccountId(
+            @PathVariable("accountNumber") String accountNumber
+    ) {
+        return accountService.getAccountId(accountNumber);
+    }
+
 }
