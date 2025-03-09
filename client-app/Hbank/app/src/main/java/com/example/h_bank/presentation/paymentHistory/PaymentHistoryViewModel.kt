@@ -64,9 +64,6 @@ class PaymentHistoryViewModel(
                     )
                     updateOperationsFilterUseCase { copy(accountId = accountsResult.data.first().id) }
                 }
-
-
-            updatePager()
         }
         _state.update { it.copy(filteredPayments = state.value.allPayments) }
     }
