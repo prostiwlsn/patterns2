@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 fun TextInputField(
     @StringRes labelRes: Int,
     value: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     onValueChange: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -41,7 +42,7 @@ fun TextInputField(
                 color = Color(0xFF282A31),
                 fontWeight = FontWeight.Medium
             ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = keyboardOptions,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
