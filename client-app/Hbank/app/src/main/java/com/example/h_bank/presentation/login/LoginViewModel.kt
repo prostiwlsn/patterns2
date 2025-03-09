@@ -76,6 +76,16 @@ class LoginViewModel(
                                 )
                             }
                         }
+                        else if (it.code == 403) {
+                            _state.update {
+                                it.copy(
+                                    fieldErorrs = LoginFrontErrors(
+                                        loginFieldError = "",
+                                        passwordFieldError = "Пользователь заблокирован",
+                                    )
+                                )
+                            }
+                        }
                     }
             }
         }
