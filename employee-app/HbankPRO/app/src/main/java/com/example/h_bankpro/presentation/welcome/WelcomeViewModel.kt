@@ -1,14 +1,16 @@
 package com.example.h_bankpro.presentation.welcome
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class WelcomeViewModel : ViewModel() {
+class WelcomeViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
+) : BaseViewModel() {
     private val _state = MutableStateFlow(WelcomeState())
     val state: StateFlow<WelcomeState> = _state
 

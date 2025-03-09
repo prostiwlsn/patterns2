@@ -15,6 +15,8 @@ import androidx.paging.cachedIn
 import com.example.h_bankpro.data.OperationTypeFilter
 import com.example.h_bankpro.domain.model.OperationShort
 import com.example.h_bankpro.domain.useCase.GetOperationsByAccountUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,18 +25,19 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import java.time.ZoneId
 import java.util.Locale
-import java.time.LocalDate as JavaLocalDate
 import java.time.Instant as JavaInstant
+import java.time.LocalDate as JavaLocalDate
 
 class AccountViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val getOperationsByAccountUseCase: GetOperationsByAccountUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(AccountState())
     val state: StateFlow<AccountState> = _state
 

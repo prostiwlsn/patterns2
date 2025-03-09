@@ -19,26 +19,25 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModel { WelcomeViewModel() }
-    viewModel { MainViewModel(get(), get(), get(), get()) }
-    viewModel { RateCreationViewModel(get()) }
-    viewModel { SuccessfulRateCreationViewModel() }
-    viewModel { SuccessfulRateEditingViewModel() }
-    viewModel { SuccessfulRateDeletionViewModel() }
+    viewModel { WelcomeViewModel(get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { SuccessfulRateCreationViewModel(get()) }
+    viewModel { SuccessfulRateEditingViewModel(get()) }
+    viewModel { SuccessfulRateDeletionViewModel(get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        RateViewModel(savedStateHandle, get())
+        RateViewModel(get(), savedStateHandle, get())
     }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        RateEditingViewModel(savedStateHandle, get())
+        RateEditingViewModel(get(), savedStateHandle, get())
     }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        LoanViewModel(savedStateHandle)
+        LoanViewModel(get(), savedStateHandle)
     }
-    viewModel { UserCreationViewModel(get()) }
-    viewModel { SuccessfulUserCreationViewModel() }
-    viewModel { AccountViewModel(get(), get()) }
-    viewModel { OperationInfoViewModel(get(), get()) }
+    viewModel { UserCreationViewModel(get(), get()) }
+    viewModel { SuccessfulUserCreationViewModel(get()) }
+    viewModel { AccountViewModel(get(), get(), get()) }
+    viewModel { OperationInfoViewModel(get(), get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        UserViewModel(savedStateHandle, get(), get(), get(), get(), get())
+        UserViewModel(get(), savedStateHandle, get(), get(), get(), get(), get())
     }
 }

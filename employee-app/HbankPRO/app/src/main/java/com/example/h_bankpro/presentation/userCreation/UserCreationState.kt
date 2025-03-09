@@ -4,7 +4,6 @@ data class UserCreationState(
     val name: String = "",
     val phone: String = "",
     val password: String = "",
-    val repeatPassword: String = "",
     val selectedRole: Boolean = false,
     val areFieldsValid: Boolean = false,
 )

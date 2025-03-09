@@ -9,6 +9,8 @@
     // Логин
     <string name="user_login">Логин</string>
     <string name="password">Пароль</string>
+    <string name="go_back">Вернуться назад</string>
+    <string name="no_connection_message">Нет подключения к интернету</string>
     <string name="login_bottom_text">"Уже есть аккаунт? "</string>
     <string name="login_bottom_text_2">Зарегистрируйтесь</string>
     <string name="registration_bottom_text">"Ещё нет аккаунта? "</string>

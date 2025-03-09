@@ -1,11 +1,11 @@
 package com.example.h_bankpro.presentation.rateEditing
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.domain.entity.Command
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.domain.useCase.UpdateTariffUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,9 +14,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RateEditingViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val updateTariffUseCase: UpdateTariffUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(RateEditingState())
     val state: StateFlow<RateEditingState> = _state
 
@@ -33,7 +34,7 @@ class RateEditingViewModel(
             it.copy(
                 rateId = rateId,
                 name = name,
-                interestRate = interestRate.toDouble(),
+                interestRate = interestRate,
                 description = description,
                 initialName = name,
                 initialInterestRate = interestRate.toDouble(),
@@ -42,9 +43,16 @@ class RateEditingViewModel(
         }
     }
 
-    fun onRateChange(rate: Double) {
-        _state.update { it.copy(interestRate = rate) }
-        validateFields()
+    fun onRateChange(rate: String) {
+        val rateValue = rate.toDoubleOrNull()
+
+        if ((rateValue != null && rateValue <= 100) &&
+            !(rate.startsWith('0') && rate.length > 1) ||
+            rate.isEmpty()
+        ) {
+            _state.update { it.copy(interestRate = rate) }
+            validateFields()
+        }
     }
 
     fun onNameChange(name: String) {
@@ -62,14 +70,16 @@ class RateEditingViewModel(
     }
 
     private fun validateFields() {
+        val rateValue = _state.value.interestRate?.toDoubleOrNull() ?: 0.0
+
         _state.update {
             it.copy(
-                areFieldsValid = _state.value.interestRate > 0 &&
+                areFieldsValid = rateValue > 0.0 &&
                         _state.value.name.isNotBlank() &&
                         _state.value.description.isNotBlank() &&
                         !(_state.value.initialDescription == _state.value.description &&
                                 _state.value.initialName == _state.value.name &&
-                                _state.value.initialInterestRate == _state.value.interestRate)
+                                _state.value.initialInterestRate == rateValue)
             )
         }
     }
@@ -79,16 +89,14 @@ class RateEditingViewModel(
             updateTariffUseCase(
                 rateId,
                 state.value.name,
-                state.value.interestRate,
+                state.value.interestRate?.toDoubleOrNull() ?: 0.0,
                 state.value.description,
-            )
-                .onSuccess {
-                    _navigationEvent.emit(
-                        RateEditingNavigationEvent.NavigateToSuccessfulRateEditing
-                    )
-                }
-                .onFailure {
-                }
+            ).onSuccess {
+                pushCommandUseCase(Command.RefreshMainScreen)
+                _navigationEvent.emit(
+                    RateEditingNavigationEvent.NavigateToSuccessfulRateEditing
+                )
+            }
         }
     }
 }

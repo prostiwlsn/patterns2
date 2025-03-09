@@ -3,17 +3,25 @@ package com.example.h_bankpro.di
 import com.example.h_bankpro.data.network.AuthorizationApi
 import com.example.h_bankpro.data.repository.AuthorizationLocalStorage
 import com.example.h_bankpro.data.repository.AuthorizationRemoteRepository
+import com.example.h_bankpro.data.repository.CommandStorage
 import com.example.h_bankpro.domain.repository.IAuthorizationLocalRepository
 import com.example.h_bankpro.domain.repository.IAuthorizationRemoteRepository
+import com.example.h_bankpro.domain.repository.ICommandStorage
+import com.example.h_bankpro.domain.useCase.GetCommandUseCase
 import com.example.h_bankpro.domain.useCase.LoginUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.domain.useCase.RegisterUseCase
 import com.example.h_bankpro.domain.useCase.RegistrationValidationUseCase
 import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
+import com.example.h_bankpro.presentation.connectionError.ConnectionErrorScreen
+import com.example.h_bankpro.presentation.connectionError.ConnectionErrorViewModel
 import com.example.h_bankpro.presentation.launch.LaunchViewModel
 import com.example.h_bankpro.presentation.login.LoginViewModel
+import com.example.h_bankpro.presentation.navigation.NavigationViewModel
 import com.example.h_bankpro.presentation.registration.RegistrationViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -84,7 +92,25 @@ val authorizationModule = module {
         )
     }
 
-    viewModel { LaunchViewModel(get()) }
+    single<ICommandStorage> {
+        CommandStorage()
+    }
+
+    factory<PushCommandUseCase> {
+        PushCommandUseCase(
+            storage = get(),
+        )
+    }
+
+    factory<GetCommandUseCase> {
+        GetCommandUseCase(
+            storage = get(),
+        )
+    }
+
+    viewModel { LaunchViewModel(get(), get()) }
+    viewModel { NavigationViewModel(get(), get()) }
+    viewModel { ConnectionErrorViewModel(get()) }
 
     viewModel {
         LoginViewModel(
@@ -93,6 +119,7 @@ val authorizationModule = module {
             validationUseCase = get(),
             loginUseCase = get(),
             resetCredentialsUseCase = get(),
+            pushCommandUseCase = get(),
         )
     }
 
@@ -103,6 +130,7 @@ val authorizationModule = module {
             resetCredentialsUseCase = get(),
             validationUseCase = get(),
             registerUseCase = get(),
+            pushCommandUseCase = get(),
         )
     }
 }

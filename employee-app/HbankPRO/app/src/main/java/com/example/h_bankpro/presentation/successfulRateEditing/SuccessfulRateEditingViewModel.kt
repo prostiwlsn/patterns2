@@ -1,12 +1,14 @@
 package com.example.h_bankpro.presentation.successfulRateEditing
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
-class SuccessfulRateEditingViewModel : ViewModel() {
+class SuccessfulRateEditingViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
+) : BaseViewModel() {
     private val _navigationEvent = MutableSharedFlow<SuccessfulRateEditingNavigationEvent>()
     val navigationEvent: SharedFlow<SuccessfulRateEditingNavigationEvent> = _navigationEvent
 

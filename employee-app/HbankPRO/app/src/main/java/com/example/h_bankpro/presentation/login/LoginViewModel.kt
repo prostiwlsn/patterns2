@@ -1,14 +1,15 @@
 package com.example.h_bankpro.presentation.login
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.domain.entity.Command
 import com.example.h_bankpro.domain.useCase.LoginUseCase
 import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import com.example.h_bankpro.presentation.login.model.LoginFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,12 +21,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val updateCredentialsUseCase: UpdateCredentialsUseCase,
     private val validationUseCase: LoginValidationUseCase,
     private val loginUseCase: LoginUseCase,
     getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
     resetCredentialsUseCase: ResetCredentialsUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state
@@ -59,6 +61,7 @@ class LoginViewModel(
             viewModelScope.launch {
                 loginUseCase()
                     .onSuccess {
+                        pushCommandUseCase(Command.RefreshMainScreen)
                         _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
                     }
                     .onFailure {
@@ -68,6 +71,16 @@ class LoginViewModel(
                                     fieldErorrs = LoginFrontErrors(
                                         loginFieldError = "",
                                         passwordFieldError = "Неверный логин или пароль",
+                                    )
+                                )
+                            }
+                        }
+                        else if (it.code == 403) {
+                            _state.update {
+                                it.copy(
+                                    fieldErorrs = LoginFrontErrors(
+                                        loginFieldError = "",
+                                        passwordFieldError = "Пользователь заблокирован",
                                     )
                                 )
                             }

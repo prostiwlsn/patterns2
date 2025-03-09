@@ -2,7 +2,7 @@ package com.example.h_bankpro.presentation.rateEditing
 
 data class RateEditingState(
     val rateId: String = "",
-    val interestRate: Double = 0.0,
+    val interestRate: String? = null,
     val initialInterestRate: Double = 0.0,
     val name: String = "",
     val initialName: String = "",

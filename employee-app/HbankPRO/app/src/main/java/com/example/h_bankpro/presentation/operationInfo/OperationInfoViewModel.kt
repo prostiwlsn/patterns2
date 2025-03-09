@@ -1,12 +1,12 @@
 package com.example.h_bankpro.presentation.operationInfo
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bankpro.data.OperationType
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.domain.useCase.GetOperationInfoUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,9 +18,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class OperationInfoViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val getOperationInfoUseCase: GetOperationInfoUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(OperationInfoState())
     val state: StateFlow<OperationInfoState> = _state
 

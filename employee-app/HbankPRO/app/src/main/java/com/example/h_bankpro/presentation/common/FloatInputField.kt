@@ -32,6 +32,7 @@ fun FloatInputField(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
+            singleLine = true,
             value = value,
             onValueChange = { text ->
                 onValueChange(text)

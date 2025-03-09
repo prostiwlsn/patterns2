@@ -3,11 +3,13 @@ package com.example.h_bankpro.presentation.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.h_bankpro.presentation.account.AccountScreen
+import com.example.h_bankpro.presentation.connectionError.ConnectionErrorScreen
 import com.example.h_bankpro.presentation.launch.LaunchScreen
 import com.example.h_bankpro.presentation.loan.LoanScreen
 import com.example.h_bankpro.presentation.login.LoginScreen
@@ -24,10 +26,13 @@ import com.example.h_bankpro.presentation.successfulRateDeletion.SuccessfulRateD
 import com.example.h_bankpro.presentation.user.UserScreen
 import com.example.h_bankpro.presentation.userCreation.UserCreationScreen
 import com.example.h_bankpro.presentation.welcome.WelcomeScreen
+import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    viewModel: NavigationViewModel = koinViewModel()
+) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -127,6 +132,22 @@ fun AppNavigation() {
             )
         ) {
             OperationInfoScreen(navController)
+        }
+        composable(
+            route = "connectionError"
+        ) {
+            ConnectionErrorScreen(navController)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                NavigationEvent.NavigateToNoConnection ->
+                    if (navController.currentDestination?.route != "connectionError") {
+                        navController.navigate("connectionError")
+                    }
+            }
         }
     }
 }

@@ -1,32 +1,38 @@
 package com.example.h_bankpro.presentation.main
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
-import com.example.h_bankpro.domain.model.User
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.data.utils.RequestResult
+import com.example.h_bankpro.domain.entity.Command
 import com.example.h_bankpro.domain.model.Tariff
+import com.example.h_bankpro.domain.model.User
+import com.example.h_bankpro.domain.useCase.GetCommandUseCase
 import com.example.h_bankpro.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bankpro.domain.useCase.GetTariffListUseCase
 import com.example.h_bankpro.domain.useCase.GetUsersUseCase
 import com.example.h_bankpro.domain.useCase.LogoutUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val getUsersUseCase: GetUsersUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getTariffListUseCase: GetTariffListUseCase,
-    private val logoutUseCase: LogoutUseCase
-) : ViewModel() {
+    private val logoutUseCase: LogoutUseCase,
+    private val getCommandUseCase: GetCommandUseCase,
+) : BaseViewModel() {
     private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
 
@@ -34,6 +40,17 @@ class MainViewModel(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
+        getCommandUseCase().onEach { command ->
+            when (command) {
+                is Command.RefreshMainScreen -> onInit()
+
+                else -> Unit
+            }
+        }.launchIn(viewModelScope)
+        onInit()
+    }
+
+    private fun onInit() {
         getCurrentUserId()
         loadInitialTariffs()
         setupTariffPager()

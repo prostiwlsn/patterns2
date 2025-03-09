@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.example.h_bankpro.R
 import com.example.h_bankpro.presentation.common.CustomDisablableButton
 import com.example.h_bankpro.presentation.common.FloatInputField
+import com.example.h_bankpro.presentation.common.NumberInputField
 import com.example.h_bankpro.presentation.common.TextInputField
 import com.example.h_bankpro.presentation.rateCreation.components.RateCreationHeader
 import org.koin.androidx.compose.koinViewModel
@@ -65,9 +66,9 @@ fun RateCreationScreen(
         Spacer(modifier = Modifier.height(6.dp))
         FloatInputField(
             labelRes = R.string.rate_in_percent,
-            value = state.interestRate.toString(),
+            value = state.interestRate.orEmpty(),
             onValueChange = { text ->
-                viewModel.onRateChange(text.toDouble())
+                viewModel.onRateChange(text)
             }
         )
         Spacer(modifier = Modifier.height(6.dp))

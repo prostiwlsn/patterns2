@@ -1,8 +1,8 @@
 package com.example.h_bankpro.presentation.loan
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoanViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class LoanViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
+    savedStateHandle: SavedStateHandle,
+) : BaseViewModel() {
     private val _state = MutableStateFlow(LoanState())
     val state: StateFlow<LoanState> = _state
 

@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.domain.entity.Command
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.domain.useCase.RegisterUseCase
 import com.example.h_bankpro.domain.useCase.RegistrationValidationUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import com.example.h_bankpro.presentation.registration.model.RegistrationFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,12 +23,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegistrationViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val updateCredentialsUseCase: UpdateCredentialsUseCase,
     private val validationUseCase: RegistrationValidationUseCase,
     private val registerUseCase: RegisterUseCase,
     getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
     resetCredentialsUseCase: ResetCredentialsUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(RegistrationState())
     val state: StateFlow<RegistrationState> = _state
 
@@ -77,6 +81,7 @@ class RegistrationViewModel(
             viewModelScope.launch {
                 registerUseCase()
                     .onSuccess {
+                        pushCommandUseCase(Command.RefreshMainScreen)
                         _navigationEvent.emit(RegistrationNavigationEvent.NavigateToMain)
                     }
                     .onFailure {

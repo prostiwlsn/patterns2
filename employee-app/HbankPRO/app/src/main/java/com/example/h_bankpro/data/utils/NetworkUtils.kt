@@ -1,5 +1,6 @@
 package com.example.h_bankpro.data.utils
 
+import com.example.h_bankpro.presentation.common.viewModel.NoInternetConnectionException
 import retrofit2.HttpException
 import java.net.ConnectException
 
@@ -15,7 +16,7 @@ object NetworkUtils {
                 message = e.message()
             )
         } catch (e: ConnectException) {
-            RequestResult.NoInternetConnection()
+            throw NoInternetConnectionException()
         }
     }
 

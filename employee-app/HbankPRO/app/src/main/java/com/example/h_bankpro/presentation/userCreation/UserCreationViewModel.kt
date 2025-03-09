@@ -1,12 +1,12 @@
 package com.example.h_bankpro.presentation.userCreation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bankpro.data.RoleType
 import com.example.h_bankpro.data.dto.UserCreationDto
-import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
+import com.example.h_bankpro.domain.entity.Command
 import com.example.h_bankpro.domain.useCase.CreateUserUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,8 +15,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class UserCreationViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val createUserUseCase: CreateUserUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(UserCreationState())
     val state: StateFlow<UserCreationState> = _state
 
@@ -38,11 +39,6 @@ class UserCreationViewModel(
         validateFields()
     }
 
-    fun onRepeatPasswordChange(repeatPassword: String) {
-        _state.update { it.copy(repeatPassword = repeatPassword) }
-        validateFields()
-    }
-
     fun onRoleSelect(role: Boolean) {
         _state.update { it.copy(selectedRole = role) }
     }
@@ -58,8 +54,7 @@ class UserCreationViewModel(
             it.copy(
                 areFieldsValid = _state.value.name.isNotBlank() &&
                         state.value.phone.isNotBlank() &&
-                        state.value.password.isNotBlank() &&
-                        state.value.repeatPassword.isNotBlank()
+                        state.value.password.isNotBlank()
             )
         }
     }
@@ -74,11 +69,10 @@ class UserCreationViewModel(
             )
             createUserUseCase(request = request)
                 .onSuccess {
+                    pushCommandUseCase(Command.RefreshMainScreen)
                     _navigationEvent.emit(
                         UserCreationNavigationEvent.NavigateToSuccessfulUserCreation
                     )
-                }
-                .onFailure {
                 }
         }
     }

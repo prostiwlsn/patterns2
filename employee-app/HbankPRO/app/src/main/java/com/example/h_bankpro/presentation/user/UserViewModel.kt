@@ -1,8 +1,6 @@
 package com.example.h_bankpro.presentation.user
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -10,12 +8,15 @@ import com.example.h_bankpro.data.Account
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.data.utils.RequestResult
+import com.example.h_bankpro.domain.entity.Command
 import com.example.h_bankpro.domain.model.Loan
 import com.example.h_bankpro.domain.useCase.BlockUserUseCase
 import com.example.h_bankpro.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bankpro.domain.useCase.GetUserByIdUseCase
 import com.example.h_bankpro.domain.useCase.GetUserLoansUseCase
+import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.domain.useCase.UnblockUserUseCase
+import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,13 +26,14 @@ import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
 class UserViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val blockUserUseCase: BlockUserUseCase,
     private val unblockUserUseCase: UnblockUserUseCase,
     private val getUserLoansUseCase: GetUserLoansUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _state
 
@@ -153,6 +155,7 @@ class UserViewModel(
         viewModelScope.launch {
             blockUserUseCase(userId)
                 .onSuccess {
+                    pushCommandUseCase(Command.RefreshMainScreen)
                     _state.update { currentState ->
                         currentState.copy(
                             user = currentState.user?.copy(isBlocked = true)
@@ -168,6 +171,7 @@ class UserViewModel(
         viewModelScope.launch {
             unblockUserUseCase(userId)
                 .onSuccess {
+                    pushCommandUseCase(Command.RefreshMainScreen)
                     _state.update { currentState ->
                         currentState.copy(
                             user = currentState.user?.copy(isBlocked = false)
