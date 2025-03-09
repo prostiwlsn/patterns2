@@ -62,7 +62,7 @@ class LoginViewModel(
             viewModelScope.launch {
                 loginUseCase()
                     .onSuccess {
-                        pushAuthorizationCommandUseCase(Command.UpdateProfile)
+                        pushAuthorizationCommandUseCase(Command.RefreshMainScreen)
                         _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
                     }
                     .onFailure {

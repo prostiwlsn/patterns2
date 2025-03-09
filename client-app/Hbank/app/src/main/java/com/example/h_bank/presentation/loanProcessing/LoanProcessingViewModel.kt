@@ -171,7 +171,7 @@ class LoanProcessingViewModel(
                     accountId = _state.value.selectedAccount?.id.orEmpty(),
                     tariffId = _state.value.selectedRate?.id.orEmpty(),
                 ).onSuccess {
-                    pushCommandUseCase(Command.UpdateProfile)
+                    pushCommandUseCase(Command.RefreshMainScreen)
                     _navigationEvent.emit(LoanProcessingNavigationEvent.NavigateToSuccessfulLoanProcessing)
                     resetLoanUseCase()
                 }

@@ -42,7 +42,6 @@ fun LoanProcessingScreen(
     viewModel: LoanProcessingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-//    val lazyPagingItems = state.tariffsFlow.collectAsLazyPagingItems()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->

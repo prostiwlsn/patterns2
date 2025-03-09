@@ -1,5 +1,6 @@
 package com.example.h_bank.presentation.navigation
 
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.useCase.authorization.GetMainCommandsUseCase
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
@@ -17,8 +18,13 @@ class NavigationViewModel(
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
-        getAuthorizationCommandsUseCase().onEach {
-            _navigationEvent.emit(NavigationEvent.NavigateToNoConnection)
+        getAuthorizationCommandsUseCase().onEach { command ->
+            when (command) {
+                is Command.NavigateToNoConnection ->
+                    _navigationEvent.emit(NavigationEvent.NavigateToNoConnection)
+
+                else -> Unit
+            }
         }.launchIn(viewModelScope)
     }
 }

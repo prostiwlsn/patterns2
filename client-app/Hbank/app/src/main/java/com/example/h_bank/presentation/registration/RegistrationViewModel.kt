@@ -80,7 +80,7 @@ class RegistrationViewModel(
             viewModelScope.launch {
                 registerUseCase()
                     .onSuccess {
-                        pushAuthorizationCommandUseCase(Command.UpdateProfile)
+                        pushAuthorizationCommandUseCase(Command.RefreshMainScreen)
                         _navigationEvent.emit(RegistrationNavigationEvent.NavigateToMain)
                     }
                     .onFailure {

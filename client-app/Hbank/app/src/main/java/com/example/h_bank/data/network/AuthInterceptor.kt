@@ -1,14 +1,17 @@
 package com.example.h_bank.data.network
 
 import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.repository.authorization.ITokenRepository
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
 class AuthInterceptor(
-    private val tokenRepository: ITokenRepository
+    private val tokenRepository: ITokenRepository,
+    private val pushCommandUseCase: PushCommandUseCase,
 ) : Interceptor {
     companion object {
         private const val MAX_RETRY_ATTEMPTS = 1

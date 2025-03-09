@@ -1,11 +1,10 @@
 package com.example.h_bank.presentation.loanPayment
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.RepayLoanUseCase
@@ -55,10 +54,9 @@ class LoanPaymentViewModel(
         val amountValue = amountInput.toDoubleOrNull()
 
         if (amountValue != null || amountInput.isEmpty()) {
-            _state.update { it.copy(amount = amountValue) }
+            _state.update { it.copy(amount = amountInput) }
         }
 
-        _state.update { it.copy(amount = amountValue) }
         validateFields()
     }
 
@@ -97,18 +95,18 @@ class LoanPaymentViewModel(
                 repayLoanUseCase(
                     state.value.selectedAccount?.id ?: "",
                     loanId,
-                    it
+                    it.toDoubleOrNull() ?: 0.0
                 ).onSuccess {
+                    pushCommandUseCase(Command.RefreshMainScreen)
                     _navigationEvent.emit(
                         LoanPaymentNavigationEvent.NavigateToSuccessfulLoanPayment(
                             documentNumber = documentNumber,
                             amount = _state.value.amount.toString(),
-                            debt = (((debt.toDouble() - (_state.value.amount ?: 0.0)))).toString(),
+                            debt = (((debt.toDouble() - (_state.value.amount?.toDoubleOrNull() ?: 0.0)))).toString(),
                             accountNumber = _state.value.selectedAccount?.accountNumber ?: "",
                         )
                     )
                 }
-                    .onFailure { }
             }
         }
     }
