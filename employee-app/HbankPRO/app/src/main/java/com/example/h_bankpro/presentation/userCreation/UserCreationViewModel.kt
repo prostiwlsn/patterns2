@@ -1,5 +1,6 @@
 package com.example.h_bankpro.presentation.userCreation
 
+import androidx.core.text.isDigitsOnly
 import com.example.h_bankpro.data.RoleType
 import com.example.h_bankpro.data.dto.UserCreationDto
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
@@ -30,8 +31,10 @@ class UserCreationViewModel(
     }
 
     fun onPhoneChange(phone: String) {
-        _state.update { it.copy(phone = phone) }
-        validateFields()
+        if (phone.isDigitsOnly() && phone.length <= 10) {
+            _state.update { it.copy(phone = phone) }
+            validateFields()
+        }
     }
 
     fun onPasswordChange(password: String) {
@@ -50,19 +53,23 @@ class UserCreationViewModel(
     }
 
     private fun validateFields() {
+        val phoneValid = _state.value.phone.length == 10
+        val passwordValid = _state.value.password.length in 8..32
+
         _state.update {
             it.copy(
                 areFieldsValid = _state.value.name.isNotBlank() &&
-                        state.value.phone.isNotBlank() &&
-                        state.value.password.isNotBlank()
+                        phoneValid &&
+                        passwordValid
             )
         }
     }
 
     fun onCreateClicked() {
         viewModelScope.launch {
+            val formattedPhone = "+7${state.value.phone}"
             val request = UserCreationDto(
-                phone = state.value.phone,
+                phone = formattedPhone,
                 password = state.value.password,
                 name = state.value.name,
                 role = if (state.value.selectedRole) null else RoleType.MANAGER
