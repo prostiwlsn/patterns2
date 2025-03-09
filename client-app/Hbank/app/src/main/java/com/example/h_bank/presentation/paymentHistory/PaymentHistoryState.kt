@@ -1,120 +1,28 @@
 package com.example.h_bank.presentation.paymentHistory
 
+import androidx.paging.PagingData
 import com.example.h_bank.data.Account
-import com.example.h_bank.data.Payment
-import com.example.h_bank.data.PaymentType
-import com.example.h_bank.data.PaymentTypeFilter
+import com.example.h_bank.data.Operation
+import com.example.h_bank.domain.entity.payment.PaymentItemEntity
+import com.example.h_bank.domain.model.OperationShort
+import com.example.h_bank.presentation.paymentHistory.model.OperationsFilterModel
+import com.example.h_bank.presentation.paymentHistory.utils.getAccounts
+import com.example.h_bank.presentation.paymentHistory.utils.getAllPayments
+import com.example.h_bank.presentation.paymentHistory.utils.getFilteredPayments
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 data class PaymentHistoryState(
-    val allPayments: List<Payment> = listOf(
-        Payment(
-            "1",
-            PaymentType.INCOMING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-        Payment(
-            "1",
-            PaymentType.OUTGOING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        ),
-    ),
-    val filteredPayments: List<Payment> = listOf(
-        Payment(
-            "1",
-            PaymentType.INCOMING,
-            LocalDate.of(2025, 2, 1),
-            500.0,
-            Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-            null
-        )
-    ),
-    val accounts: List<Account> = listOf(
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-        Account("1", "Счёт 1", 100000.toFloat(), "1", false, LocalDateTime.now()),
-    ),
-    val selectedAccount: Account? = null,
-    val selectedType: PaymentTypeFilter = PaymentTypeFilter.All,
-    val selectedDateRange: Pair<LocalDate?, LocalDate?> = null to null,
+    val allPayments: List<PaymentItemEntity> = getAllPayments(),
+    val filteredPayments: List<PaymentItemEntity> = getFilteredPayments(),
+    val accounts: List<Account> = getAccounts(),
     val isAccountsSheetVisible: Boolean = false,
     val isTypesSheetVisible: Boolean = false,
-    val isDatePickerVisible: Boolean = false
+    val isDatePickerVisible: Boolean = false,
+
+    val operationsPager: Flow<PagingData<OperationShort>> = MutableStateFlow(PagingData.empty()),
+    val filterModel: OperationsFilterModel = OperationsFilterModel(),
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
 )

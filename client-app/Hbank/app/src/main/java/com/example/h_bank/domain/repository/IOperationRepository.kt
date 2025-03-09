@@ -1,15 +1,16 @@
 package com.example.h_bank.domain.repository
 
-import com.example.h_bank.data.dto.OperationRquestBody
-import com.example.h_bank.data.dto.OperationDto
-import com.example.h_bank.data.dto.OperationShortDto
+import com.example.h_bank.data.dto.payment.OperationRquestBody
+import com.example.h_bank.data.dto.payment.OperationDto
+import com.example.h_bank.data.dto.payment.OperationShortDto
 import com.example.h_bank.data.dto.PageResponse
 import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.entity.filter.OperationFilterEntity
 
 interface IOperationRepository {
     suspend fun getOperationsByAccount(
-        accountId: String,
+        filters: OperationFilterEntity,
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>>
 

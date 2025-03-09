@@ -1,7 +1,7 @@
 package com.example.h_bank.domain.useCase
 
-import com.example.h_bank.data.OperationType
-import com.example.h_bank.data.dto.OperationRquestBody
+import com.example.h_bank.data.dto.payment.OperationTypeDto
+import com.example.h_bank.data.dto.payment.OperationRquestBody
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.repository.IOperationRepository
 
@@ -17,7 +17,7 @@ class ReplenishUseCase(
             recipientAccountId = recipientAccountId,
             amount = amount,
             message = null,
-            operationType = OperationType.REPLENISHMENT
+            operationType = OperationTypeDto.REPLENISHMENT
         )
         return operationRepository.createOperation(request)
     }

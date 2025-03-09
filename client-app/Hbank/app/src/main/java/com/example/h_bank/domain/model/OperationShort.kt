@@ -1,6 +1,6 @@
 package com.example.h_bank.domain.model
 
-import com.example.h_bank.data.OperationType
+import com.example.h_bank.data.dto.payment.OperationTypeDto
 import kotlinx.datetime.LocalDateTime
 
 data class OperationShort(
@@ -8,5 +8,5 @@ data class OperationShort(
     val amount: Float,
     val directionToMe: Boolean,
     val transactionDateTime: LocalDateTime,
-    val operationType: OperationType
+    val operationType: OperationTypeDto
 )

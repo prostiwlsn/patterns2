@@ -16,6 +16,7 @@ import com.example.h_bank.di.userModule
 import com.example.h_bank.presentation.navigation.AppNavigation
 import com.example.h_bank.ui.theme.HbankTheme
 import com.example.h_bank.di.networkModule
+import com.example.h_bank.di.paymentModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
             modules(tokenModule)
             modules(logoutModule)
             modules(loanModule)
+            modules(paymentModule)
         }
         enableEdgeToEdge()
         setContent {

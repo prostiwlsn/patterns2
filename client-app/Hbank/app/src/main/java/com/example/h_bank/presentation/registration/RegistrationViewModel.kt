@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
-import com.example.h_bank.domain.useCase.RegisterUseCase
-import com.example.h_bank.domain.useCase.RegistrationValidationUseCase
+import com.example.h_bank.domain.entity.authorization.AuthorizationCommand
+import com.example.h_bank.domain.useCase.authorization.PushAuthorizationCommandUseCase
+import com.example.h_bank.domain.useCase.authorization.RegisterUseCase
+import com.example.h_bank.domain.useCase.authorization.RegistrationValidationUseCase
 import com.example.h_bank.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
@@ -23,6 +25,7 @@ class RegistrationViewModel(
     private val updateCredentialsUseCase: UpdateCredentialsUseCase,
     private val validationUseCase: RegistrationValidationUseCase,
     private val registerUseCase: RegisterUseCase,
+    private val pushAuthorizationCommandUseCase: PushAuthorizationCommandUseCase,
     getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
     resetCredentialsUseCase: ResetCredentialsUseCase,
 ) : ViewModel() {
@@ -77,6 +80,7 @@ class RegistrationViewModel(
             viewModelScope.launch {
                 registerUseCase()
                     .onSuccess {
+                        pushAuthorizationCommandUseCase(AuthorizationCommand.UpdateProfile)
                         _navigationEvent.emit(RegistrationNavigationEvent.NavigateToMain)
                     }
                     .onFailure {

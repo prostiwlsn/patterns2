@@ -1,7 +1,7 @@
 package com.example.h_bank.presentation.transactionInfo
 
 import com.example.h_bank.data.Operation
-import com.example.h_bank.data.OperationType
+import com.example.h_bank.data.dto.payment.OperationTypeDto
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -13,7 +13,7 @@ data class TransactionInfoState(
         transactionDateTime = LocalDateTime.now(),
         amount = 1000.0,
         message = "Перевод на карту",
-        operationType = OperationType.TRANSFER,
+        operationType = OperationTypeDto.TRANSFER,
         directionToMe = false,
     )
 )

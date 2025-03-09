@@ -20,13 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.h_bank.R
-import com.example.h_bank.data.OperationType
+import com.example.h_bank.data.dto.payment.OperationTypeDto
 import com.example.h_bank.presentation.common.SuccessIcon
 import com.example.h_bank.presentation.common.TextField
 import com.example.h_bank.presentation.successfulTransfer.components.SuccessfulTransferHeader
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -87,21 +84,21 @@ fun TransactionInfoScreen(
         Spacer(modifier = Modifier.height(80.dp))
 
         when (state.operation.operationType) {
-            OperationType.REPLENISHMENT -> {
+            OperationTypeDto.REPLENISHMENT -> {
                 TextField(
                     labelRes = R.string.replenishment_account,
                     value = state.operation.senderAccountId.toString(),
                 )
             }
 
-            OperationType.WITHDRAWAL -> {
+            OperationTypeDto.WITHDRAWAL -> {
                 TextField(
                     labelRes = R.string.withdrawal_account,
                     value = state.operation.senderAccountId.toString(),
                 )
             }
 
-            OperationType.TRANSFER -> {
+            OperationTypeDto.TRANSFER -> {
                 TextField(
                     labelRes = R.string.sender_account,
                     value = state.operation.senderAccountId.toString(),
@@ -118,7 +115,7 @@ fun TransactionInfoScreen(
                 )
             }
 
-            OperationType.LOAN_REPAYMENT -> {
+            OperationTypeDto.LOAN_REPAYMENT -> {
                 TextField(
                     labelRes = R.string.payment_account,
                     value = state.operation.senderAccountId.toString(),

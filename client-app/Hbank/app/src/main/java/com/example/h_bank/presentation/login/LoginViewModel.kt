@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
-import com.example.h_bank.domain.useCase.LoginUseCase
-import com.example.h_bank.domain.useCase.LoginValidationUseCase
+import com.example.h_bank.domain.entity.authorization.AuthorizationCommand
+import com.example.h_bank.domain.useCase.authorization.LoginUseCase
+import com.example.h_bank.domain.useCase.authorization.LoginValidationUseCase
+import com.example.h_bank.domain.useCase.authorization.PushAuthorizationCommandUseCase
 import com.example.h_bank.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
-import com.example.h_bank.presentation.login.LoginNavigationEvent
-import com.example.h_bank.presentation.login.LoginState
 import com.example.h_bank.presentation.login.model.LoginFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +25,7 @@ class LoginViewModel(
     private val updateCredentialsUseCase: UpdateCredentialsUseCase,
     private val validationUseCase: LoginValidationUseCase,
     private val loginUseCase: LoginUseCase,
+    private val pushAuthorizationCommandUseCase: PushAuthorizationCommandUseCase,
     getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
     resetCredentialsUseCase: ResetCredentialsUseCase,
 ) : ViewModel() {
@@ -61,6 +62,7 @@ class LoginViewModel(
             viewModelScope.launch {
                 loginUseCase()
                     .onSuccess {
+                        pushAuthorizationCommandUseCase(AuthorizationCommand.UpdateProfile)
                         _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
                     }
                     .onFailure {

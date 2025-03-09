@@ -24,7 +24,7 @@ import org.koin.dsl.module
 val appModule = module {
     viewModel { WelcomeViewModel() }
     viewModel { LaunchViewModel(get()) }
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         LoanPaymentViewModel(
             savedStateHandle,
@@ -37,7 +37,6 @@ val appModule = module {
     viewModel { SuccessfulLoanPaymentViewModel() }
     viewModel { SuccessfulAccountOpeningViewModel() }
     viewModel { SuccessfulAccountClosureViewModel() }
-    viewModel { PaymentHistoryViewModel() }
     viewModel { TransferViewModel() }
     viewModel { (savedStateHandle: SavedStateHandle) -> TransactionInfoViewModel(savedStateHandle) }
     viewModel { ReplenishmentViewModel() }

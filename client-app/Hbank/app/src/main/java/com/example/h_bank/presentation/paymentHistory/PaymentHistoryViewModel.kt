@@ -1,59 +1,123 @@
 package com.example.h_bank.presentation.paymentHistory
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.material3.DateRangePickerState
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SelectableDates
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.example.h_bank.data.Account
-import com.example.h_bank.data.Payment
-import com.example.h_bank.data.PaymentTypeFilter
+import com.example.h_bank.data.utils.NetworkUtils.onSuccess
+import com.example.h_bank.domain.entity.filter.AccountFilter
+import com.example.h_bank.domain.entity.filter.FilterItem
+import com.example.h_bank.domain.entity.filter.OperationType
+import com.example.h_bank.domain.entity.filter.OperationTypeFilter
+import com.example.h_bank.domain.entity.filter.PeriodFilter
+import com.example.h_bank.domain.entity.payment.PaymentItemEntity
+import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
+import com.example.h_bank.domain.useCase.GetUserIdUseCase
+import com.example.h_bank.domain.useCase.filter.GetOperationsFiltersFlowUseCase
+import com.example.h_bank.domain.useCase.filter.UpdateOperationsFilterUseCase
+import com.example.h_bank.domain.useCase.payment.GetOperationsHistoryUseCase
+import com.example.h_bank.presentation.paymentHistory.model.OperationsFilterModel
+import com.example.h_bank.presentation.paymentHistory.paging.OperationsPagingSource
+import com.example.h_bank.presentation.paymentHistory.utils.DateFormatter.toStringFormat
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.ZoneId
-import java.util.Locale
+import java.time.LocalDateTime
 
-class PaymentHistoryViewModel : ViewModel() {
+class PaymentHistoryViewModel(
+    private val getUserAccountsUseCase: GetUserAccountsUseCase,
+    private val getOperationsHistoryUseCase: GetOperationsHistoryUseCase,
+    private val updateOperationsFilterUseCase: UpdateOperationsFilterUseCase,
+    getOperationsFiltersFlowUseCase: GetOperationsFiltersFlowUseCase,
+    getUserIdUseCase: GetUserIdUseCase,
+) : ViewModel() {
     private val _state = MutableStateFlow(PaymentHistoryState())
     val state: StateFlow<PaymentHistoryState> = _state
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    val dateRangePickerState = DateRangePickerState(
-        initialSelectedStartDateMillis = null,
-        initialSelectedEndDateMillis = null,
-        initialDisplayedMonthMillis = System.currentTimeMillis(),
-        yearRange = IntRange(2000, 2100),
-        initialDisplayMode = DisplayMode.Picker,
-        locale = Locale("ru"),
-        selectableDates = object : SelectableDates {
-            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                val date = LocalDate.ofInstant(
-                    java.time.Instant.ofEpochMilli(utcTimeMillis),
-                    ZoneId.systemDefault()
-                )
-                return !date.isAfter(LocalDate.now())
-            }
-
-            override fun isSelectableYear(year: Int): Boolean {
-                return year in 2000..2100
-            }
-        }
-    )
 
     private val _navigationEvent = MutableSharedFlow<PaymentHistoryNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
+        val userId = getUserIdUseCase().orEmpty()
+
+        getOperationsFiltersFlowUseCase().onEach {
+            updatePager()
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            getUserAccountsUseCase(userId)
+                .onSuccess { accountsResult ->
+                    _state.update {
+                        it.copy(
+                            accounts = accountsResult.data
+                        )
+                    }
+                    _state.value.filterModel.updateFilter(
+                        AccountFilter(accountsResult.data.first().accountNumber)
+                    )
+                    updateOperationsFilterUseCase { copy(accountId = accountsResult.data.first().id) }
+                }
+
+            updatePager()
+        }
         _state.update { it.copy(filteredPayments = state.value.allPayments) }
+    }
+
+    private fun updatePager() {
+        val pager = Pager(
+            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+            pagingSourceFactory = {
+                OperationsPagingSource(getOperationsHistoryUseCase)
+            }
+        )
+        _state.update {
+            it.copy(
+                operationsPager = pager.flow
+            )
+        }
+    }
+
+    fun onFilterClick(filterItem: FilterItem) {
+        when (filterItem) {
+            is AccountFilter -> showAccountsSheet()
+            is PeriodFilter -> showDatePicker()
+            is OperationTypeFilter -> showTypesSheet()
+        }
+    }
+
+    fun onFilterClose(filterItem: FilterItem) {
+        val currentFilters = _state.value.filterModel.getFiltersList()
+
+        _state.update {
+            it.copy(
+                filterModel = OperationsFilterModel()
+            )
+        }
+        currentFilters.filterNot { it == filterItem }.forEach {
+            _state.value.filterModel.updateFilter(it)
+        }
+        when (filterItem) {
+            is AccountFilter -> {
+                updateOperationsFilterUseCase { copy(accountId = null) }
+            }
+            is PeriodFilter -> {
+                updateOperationsFilterUseCase {
+                    copy(
+                        startDate = null,
+                        endDate = null,
+                    )
+                }
+            }
+            is OperationTypeFilter -> {
+                updateOperationsFilterUseCase { copy(operationType = null) }
+            }
+        }
     }
 
     fun showAccountsSheet() {
@@ -64,7 +128,7 @@ class PaymentHistoryViewModel : ViewModel() {
         _state.update { it.copy(isAccountsSheetVisible = false) }
     }
 
-    fun showTypesSheet() {
+    private fun showTypesSheet() {
         _state.update { it.copy(isTypesSheetVisible = true) }
     }
 
@@ -72,7 +136,7 @@ class PaymentHistoryViewModel : ViewModel() {
         _state.update { it.copy(isTypesSheetVisible = false) }
     }
 
-    fun showDatePicker() {
+    private fun showDatePicker() {
         _state.update { it.copy(isDatePickerVisible = true) }
     }
 
@@ -80,66 +144,47 @@ class PaymentHistoryViewModel : ViewModel() {
         _state.update { it.copy(isDatePickerVisible = false) }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    @OptIn(ExperimentalMaterial3Api::class)
-    fun onDateRangeSelected() {
-        val startDateMillis = dateRangePickerState.selectedStartDateMillis
-        val endDateMillis = dateRangePickerState.selectedEndDateMillis
-
-        val startDate = startDateMillis?.let {
-            LocalDate.ofInstant(
-                java.time.Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
+    fun onDateRangeSelected(startDate: LocalDateTime, endDate: LocalDateTime) {
+        _state.value = _state.value.copy(
+            isDatePickerVisible = false,
+        )
+        _state.value.filterModel.updateFilter(
+            PeriodFilter(startDate.toStringFormat() + " - " + endDate.toStringFormat())
+        )
+        updateOperationsFilterUseCase {
+            copy(
+                startDate = startDate,
+                endDate = endDate,
             )
         }
-        val endDate = endDateMillis?.let {
-            LocalDate.ofInstant(
-                java.time.Instant.ofEpochMilli(it),
-                ZoneId.systemDefault()
-            )
-        }
-
-        _state.value = _state.value.copy(selectedDateRange = startDate to endDate)
-        filterPayments()
     }
 
     fun resetFilters() {
-        _state.value = _state.value.copy(
-            selectedAccount = null,
-            selectedType = PaymentTypeFilter.All,
-            selectedDateRange = null to null,
-            filteredPayments = _state.value.allPayments
-        )
-    }
-
-    private fun filterPayments() {
-        val filtered = _state.value.allPayments.filter { payment ->
-            val accountMatch = _state.value.selectedAccount == null ||
-                    payment.account == _state.value.selectedAccount
-
-            val typeMatch = when (val selectedType = _state.value.selectedType) {
-                is PaymentTypeFilter.All -> true
-                is PaymentTypeFilter.Specific -> payment.type == selectedType.type
-            }
-
-            val dateMatch = _state.value.selectedDateRange.let { (start, end) ->
-                if (start == null || end == null) true
-                else {
-                    payment.date in start..end
-                }
-            }
-
-            accountMatch && typeMatch && dateMatch
+        _state.update {
+            it.copy(
+                filterModel = OperationsFilterModel()
+            )
         }
-        _state.update { it.copy(filteredPayments = filtered) }
+        updateOperationsFilterUseCase {
+            copy(
+                accountId = null,
+                startDate = null,
+                endDate = null,
+                operationType = null,
+            )
+        }
     }
 
     fun onAccountClicked(account: Account) {
-        _state.update { it.copy(selectedAccount = account) }
-        filterPayments()
+        _state.value.filterModel.updateFilter(
+            AccountFilter(
+                account.accountNumber,
+            )
+        )
+        updateOperationsFilterUseCase { copy(accountId = account.id) }
     }
 
-    fun onPaymentClicked(payment: Payment) {
+    fun onPaymentClicked(payment: PaymentItemEntity) {
         viewModelScope.launch {
             _navigationEvent.emit(
                 PaymentHistoryNavigationEvent.NavigateToTransactionInfo(
@@ -149,9 +194,11 @@ class PaymentHistoryViewModel : ViewModel() {
         }
     }
 
-    fun onTypeClicked(type: PaymentTypeFilter) {
-        _state.update { it.copy(selectedType = type) }
-        filterPayments()
+    fun onTypeClicked(type: OperationType) {
+        _state.value.filterModel.updateFilter(
+            OperationTypeFilter(type)
+        )
+        updateOperationsFilterUseCase { copy(operationType = type) }
     }
 
     fun onBackClicked() {
