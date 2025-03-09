@@ -17,4 +17,6 @@ class LoanStorageRepository: ILoanStorageRepository{
     override fun getLoanFlow(): Flow<LoanEntity> = currentLoan
 
     override fun getLoanState() = currentLoan.value
+
+    override fun reset() = currentLoan.update { LoanEntity() }
 }

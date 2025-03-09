@@ -37,7 +37,7 @@ fun LoanItem(
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = loan.debt.toString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = loan.amount.toBigDecimal().toPlainString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
         Text(
             text = "до " + loan.endDate.format(formatter),

@@ -9,4 +9,6 @@ interface ILoanStorageRepository {
     fun getLoanFlow(): Flow<LoanEntity>
 
     fun getLoanState(): LoanEntity
+
+    fun reset()
 }

@@ -56,6 +56,7 @@
     <string name="loan_payment">Погашение кредита</string>
     <string name="process_loan">Оформить кредит</string>
     <string name="rate">Тариф</string>
+    <string name="account">Счет</string>
     <string name="loan_amount">Размер кредита</string>
     <string name="amount">Сумма</string>
     <string name="comment">Комментарий к переводу</string>

@@ -176,6 +176,7 @@ fun PaymentHistoryScreen(
             }
         }
     }
+
     // Выбор типа операции
     if (state.isTypesSheetVisible) {
         ModalBottomSheet(

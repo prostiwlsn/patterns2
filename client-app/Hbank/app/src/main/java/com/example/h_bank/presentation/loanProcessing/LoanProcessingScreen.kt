@@ -31,6 +31,7 @@ import com.example.h_bank.presentation.common.NumberInputField
 import com.example.h_bank.presentation.common.TextField
 import com.example.h_bank.presentation.common.utils.Keyboard
 import com.example.h_bank.presentation.common.utils.keyboardAsState
+import com.example.h_bank.presentation.loanPayment.components.LoanPaymentBottomSheetContent
 import com.example.h_bank.presentation.loanProcessing.components.LoanProcessingHeader
 import org.koin.androidx.compose.koinViewModel
 
@@ -91,9 +92,15 @@ fun LoanProcessingScreen(
             Spacer(modifier = Modifier.height(37.dp))
             IconButtonField(
                 labelRes = R.string.rate,
-                value = state.selectedRate.name,
+                value = state.selectedRate?.name.orEmpty(),
                 icon = Icons.Default.Edit,
                 onIconClick = {viewModel.showRatesSheet() },
+            )
+            IconButtonField(
+                labelRes = R.string.account,
+                value = state.selectedAccount?.accountNumber.orEmpty(),
+                icon = Icons.Default.Edit,
+                onIconClick = { viewModel.showAccountSheet() },
             )
             Spacer(modifier = Modifier.height(6.dp))
             NumberInputField(
@@ -114,13 +121,17 @@ fun LoanProcessingScreen(
             Spacer(modifier = Modifier.height(6.dp))
             TextField(
                 labelRes = R.string.interest_rate,
-                value = state.selectedRate.interestRate.toString() + " %",
+                value = state.selectedRate?.let {
+                    "${it.ratePercent} %"
+                }.orEmpty(),
             )
             Spacer(modifier = Modifier.height(6.dp))
-            TextField(
-                labelRes = R.string.daily_payment,
-                value = state.dailyPayment.toString() + " ₽",
-            )
+            state.dailyPayment?.let {
+                TextField(
+                    labelRes = R.string.daily_payment,
+                    value = "$it ₽"
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
         }
         if (state.isRatesSheetVisible) {
@@ -130,10 +141,27 @@ fun LoanProcessingScreen(
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 RatesBottomSheetContent(
-                    rates = state.rates,
+                    state,
                     onItemClick = { rate ->
                         viewModel.onRateClicked(rate)
                         viewModel.hideRatesSheet()
+                    }
+                )
+            }
+        }
+
+        // Выбор счета
+        if (state.isAccountsSheetVisible) {
+            ModalBottomSheet(
+                onDismissRequest = { viewModel.hideAccountsSheet() },
+                containerColor = Color(0xFFF9F9F9),
+                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+            ) {
+                LoanPaymentBottomSheetContent(
+                    accounts = state.accounts,
+                    onItemClick = { account ->
+                        viewModel.onAccountClicked(account)
+                        viewModel.hideAccountsSheet()
                     }
                 )
             }

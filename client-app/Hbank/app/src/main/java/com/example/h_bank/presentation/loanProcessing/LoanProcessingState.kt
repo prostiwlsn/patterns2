@@ -1,21 +1,27 @@
 package com.example.h_bank.presentation.loanProcessing
 
+import androidx.paging.PagingData
+import com.example.h_bank.data.Account
 import com.example.h_bank.data.Rate
+import com.example.h_bank.domain.entity.loan.TariffEntity
 import com.example.h_bank.presentation.loanProcessing.model.LoanProcessingErrorModel
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
+import com.example.h_bank.presentation.paymentHistory.utils.getAccounts
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 data class LoanProcessingState(
     val rateName: String = "",
-    val rates: List<Rate> = listOf(
-        Rate("1", "Тариф  1",10f),
-        Rate("2", "Тариф  2",20f),
-        Rate("3", "Тариф  3",30f),
-    ),
-    val selectedRate: Rate = Rate("1", "Тариф  1",10f),
+    val rates: Flow<PagingData<TariffEntity>> = MutableStateFlow(PagingData.empty()),
+    val selectedRate: TariffEntity? = null,
+    val selectedAccount: Account? = null,
+    val accounts: List<Account> = emptyList(),
     val amount: Int? = null,
     val term: Int? = null,
     val interestRate: Float? = null,
-    val dailyPayment: Int? = null,
+    val dailyPayment: Double? = null,
     val areFieldsValid: Boolean = false,
     val isRatesSheetVisible: Boolean = false,
+    val isAccountsSheetVisible: Boolean = false,
     val fieldErrors: LoanProcessingErrorModel? = null,
 )
