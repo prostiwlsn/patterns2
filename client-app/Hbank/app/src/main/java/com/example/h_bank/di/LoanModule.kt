@@ -3,12 +3,15 @@ package com.example.h_bank.di
 import com.example.h_bank.data.network.LoanApi
 import com.example.h_bank.data.repository.loan.LoanRemoteRepository
 import com.example.h_bank.data.repository.loan.LoanStorageRepository
+import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.repository.loan.ILoanRemoteRepository
 import com.example.h_bank.domain.repository.loan.ILoanStorageRepository
 import com.example.h_bank.domain.useCase.loan.GetLoanFlowUseCase
+import com.example.h_bank.domain.useCase.loan.GetLoanUseCase
 import com.example.h_bank.domain.useCase.loan.GetTariffListUseCase
 import com.example.h_bank.domain.useCase.loan.GetUserLoansUseCase
 import com.example.h_bank.domain.useCase.loan.LoanProcessingValidationUseCase
+import com.example.h_bank.domain.useCase.loan.ResetLoanUseCase
 import com.example.h_bank.domain.useCase.loan.UpdateLoanUseCase
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -63,12 +66,31 @@ val loanModule = module {
         )
     }
 
+    factory<GetLoanUseCase> {
+        GetLoanUseCase(
+            repository = get(),
+            storageRepository = get(),
+            userRepository = get(),
+        )
+    }
+
+    factory<ResetLoanUseCase> {
+        ResetLoanUseCase(
+            storageRepository = get(),
+        )
+    }
+
     viewModel {
         LoanProcessingViewModel(
             updateLoanUseCase = get(),
             getLoanFlowUseCase = get(),
             loanProcessingValidationUseCase = get(),
-            getTariffListUseCase = get()
+            getTariffListUseCase = get(),
+            getUserIdUseCase = get(),
+            getUserAccountsUseCase = get(),
+            getLoanUseCase = get(),
+            pushAuthorizationCommandUseCase = get(),
+            resetLoanUseCase = get()
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.h_bank.domain.useCase.loan
 
+import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.dto.loan.toDomain
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.data.utils.mapSuccess
@@ -11,10 +12,9 @@ class GetTariffListUseCase(
     private val loanRepository: ILoanRemoteRepository
 ) {
     suspend operator fun invoke(
-        pageNumber: Int = 0,
-        pageSize: Int = 10
+        pageable: Pageable,
     ): RequestResult<LoansPageResponse<TariffEntity>> {
-        return loanRepository.getTariffList(pageNumber, pageSize)
+        return loanRepository.getTariffList(pageable.page, pageable.size)
             .mapSuccess { it.toDomain() }
     }
 }

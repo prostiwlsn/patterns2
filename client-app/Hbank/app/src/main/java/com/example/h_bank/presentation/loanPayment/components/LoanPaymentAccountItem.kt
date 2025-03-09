@@ -36,7 +36,7 @@ fun LoanPaymentAccountItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(text = account.accountNumber, fontSize = 14.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = account.balance.toString(), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(text = account.balance.toString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
         Icon(
             painter = painterResource(id = R.drawable.credit_card),

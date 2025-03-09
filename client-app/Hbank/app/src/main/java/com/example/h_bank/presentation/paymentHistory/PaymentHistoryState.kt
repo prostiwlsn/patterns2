@@ -19,7 +19,6 @@ data class PaymentHistoryState(
     val isAccountsSheetVisible: Boolean = false,
     val isTypesSheetVisible: Boolean = false,
     val isDatePickerVisible: Boolean = false,
-
     val operationsPager: Flow<PagingData<OperationShortModel>> = MutableStateFlow(PagingData.empty()),
     val filterModel: OperationsFilterModel = OperationsFilterModel(),
     val startDate: LocalDate? = null,
