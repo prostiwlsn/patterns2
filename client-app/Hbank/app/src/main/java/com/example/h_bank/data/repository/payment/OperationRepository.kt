@@ -12,6 +12,8 @@ import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.entity.filter.OperationFilterEntity
 import com.example.h_bank.domain.entity.filter.OperationType.Companion.getQuery
 import com.example.h_bank.domain.repository.IOperationRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.ZoneOffset
 
 class OperationRepository(
@@ -20,8 +22,8 @@ class OperationRepository(
     override suspend fun getOperationsByAccount(
         filters: OperationFilterEntity,
         pageable: Pageable
-    ): RequestResult<PageResponse<OperationShortDto>> {
-        return runResultCatching {
+    ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
             api.getOperationsByAccount(
                 accountId = filters.accountId.orEmpty(),
                 timeStart = filters.startDate?.toInstant(ZoneOffset.UTC),
@@ -37,8 +39,8 @@ class OperationRepository(
     override suspend fun getOperationDetails(
         accountId: String,
         operationId: String,
-    ): RequestResult<OperationDetailsDto> {
-        return runResultCatching {
+    ): RequestResult<OperationDetailsDto> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
             api.getOperationDetails(
                 accountId = accountId,
                 operationId = operationId,
@@ -46,15 +48,17 @@ class OperationRepository(
         }
     }
 
-    override suspend fun getOperationInfo(operationId: String): RequestResult<OperationDto> {
-        return runResultCatching {
-            api.getOperationInfo(operationId)
+    override suspend fun getOperationInfo(operationId: String): RequestResult<OperationDto> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching {
+                api.getOperationInfo(operationId)
+            }
         }
-    }
 
-    override suspend fun createOperation(request: OperationRequestBody): RequestResult<Unit> {
-        return runResultCatching {
-            api.createOperation(request)
+    override suspend fun createOperation(request: OperationRequestBody): RequestResult<Unit> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching {
+                api.createOperation(request)
+            }
         }
-    }
 }
