@@ -1,6 +1,6 @@
 package com.example.h_bank.data.repository
 
-import com.example.h_bank.data.dto.OperationCreationRequestDto
+import com.example.h_bank.data.dto.OperationRquestBody
 import com.example.h_bank.data.dto.OperationDto
 import com.example.h_bank.data.dto.OperationShortDto
 import com.example.h_bank.data.dto.PageResponse
@@ -28,7 +28,7 @@ class OperationRepository(
         }
     }
 
-    override suspend fun createOperation(request: OperationCreationRequestDto): RequestResult<Unit> {
+    override suspend fun createOperation(request: OperationRquestBody): RequestResult<Unit> {
         return runResultCatching {
             api.createOperation(request)
         }

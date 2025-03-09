@@ -1,10 +1,9 @@
 package com.example.h_bank.data.network
 
-import com.example.h_bank.data.dto.OperationCreationRequestDto
+import com.example.h_bank.data.dto.OperationRquestBody
 import com.example.h_bank.data.dto.OperationDto
 import com.example.h_bank.data.dto.OperationShortDto
 import com.example.h_bank.data.dto.PageResponse
-import com.example.h_bank.data.utils.RequestResult
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -27,6 +26,6 @@ interface OperationApi {
 
     @POST("operation")
     suspend fun createOperation(
-        @Body request: OperationCreationRequestDto
+        @Body request: OperationRquestBody
     )
 }
