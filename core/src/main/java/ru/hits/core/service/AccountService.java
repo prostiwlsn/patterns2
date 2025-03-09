@@ -27,4 +27,6 @@ public interface AccountService {
 
     void updateBalance(AccountEntity account, Float newBalance);
 
+    UUID getAccountId(String accountNumber);
+
 }
