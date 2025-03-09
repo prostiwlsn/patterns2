@@ -94,6 +94,12 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("IsBlocked", policy =>
         policy.RequireClaim("isBlocked", "False"));
+
+    options.AddPolicy("IsModerator", policy =>
+        policy.RequireClaim("Role", "Moderator", "Admin"));
+
+    options.AddPolicy("IsAdmin", policy =>
+        policy.RequireClaim("Role", "Admin"));
 });
 
 builder.Services.AddQuartz(q =>
