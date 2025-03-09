@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
+using System.Security.Claims;
 
 namespace patterns2_infoauth.Controllers
 {
@@ -20,7 +23,7 @@ namespace patterns2_infoauth.Controllers
         {
             try
             {
-                string token = await _authService.Register(model);
+                var token = await _authService.Register(model);
                 return Ok(token);
             }
             catch (ArgumentException argEx)
@@ -35,13 +38,74 @@ namespace patterns2_infoauth.Controllers
         {
             try
             {
-                string token = await _authService.Login(model);
+                var token = await _authService.Login(model);
                 return Ok(token);
             }
             catch (ArgumentException argEx)
             {
                 return BadRequest("This user doesn't exist");
             }
+            catch (InvalidOperationException invEx)
+            {
+                return Forbid();
+            }
+        }
+
+        [HttpPost("/refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var type = User.FindFirstValue("type");
+
+            if (type == null)
+                return BadRequest("no token type specified");
+
+            if (type != "refresh")
+                return BadRequest(new { Message = "Wrong token type" });
+
+            var sessionIdString = User.FindFirstValue("sessionId");
+
+            if (sessionIdString == null)
+                return BadRequest("no session id");
+
+            Guid sessionId = new Guid(sessionIdString);
+
+            try
+            {
+                var tokens = await _authService.Refresh(sessionId);
+
+                return Ok(tokens);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException invEx)
+            {
+                return Forbid();
+            }
+        }
+
+        [HttpPost("/logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            var sessionIdString = User.FindFirstValue("sessionId");
+
+            if (sessionIdString == null)
+                return BadRequest("no session id");
+
+            Guid sessionId = new Guid(sessionIdString);
+
+            try
+            {
+                await _authService.Logout(sessionId);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound();
+            }
+
+            return Ok();
         }
     }
 }

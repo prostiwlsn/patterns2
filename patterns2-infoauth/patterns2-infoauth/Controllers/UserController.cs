@@ -96,10 +96,13 @@ namespace patterns2_infoauth.Controllers
         }
 
         [HttpGet("/profile")]
-        [Authorize]
+        [Authorize(Policy = "IsBlocked")  ]
         public async Task<IActionResult> GetProfile()
         {
-            string id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(id == null)
+                return BadRequest("no user id");
+
             try
             {
                 var user = await _userService.GetUser(Guid.Parse(id));
@@ -111,10 +114,13 @@ namespace patterns2_infoauth.Controllers
             }
         }
         [HttpPut("/profile")]
-        [Authorize]
+        [Authorize(Policy = "IsBlocked")]
         public async Task<IActionResult> EditProfile(UserEditDto model)
         {
-            string id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (id == null)
+                return BadRequest("no user id");
+
             try
             {
                 await _userService.EditUser(model, Guid.Parse(id));

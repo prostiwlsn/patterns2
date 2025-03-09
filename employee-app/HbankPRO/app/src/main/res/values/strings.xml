@@ -1,0 +1,82 @@
+<resources>
+    <string name="app_name">H-bank
+        PRO</string>
+    <string name="welcome_content">Для сотрудников</string>
+    <string name="registration">Регистрация</string>
+    <string name="login">Войти</string>
+    <string name="login_button_text">Вход</string>
+
+    // Логин
+    <string name="user_login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="go_back">Вернуться назад</string>
+    <string name="no_connection_message">Нет подключения к интернету</string>
+    <string name="login_bottom_text">"Уже есть аккаунт? "</string>
+    <string name="login_bottom_text_2">Зарегистрируйтесь</string>
+    <string name="registration_bottom_text">"Ещё нет аккаунта? "</string>
+    <string name="phone_number_prefix">+7</string>
+
+    <string name="registration_bottom_text_2">Войдите</string>
+    <string name="registration_button">Зарегистрироваться</string>
+    <string name="name">Имя</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="hits_bank">Hits bank\nPRO</string>
+    <string name="actions">Действия</string>
+    <string name="create_loan_rate">Создать тариф для кредита</string>
+    <string name="loan_rate_creation">Создание тарифа</string>
+    <string name="user_creation">Создание пользователя</string>
+    <string name="loan_rate_editing">Редактирование тарифа</string>
+    <string name="create_user">Создать пользователя</string>
+    <string name="create">Создать</string>
+    <string name="save">Сохранить</string>
+    <string name="all">Все</string>
+    <string name="to_main">На главную</string>
+    <string name="successful_rate_creation">Тариф успешно
+    создан</string>
+    <string name="successful_rate_deletion">Тариф успешно
+    удалён</string>
+    <string name="successful_user_creation">Пользователь
+        успешно создан</string>
+    <string name="successful_rate_editing">Тариф успешно
+    отредактирован</string>
+    <string name="interest_rate">Ставка</string>
+    <string name="rate">Кредитный тариф</string>
+    <string name="rate_in_percent">Ставка в %</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="accounts">Счета</string>
+    <string name="loans">Кредиты</string>
+    <string name="all_users">Все пользователи</string>
+    <string name="all_rates">Все тарифы</string>
+    <string name="rates">Кредитные тарифы</string>
+    <string name="users">Пользователи</string>
+    <string name="good_day">Добрый день</string>
+    <string name="all_accounts">Все счета</string>
+    <string name="all_loans">Все кредиты</string>
+    <string name="loan_agreement">Кредитный договор</string>
+    <string name="transaction_history">История операций</string>
+    <string name="loan_amount">Размер кредита</string>
+    <string name="due_date">Дата окончания договора</string>
+    <string name="debt">Задолженность</string>
+    <string name="employee">Сотрудник</string>
+    <string name="client">Клиент</string>
+    <string name="phone">Номер телефона</string>
+    <string name="period">Период</string>
+    <string name="reset_filters">Сбросить фильтры</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="cancel">Отмена</string>
+    <string name="choose_period">Выберите период</string>
+    <string name="operation">Операция</string>
+    <string name="replenishment_account">Счёт пополнения</string>
+    <string name="withdrawal_account">Счёт снятия</string>
+    <string name="sender_account">Счёт отправителя</string>
+    <string name="recipient_account">Счёт получателя</string>
+    <string name="comment">Комментарий</string>
+    <string name="payment_account">Счёт списания</string>
+    <string name="blocked">Заблокирован</string>
+    <string name="incoming_transfer">Входящий перевод</string>
+    <string name="outgoing_transfer">Исходящий перевод</string>
+    <string name="manager">Менеджер</string>
+    <string name="loading_error">Ошибка загрузки</string>
+</resources>

@@ -1,0 +1,44 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    hostname: database
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=patterns
+      - POSTGRES_USER=postgresss
+      - POSTGRES_PASSWORD=postgresss
+    networks:
+      - patterns-network
+    ports:
+      - "5430:5432"
+
+  core:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    hostname: core
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - patterns-network
+    environment:
+      - JDBC_URL=jdbc:postgresql://database:5432/patterns
+      - JDBC_USER=postgresss
+      - JDBC_PASSWORD=postgresss
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 10s
+      retries: 5
+      start_period: 15s
+      timeout: 10s
+
+networks:
+  patterns-network:
+    driver: bridge
+
+volumes:
+  db_data:
