@@ -7,7 +7,7 @@ data class Operation(
     val id: String,
     val senderAccountId: String?,
     val senderAccountNumber: String?,
-    val recipientAccountId: String,
+    val recipientAccountId: String?,
     val recipientAccountNumber: String?,
     val directionToMe: Boolean,
     val amount: Float,
