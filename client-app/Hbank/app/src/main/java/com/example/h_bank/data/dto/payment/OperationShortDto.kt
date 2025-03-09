@@ -1,6 +1,6 @@
 package com.example.h_bank.data.dto.payment
 
-import com.example.h_bank.domain.model.OperationShort
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -15,8 +15,8 @@ data class OperationShortDto(
     val operationType: OperationTypeDto
 )
 
-internal fun OperationShortDto.toDomain(): OperationShort =
-    OperationShort(
+internal fun OperationShortDto.toDomain(): OperationShortModel =
+    OperationShortModel(
         id = id,
         amount = amount,
         directionToMe = directionToMe,

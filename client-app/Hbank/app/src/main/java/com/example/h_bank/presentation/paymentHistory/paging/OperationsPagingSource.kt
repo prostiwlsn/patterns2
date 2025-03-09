@@ -5,18 +5,18 @@ import androidx.paging.PagingState
 import com.example.h_bank.data.dto.PageResponse
 import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.utils.RequestResult
-import com.example.h_bank.domain.model.OperationShort
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.domain.useCase.payment.GetOperationsHistoryUseCase
 
 class OperationsPagingSource(
     private val getOperationsHistoryUseCase: GetOperationsHistoryUseCase,
-) : PagingSource<Int, OperationShort>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, OperationShort> {
+) : PagingSource<Int, OperationShortModel>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, OperationShortModel> {
         val page = params.key ?: 0
         val pageable = Pageable(page = page, size = params.loadSize)
 
         return when (val result = getOperationsHistoryUseCase(pageable)) {
-            is RequestResult.Success<PageResponse<OperationShort>> -> {
+            is RequestResult.Success<PageResponse<OperationShortModel>> -> {
                 val operations = result.data.content
                 LoadResult.Page(
                     data = operations,
@@ -25,15 +25,15 @@ class OperationsPagingSource(
                 )
             }
 
-            is RequestResult.Error<PageResponse<OperationShort>> ->
+            is RequestResult.Error<PageResponse<OperationShortModel>> ->
                 LoadResult.Error(Exception(result.message ?: "Unknown error"))
 
-            is RequestResult.NoInternetConnection<PageResponse<OperationShort>> ->
+            is RequestResult.NoInternetConnection<PageResponse<OperationShortModel>> ->
                 LoadResult.Error(Exception("No internet connection"))
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, OperationShort>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, OperationShortModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)

@@ -6,7 +6,7 @@ import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.dto.payment.toDomain
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.data.utils.mapSuccess
-import com.example.h_bank.domain.model.OperationShort
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.domain.repository.IOperationRepository
 import com.example.h_bank.domain.repository.payment.IPaymentStorageRepository
 
@@ -16,7 +16,7 @@ class GetOperationsByAccountUseCase(
 ) {
     suspend operator fun invoke(
         pageable: Pageable = Pageable()
-    ): RequestResult<PageResponse<OperationShort>> {
+    ): RequestResult<PageResponse<OperationShortModel>> {
         val filters = storageRepository.getFilters()
 
         return operationRepository.getOperationsByAccount(filters, pageable)

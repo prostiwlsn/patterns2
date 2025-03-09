@@ -11,7 +11,7 @@ import com.example.h_bank.domain.entity.filter.FilterItem
 import com.example.h_bank.domain.entity.filter.OperationType
 import com.example.h_bank.domain.entity.filter.OperationTypeFilter
 import com.example.h_bank.domain.entity.filter.PeriodFilter
-import com.example.h_bank.domain.entity.payment.PaymentItemEntity
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.GetUserIdUseCase
 import com.example.h_bank.domain.useCase.filter.GetOperationsFiltersFlowUseCase
@@ -184,11 +184,11 @@ class PaymentHistoryViewModel(
         updateOperationsFilterUseCase { copy(accountId = account.id) }
     }
 
-    fun onPaymentClicked(payment: PaymentItemEntity) {
+    fun onPaymentClicked(payment: OperationShortModel) {
         viewModelScope.launch {
             _navigationEvent.emit(
                 PaymentHistoryNavigationEvent.NavigateToTransactionInfo(
-                    payment.id
+                    payment.id,
                 )
             )
         }

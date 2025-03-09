@@ -1,5 +1,7 @@
 package com.example.h_bank.domain.entity.filter
 
+import com.example.h_bank.data.dto.payment.OperationTypeDto
+
 enum class OperationType {
     ALL,
     REPLENISHMENT,
@@ -26,4 +28,11 @@ enum class OperationType {
             LOAN_PAYMENT -> "loan_payment"
         }
     }
+}
+
+fun OperationTypeDto.toDomain() = when(this) {
+    OperationTypeDto.TRANSFER -> OperationType.TRANSFER
+    OperationTypeDto.WITHDRAWAL -> OperationType.WITHDRAWAL
+    OperationTypeDto.REPLENISHMENT -> OperationType.REPLENISHMENT
+    OperationTypeDto.LOAN_REPAYMENT -> OperationType.LOAN_PAYMENT
 }

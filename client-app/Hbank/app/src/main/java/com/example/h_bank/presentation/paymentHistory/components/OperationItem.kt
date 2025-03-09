@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 import com.example.h_bank.data.dto.payment.OperationTypeDto
-import com.example.h_bank.domain.model.OperationShort
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
+fun OperationItem(operation: OperationShortModel, onClick: () -> Unit) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale("ru"))
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
     Row(

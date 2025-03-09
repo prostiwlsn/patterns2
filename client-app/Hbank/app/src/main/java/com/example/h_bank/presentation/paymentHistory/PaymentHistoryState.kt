@@ -2,9 +2,8 @@ package com.example.h_bank.presentation.paymentHistory
 
 import androidx.paging.PagingData
 import com.example.h_bank.data.Account
-import com.example.h_bank.data.Operation
 import com.example.h_bank.domain.entity.payment.PaymentItemEntity
-import com.example.h_bank.domain.model.OperationShort
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.presentation.paymentHistory.model.OperationsFilterModel
 import com.example.h_bank.presentation.paymentHistory.utils.getAccounts
 import com.example.h_bank.presentation.paymentHistory.utils.getAllPayments
@@ -21,7 +20,7 @@ data class PaymentHistoryState(
     val isTypesSheetVisible: Boolean = false,
     val isDatePickerVisible: Boolean = false,
 
-    val operationsPager: Flow<PagingData<OperationShort>> = MutableStateFlow(PagingData.empty()),
+    val operationsPager: Flow<PagingData<OperationShortModel>> = MutableStateFlow(PagingData.empty()),
     val filterModel: OperationsFilterModel = OperationsFilterModel(),
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,

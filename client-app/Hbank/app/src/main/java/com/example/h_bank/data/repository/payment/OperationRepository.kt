@@ -1,10 +1,11 @@
 package com.example.h_bank.data.repository.payment
 
+import com.example.h_bank.data.dto.PageResponse
+import com.example.h_bank.data.dto.Pageable
+import com.example.h_bank.data.dto.payment.OperationDetailsDto
 import com.example.h_bank.data.dto.payment.OperationDto
 import com.example.h_bank.data.dto.payment.OperationRquestBody
 import com.example.h_bank.data.dto.payment.OperationShortDto
-import com.example.h_bank.data.dto.PageResponse
-import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.network.OperationApi
 import com.example.h_bank.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bank.data.utils.RequestResult
@@ -29,6 +30,18 @@ class OperationRepository(
                 size = pageable.size,
                 page = pageable.page,
                 sort = emptyList()
+            )
+        }
+    }
+
+    override suspend fun getOperationDetails(
+        accountId: String,
+        operationId: String,
+    ): RequestResult<OperationDetailsDto> {
+        return runResultCatching {
+            api.getOperationDetails(
+                accountId = accountId,
+                operationId = operationId,
             )
         }
     }

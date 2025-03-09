@@ -1,8 +1,8 @@
-package com.example.h_bank.domain.model
+package com.example.h_bank.domain.entity.authorization
 
 import com.example.h_bank.data.RoleType
 
-data class User(
+data class UserEntity(
     val id: String,
     val phone: String,
     val name: String,

@@ -158,7 +158,7 @@ fun PaymentHistoryScreen(
                         if (operation != null) {
                             OperationItem(
                                 operation = operation,
-                                onClick = { /*viewModel.onOperationClicked(operation)*/ }
+                                onClick = { viewModel.onPaymentClicked(operation) }
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),

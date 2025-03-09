@@ -8,6 +8,7 @@ import com.example.h_bank.domain.useCase.authorization.GetAuthorizationCommandsU
 import com.example.h_bank.domain.useCase.authorization.PushAuthorizationCommandUseCase
 import com.example.h_bank.domain.useCase.filter.GetOperationsFiltersFlowUseCase
 import com.example.h_bank.domain.useCase.filter.UpdateOperationsFilterUseCase
+import com.example.h_bank.domain.useCase.payment.GetOperationDetailsUseCase
 import com.example.h_bank.domain.useCase.payment.GetOperationsHistoryUseCase
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -56,6 +57,13 @@ val paymentModule = module {
     factory<GetAuthorizationCommandsUseCase> {
         GetAuthorizationCommandsUseCase(
             storage = get()
+        )
+    }
+
+    factory<GetOperationDetailsUseCase> {
+        GetOperationDetailsUseCase(
+            storageRepository = get(),
+            repository = get(),
         )
     }
 

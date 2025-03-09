@@ -4,6 +4,7 @@ import com.example.h_bank.data.dto.payment.OperationRquestBody
 import com.example.h_bank.data.dto.payment.OperationDto
 import com.example.h_bank.data.dto.payment.OperationShortDto
 import com.example.h_bank.data.dto.PageResponse
+import com.example.h_bank.data.dto.payment.OperationDetailsDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -24,6 +25,12 @@ interface OperationApi {
         @Query("size") size: Int,
         @Query("sort") sort: List<String>
     ): PageResponse<OperationShortDto>
+
+    @GET("operation/{accountId}/{operationId}")
+    suspend fun getOperationDetails(
+        @Path("accountId") accountId: String,
+        @Path("operationId") operationId: String,
+    ): OperationDetailsDto
 
     @GET("operation/{operationId}")
     suspend fun getOperationInfo(
