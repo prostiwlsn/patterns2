@@ -162,12 +162,13 @@ class PaymentHistoryViewModel(
     fun resetFilters() {
         _state.update {
             it.copy(
-                filterModel = OperationsFilterModel()
+                filterModel = OperationsFilterModel().copy(
+                    accountFilter = _state.value.filterModel.accountFilter,
+                )
             )
         }
         updateOperationsFilterUseCase {
             copy(
-                accountId = null,
                 startDate = null,
                 endDate = null,
                 operationType = null,

@@ -30,14 +30,4 @@ data class OperationsFilterModel(
 
         return this
     }
-
-    fun resetFilter(filter: FilterItem): OperationsFilterModel {
-        when (filter) {
-            is AccountFilter -> accountFilter = initialAccountFilter
-            is PeriodFilter -> periodFilter = PeriodFilter()
-            is OperationTypeFilter -> typeFilter = OperationTypeFilter()
-        }
-
-        return this
-    }
 }
