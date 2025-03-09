@@ -1,10 +1,14 @@
 package com.example.h_bank.data.utils
 
+import com.example.h_bank.presentation.common.viewModelBase.NoInternetConnectionException
 import retrofit2.HttpException
 import java.net.ConnectException
 
 object NetworkUtils {
-    suspend fun <T> runResultCatching(action: suspend () -> T): RequestResult<T> {
+    suspend fun <T> runResultCatching(
+        noConnectionCatching: Boolean = false,
+        action: suspend () -> T,
+    ): RequestResult<T> {
         return try {
             RequestResult.Success(
                 data = action()
@@ -15,7 +19,11 @@ object NetworkUtils {
                 message = e.message()
             )
         } catch (e: ConnectException) {
-            RequestResult.NoInternetConnection()
+            if (noConnectionCatching) {
+                RequestResult.NoInternetConnection<T>()
+            } else {
+                throw NoInternetConnectionException()
+            }
         }
     }
 

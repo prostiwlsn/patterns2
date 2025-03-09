@@ -4,8 +4,8 @@ import com.example.h_bank.data.repository.authorization.AuthorizationCommandStor
 import com.example.h_bank.data.repository.payment.PaymentStorageRepository
 import com.example.h_bank.domain.repository.authorization.IAuthorizationCommandStorage
 import com.example.h_bank.domain.repository.payment.IPaymentStorageRepository
-import com.example.h_bank.domain.useCase.authorization.GetAuthorizationCommandsUseCase
-import com.example.h_bank.domain.useCase.authorization.PushAuthorizationCommandUseCase
+import com.example.h_bank.domain.useCase.authorization.GetMainCommandsUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.filter.GetOperationsFiltersFlowUseCase
 import com.example.h_bank.domain.useCase.filter.UpdateOperationsFilterUseCase
 import com.example.h_bank.domain.useCase.payment.GetOperationDetailsUseCase
@@ -48,14 +48,14 @@ val paymentModule = module {
         AuthorizationCommandStorage()
     }
 
-    factory<PushAuthorizationCommandUseCase> {
-        PushAuthorizationCommandUseCase(
+    factory<PushCommandUseCase> {
+        PushCommandUseCase(
             storage = get()
         )
     }
 
-    factory<GetAuthorizationCommandsUseCase> {
-        GetAuthorizationCommandsUseCase(
+    factory<GetMainCommandsUseCase> {
+        GetMainCommandsUseCase(
             storage = get()
         )
     }
@@ -74,6 +74,7 @@ val paymentModule = module {
             updateOperationsFilterUseCase = get(),
             getOperationsHistoryUseCase = get(),
             getOperationsFiltersFlowUseCase = get(),
+            pushCommandUseCase = get(),
         )
     }
 }

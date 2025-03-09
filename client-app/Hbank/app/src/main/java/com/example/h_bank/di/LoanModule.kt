@@ -82,6 +82,7 @@ val loanModule = module {
 
     viewModel {
         LoanProcessingViewModel(
+            pushCommandUseCase = get(),
             updateLoanUseCase = get(),
             getLoanFlowUseCase = get(),
             loanProcessingValidationUseCase = get(),
@@ -89,7 +90,6 @@ val loanModule = module {
             getUserIdUseCase = get(),
             getUserAccountsUseCase = get(),
             getLoanUseCase = get(),
-            pushAuthorizationCommandUseCase = get(),
             resetLoanUseCase = get()
         )
     }

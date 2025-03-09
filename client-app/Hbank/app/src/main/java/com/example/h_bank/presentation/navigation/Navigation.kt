@@ -3,10 +3,13 @@ package com.example.h_bank.presentation.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.h_bank.presentation.connectionErrorScreen.ConnectionErrorScreen
 import com.example.h_bank.presentation.launch.LaunchScreen
 import com.example.h_bank.presentation.loan.LoanScreen
 import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
@@ -27,10 +30,13 @@ import com.example.h_bank.presentation.transactionInfo.TransactionInfoScreen
 import com.example.h_bank.presentation.transfer.TransferScreen
 import com.example.h_bank.presentation.welcome.WelcomeScreen
 import com.example.h_bank.presentation.withdrawal.WithdrawalScreen
+import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    viewModel: NavigationViewModel = koinViewModel()
+) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "launch") {
         composable("launch") {
@@ -149,6 +155,22 @@ fun AppNavigation() {
             ),
         ) {
             SuccessfulWithdrawalScreen(navController)
+        }
+        composable(
+            route = "connectionError"
+        ) {
+            ConnectionErrorScreen(navController)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                NavigationEvent.NavigateToNoConnection ->
+                    if (navController.currentDestination?.route != "connectionError") {
+                        navController.navigate("connectionError")
+                    }
+            }
         }
     }
 }

@@ -1,17 +1,15 @@
 package com.example.h_bank.presentation.loanProcessing
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
-import com.example.h_bank.domain.entity.authorization.AuthorizationCommand
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.entity.loan.TariffEntity
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.GetUserIdUseCase
-import com.example.h_bank.domain.useCase.authorization.PushAuthorizationCommandUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.loan.GetLoanFlowUseCase
 import com.example.h_bank.domain.useCase.loan.GetLoanUseCase
 import com.example.h_bank.domain.useCase.loan.GetTariffListUseCase
@@ -19,7 +17,7 @@ import com.example.h_bank.domain.useCase.loan.LoanProcessingValidationUseCase
 import com.example.h_bank.domain.useCase.loan.ResetLoanUseCase
 import com.example.h_bank.domain.useCase.loan.UpdateLoanUseCase
 import com.example.h_bank.domain.useCase.loan.paging.TariffPagingSource
-import kotlinx.coroutines.cancel
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -30,6 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoanProcessingViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val updateLoanUseCase: UpdateLoanUseCase,
     private val loanProcessingValidationUseCase: LoanProcessingValidationUseCase,
     private val getTariffListUseCase: GetTariffListUseCase,
@@ -37,9 +36,8 @@ class LoanProcessingViewModel(
     private val getUserIdUseCase: GetUserIdUseCase,
     private val getLoanUseCase: GetLoanUseCase,
     private val resetLoanUseCase: ResetLoanUseCase,
-    private val pushAuthorizationCommandUseCase: PushAuthorizationCommandUseCase,
     getLoanFlowUseCase: GetLoanFlowUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(LoanProcessingState())
     val state: StateFlow<LoanProcessingState> = _state
 
@@ -173,7 +171,7 @@ class LoanProcessingViewModel(
                     accountId = _state.value.selectedAccount?.id.orEmpty(),
                     tariffId = _state.value.selectedRate?.id.orEmpty(),
                 ).onSuccess {
-                    pushAuthorizationCommandUseCase(AuthorizationCommand.UpdateProfile)
+                    pushCommandUseCase(Command.UpdateProfile)
                     _navigationEvent.emit(LoanProcessingNavigationEvent.NavigateToSuccessfulLoanProcessing)
                     resetLoanUseCase()
                 }

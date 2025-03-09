@@ -9,6 +9,8 @@ import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.RepayLoanUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,11 +19,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoanPaymentViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val repayLoanUseCase: RepayLoanUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(LoanPaymentState())
     val state: StateFlow<LoanPaymentState> = _state
 

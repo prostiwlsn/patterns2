@@ -44,10 +44,12 @@
     <string name="no_accounts">Нет счетов</string>
     <string name="success_account">Счёт успешно открыт</string>
     <string name="success_account_closure">Счёт успешно закрыт</string>
+    <string name="no_connection_message">Нет подключения к интернету</string>
     <string name="success_loan_payment">Платёж успешно
         внесён</string>
     <string name="success_loan">Кредит успешно оформлен</string>
     <string name="to_main">На главную</string>
+    <string name="go_back">Вернуться</string>
     <string name="loan_processing">Оформление кредита</string>
     <string name="transaction">Перевод</string>
     <string name="transaction_history">История операций</string>

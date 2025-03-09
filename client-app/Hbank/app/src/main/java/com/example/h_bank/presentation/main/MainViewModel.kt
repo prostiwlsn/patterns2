@@ -1,7 +1,5 @@
 package com.example.h_bank.presentation.main
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -13,10 +11,12 @@ import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.useCase.CloseAccountUseCase
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
-import com.example.h_bank.domain.useCase.authorization.LogoutUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
-import com.example.h_bank.domain.useCase.authorization.GetAuthorizationCommandsUseCase
+import com.example.h_bank.domain.useCase.authorization.GetMainCommandsUseCase
+import com.example.h_bank.domain.useCase.authorization.LogoutUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.loan.GetUserLoansUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,14 +28,19 @@ import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
 class MainViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val openAccountUseCase: OpenAccountUseCase,
     private val closeAccountUseCase: CloseAccountUseCase,
     private val getUserLoansUseCase: GetUserLoansUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val logoutUseCase: LogoutUseCase,
-    getAuthorizationCommandsUseCase: GetAuthorizationCommandsUseCase,
-) : ViewModel() {
+    getAuthorizationCommandsUseCase: GetMainCommandsUseCase,
+) : BaseViewModel() {
+
+    init {
+        viewModelScope
+    }
     private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
 

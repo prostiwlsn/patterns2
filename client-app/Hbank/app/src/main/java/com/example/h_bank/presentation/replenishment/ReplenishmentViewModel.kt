@@ -8,6 +8,8 @@ import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.ReplenishUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,10 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ReplenishmentViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val replenishUseCase: ReplenishUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(ReplenishmentState())
     val state: StateFlow<ReplenishmentState> = _state
 

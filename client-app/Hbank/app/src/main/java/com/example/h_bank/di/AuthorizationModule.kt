@@ -121,6 +121,7 @@ val authorizationModule = module {
             loginUseCase = get(),
             resetCredentialsUseCase = get(),
             pushAuthorizationCommandUseCase = get(),
+            pushCommandUseCase = get(),
         )
     }
 
@@ -132,6 +133,7 @@ val authorizationModule = module {
             validationUseCase = get(),
             registerUseCase = get(),
             pushAuthorizationCommandUseCase = get(),
+            pushCommandUseCase = get(),
         )
     }
 }

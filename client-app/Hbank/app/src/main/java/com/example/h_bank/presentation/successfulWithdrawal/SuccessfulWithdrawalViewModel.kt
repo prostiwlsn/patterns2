@@ -1,8 +1,8 @@
 package com.example.h_bank.presentation.successfulWithdrawal
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SuccessfulWithdrawalViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class SuccessfulWithdrawalViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
+    savedStateHandle: SavedStateHandle,
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SuccessfulWithdrawalState())
     val state: StateFlow<SuccessfulWithdrawalState> = _state
 

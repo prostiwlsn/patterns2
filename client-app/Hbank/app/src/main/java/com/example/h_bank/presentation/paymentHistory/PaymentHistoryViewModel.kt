@@ -1,7 +1,5 @@
 package com.example.h_bank.presentation.paymentHistory
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.h_bank.data.Account
@@ -11,12 +9,14 @@ import com.example.h_bank.domain.entity.filter.FilterItem
 import com.example.h_bank.domain.entity.filter.OperationType
 import com.example.h_bank.domain.entity.filter.OperationTypeFilter
 import com.example.h_bank.domain.entity.filter.PeriodFilter
-import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.GetUserIdUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.filter.GetOperationsFiltersFlowUseCase
 import com.example.h_bank.domain.useCase.filter.UpdateOperationsFilterUseCase
 import com.example.h_bank.domain.useCase.payment.GetOperationsHistoryUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.presentation.paymentHistory.model.OperationsFilterModel
 import com.example.h_bank.presentation.paymentHistory.paging.OperationsPagingSource
 import com.example.h_bank.presentation.paymentHistory.utils.DateFormatter.toStringFormat
@@ -31,12 +31,13 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class PaymentHistoryViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val getOperationsHistoryUseCase: GetOperationsHistoryUseCase,
     private val updateOperationsFilterUseCase: UpdateOperationsFilterUseCase,
     getOperationsFiltersFlowUseCase: GetOperationsFiltersFlowUseCase,
     getUserIdUseCase: GetUserIdUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(PaymentHistoryState())
     val state: StateFlow<PaymentHistoryState> = _state
 
@@ -63,6 +64,7 @@ class PaymentHistoryViewModel(
                     )
                     updateOperationsFilterUseCase { copy(accountId = accountsResult.data.first().id) }
                 }
+
 
             updatePager()
         }

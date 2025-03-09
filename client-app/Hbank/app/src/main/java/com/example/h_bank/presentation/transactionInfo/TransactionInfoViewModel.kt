@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.entity.filter.toDomain
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.payment.GetOperationDetailsUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import com.example.h_bank.presentation.paymentHistory.utils.DateFormatter.toLocalDateTime
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +17,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TransactionInfoViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val getOperationDetailsUseCase: GetOperationDetailsUseCase,
     savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(TransactionInfoState())
     val state: StateFlow<TransactionInfoState> = _state
 

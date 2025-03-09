@@ -5,8 +5,8 @@ import androidx.paging.PagingState
 import com.example.h_bank.data.dto.PageResponse
 import com.example.h_bank.data.dto.Pageable
 import com.example.h_bank.data.utils.RequestResult
-import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.domain.useCase.payment.GetOperationsHistoryUseCase
+import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 
 class OperationsPagingSource(
     private val getOperationsHistoryUseCase: GetOperationsHistoryUseCase,

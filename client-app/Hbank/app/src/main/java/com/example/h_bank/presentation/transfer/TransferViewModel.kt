@@ -10,6 +10,8 @@ import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.useCase.GetAccountIdByNumberUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.TransferUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,11 +20,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TransferViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     savedStateHandle: SavedStateHandle,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val transferUseCase: TransferUseCase,
     private val getAccountIdByNumberUseCase: GetAccountIdByNumberUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(TransferState())
     val state: StateFlow<TransferState> = _state
 

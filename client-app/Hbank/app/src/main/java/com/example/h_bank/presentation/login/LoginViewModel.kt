@@ -1,16 +1,15 @@
 package com.example.h_bank.presentation.login
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
-import com.example.h_bank.domain.entity.authorization.AuthorizationCommand
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.useCase.authorization.LoginUseCase
 import com.example.h_bank.domain.useCase.authorization.LoginValidationUseCase
-import com.example.h_bank.domain.useCase.authorization.PushAuthorizationCommandUseCase
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.storage.GetCredentialsFlowUseCase
 import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import com.example.h_bank.presentation.login.model.LoginFrontErrors
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +21,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val updateCredentialsUseCase: UpdateCredentialsUseCase,
     private val validationUseCase: LoginValidationUseCase,
     private val loginUseCase: LoginUseCase,
-    private val pushAuthorizationCommandUseCase: PushAuthorizationCommandUseCase,
+    private val pushAuthorizationCommandUseCase: PushCommandUseCase,
     getCredentialsFlowUseCase: GetCredentialsFlowUseCase,
     resetCredentialsUseCase: ResetCredentialsUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state
@@ -62,7 +62,7 @@ class LoginViewModel(
             viewModelScope.launch {
                 loginUseCase()
                     .onSuccess {
-                        pushAuthorizationCommandUseCase(AuthorizationCommand.UpdateProfile)
+                        pushAuthorizationCommandUseCase(Command.UpdateProfile)
                         _navigationEvent.emit(LoginNavigationEvent.NavigateToMain)
                     }
                     .onFailure {

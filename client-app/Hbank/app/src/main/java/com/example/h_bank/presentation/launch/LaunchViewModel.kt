@@ -1,9 +1,9 @@
 package com.example.h_bank.presentation.launch
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
 import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
+import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
+import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LaunchViewModel(
+    override val pushCommandUseCase: PushCommandUseCase,
     private val refreshTokenUseCase: RefreshTokenUseCase
-) : ViewModel() {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(LaunchState())
     val state: StateFlow<LaunchState> = _state.asStateFlow()
 
