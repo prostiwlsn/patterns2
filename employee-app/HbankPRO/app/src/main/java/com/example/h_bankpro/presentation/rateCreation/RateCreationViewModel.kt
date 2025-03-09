@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class RateCreationViewModel(
     override val pushCommandUseCase: PushCommandUseCase,
@@ -44,18 +46,21 @@ class RateCreationViewModel(
     }
 
     fun onRateChange(rate: String) {
-        val rateValue = rate.toDoubleOrNull()
+        val rateValue = rate.toBigDecimalOrNull()
 
-        if (rateValue != null && rateValue <= 100 || rate.isEmpty()) {
-            updateTariffUseCase { copy(rate = rate) }
+        if (rate.isEmpty() || (rateValue != null && rateValue <= BigDecimal(100))) {
+            val formattedRate = rateValue?.setScale(2, RoundingMode.DOWN)?.toPlainString() ?: rate
+            _state.update { it.copy(interestRate = formattedRate).validateFields() }
         }
     }
 
-    fun onNameChange(name: String) =
-        updateTariffUseCase { copy(name = name) }
+    fun onNameChange(name: String) {
+        _state.update { it.copy(name = name).validateFields() }
+    }
 
-    fun onDescriptionChange(description: String) =
-        updateTariffUseCase { copy(description = description) }
+    fun onDescriptionChange(description: String) {
+        _state.update { it.copy(description = description).validateFields() }
+    }
 
     fun onBackClicked() {
         viewModelScope.launch {
@@ -76,5 +81,14 @@ class RateCreationViewModel(
                 )
             }
         }
+    }
+
+    private fun RateCreationState.validateFields(): RateCreationState {
+        return copy(
+            areFieldsValid = name.isNotBlank() &&
+                    description.isNotBlank() &&
+                    !interestRate.isNullOrBlank() &&
+                    interestRate.toBigDecimalOrNull() != null
+        )
     }
 }

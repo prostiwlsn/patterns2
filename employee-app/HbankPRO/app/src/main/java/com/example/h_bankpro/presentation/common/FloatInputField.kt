@@ -34,9 +34,7 @@ fun FloatInputField(
         OutlinedTextField(
             singleLine = true,
             value = value,
-            onValueChange = { text ->
-                onValueChange(text)
-            },
+            onValueChange = onValueChange,
             textStyle = TextStyle(
                 fontSize = 16.sp,
                 color = Color(0xFF282A31),

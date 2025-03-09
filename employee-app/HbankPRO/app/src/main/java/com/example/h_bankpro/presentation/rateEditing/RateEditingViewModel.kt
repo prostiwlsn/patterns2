@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class RateEditingViewModel(
     override val pushCommandUseCase: PushCommandUseCase,
@@ -44,23 +46,20 @@ class RateEditingViewModel(
     }
 
     fun onRateChange(rate: String) {
-        val rateValue = rate.toDoubleOrNull()
+        val rateValue = rate.toBigDecimalOrNull()
 
-        if ((rateValue != null && rateValue <= 100) &&
-            !(rate.startsWith('0') && rate.length > 1) ||
-            rate.isEmpty()
-        ) {
-            _state.update { it.copy(interestRate = rate) }
-            validateFields()
+        if (rate.isEmpty() || (rateValue != null && rateValue <= BigDecimal(100))) {
+            val formattedRate = rateValue?.setScale(2, RoundingMode.DOWN)?.toPlainString() ?: rate
+            _state.update { it.copy(interestRate = formattedRate).validateFields() }
         }
     }
 
     fun onNameChange(name: String) {
-        _state.update { it.copy(name = name) }
+        _state.update { it.copy(name = name).validateFields() }
     }
 
     fun onDescriptionChange(description: String) {
-        _state.update { it.copy(description = description) }
+        _state.update { it.copy(description = description).validateFields() }
     }
 
     fun onBackClicked() {
@@ -69,19 +68,16 @@ class RateEditingViewModel(
         }
     }
 
-    private fun validateFields() {
-        val rateValue = _state.value.interestRate?.toDoubleOrNull() ?: 0.0
-
-        _state.update {
-            it.copy(
-                areFieldsValid = rateValue > 0.0 &&
-                        _state.value.name.isNotBlank() &&
-                        _state.value.description.isNotBlank() &&
-                        !(_state.value.initialDescription == _state.value.description &&
-                                _state.value.initialName == _state.value.name &&
-                                _state.value.initialInterestRate == rateValue)
-            )
-        }
+    private fun RateEditingState.validateFields(): RateEditingState {
+        val rateValue = interestRate?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        return copy(
+            areFieldsValid = rateValue > BigDecimal.ZERO &&
+                    name.isNotBlank() &&
+                    description.isNotBlank() &&
+                    (name != initialName ||
+                            description != initialDescription ||
+                            rateValue != BigDecimal(initialInterestRate))
+        )
     }
 
     fun onSaveClicked() {
