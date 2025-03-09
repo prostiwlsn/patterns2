@@ -1,7 +1,7 @@
 package com.example.h_bank.di
 
 import com.example.h_bank.data.network.OperationApi
-import com.example.h_bank.data.repository.OperationRepository
+import com.example.h_bank.data.repository.payment.OperationRepository
 import com.example.h_bank.domain.repository.IOperationRepository
 import com.example.h_bank.domain.useCase.GetOperationInfoUseCase
 import com.example.h_bank.domain.useCase.GetOperationsByAccountUseCase
@@ -28,6 +28,7 @@ val operationModule = module {
 
     factory<GetOperationsByAccountUseCase> {
         GetOperationsByAccountUseCase(
+            storageRepository = get(),
             operationRepository = get()
         )
     }

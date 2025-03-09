@@ -1,7 +1,7 @@
 package com.example.h_bank.data.dto
 
 import com.example.h_bank.data.RoleType
-import com.example.h_bank.domain.model.User
+import com.example.h_bank.domain.entity.authorization.UserEntity
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,8 +13,8 @@ data class UserDto(
     val roles: List<RoleType>
 )
 
-internal fun UserDto.toDomain(): User {
-    return User(
+internal fun UserDto.toDomain(): UserEntity {
+    return UserEntity(
         id = id,
         phone = phone,
         name = name,

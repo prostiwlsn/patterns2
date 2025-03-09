@@ -1,13 +1,13 @@
 package com.example.h_bank.data.repository
 
-import TokenEntity
+import com.example.h_bank.domain.entity.authorization.TokenEntity
 import com.example.h_bank.data.dto.RefreshRequestDto
 import com.example.h_bank.data.dto.TokenDto
 import com.example.h_bank.data.network.TokenApi
 import com.example.h_bank.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bank.data.utils.RequestResult
-import com.example.h_bank.domain.repository.IAuthorizationLocalRepository
-import com.example.h_bank.domain.repository.ITokenRepository
+import com.example.h_bank.domain.repository.authorization.IAuthorizationLocalRepository
+import com.example.h_bank.domain.repository.authorization.ITokenRepository
 
 class TokenRepository(
     private val localRepository: IAuthorizationLocalRepository,

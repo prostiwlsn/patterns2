@@ -25,7 +25,7 @@ import com.example.h_bank.presentation.common.CustomButton
 @Composable
 fun AccountsBottomSheetContent(
     accounts: List<Account>,
-    onItemClick: (Account) -> Unit,
+    onCloseAccountClick: (Account) -> Unit,
     onOpenAccountClick: () -> Unit
 ) {
     LazyColumn(
@@ -43,7 +43,7 @@ fun AccountsBottomSheetContent(
             Spacer(modifier = Modifier.height(16.dp))
         }
         items(accounts) { account ->
-            AccountItem(account = account, onCloseAccountClick = { onItemClick(account) })
+            AccountItem(account = account, onCloseAccountClick = { onCloseAccountClick(account) })
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 thickness = 1.dp,

@@ -1,7 +1,7 @@
 package com.example.h_bank.domain.useCase
 
-import com.example.h_bank.data.OperationType
 import com.example.h_bank.data.dto.OperationRequestBody
+import com.example.h_bank.data.dto.payment.OperationTypeDto
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.repository.IOperationRepository
 
@@ -19,7 +19,7 @@ class TransferUseCase(
             recipientAccountId = recipientAccountId,
             amount = amount,
             message = message,
-            operationType = OperationType.TRANSFER
+            operationType = OperationTypeDto.TRANSFER
         )
         return operationRepository.createOperation(request)
     }

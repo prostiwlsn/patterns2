@@ -2,8 +2,8 @@ package com.example.h_bank.di
 
 import com.example.h_bank.data.network.TokenApi
 import com.example.h_bank.data.repository.TokenRepository
-import com.example.h_bank.domain.repository.ITokenRepository
-import com.example.h_bank.domain.useCase.RefreshTokenUseCase
+import com.example.h_bank.domain.repository.authorization.ITokenRepository
+import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit

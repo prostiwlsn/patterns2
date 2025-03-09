@@ -2,7 +2,7 @@ package com.example.h_bank.presentation.launch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.h_bank.domain.useCase.RefreshTokenUseCase
+import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
 import com.example.h_bank.data.utils.RequestResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

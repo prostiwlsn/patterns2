@@ -13,13 +13,16 @@ import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.useCase.CloseAccountUseCase
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
-import com.example.h_bank.domain.useCase.LogoutUseCase
+import com.example.h_bank.domain.useCase.authorization.LogoutUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
+import com.example.h_bank.domain.useCase.authorization.GetAuthorizationCommandsUseCase
 import com.example.h_bank.domain.useCase.loan.GetUserLoansUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -30,7 +33,8 @@ class MainViewModel(
     private val getUserLoansUseCase: GetUserLoansUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+    getAuthorizationCommandsUseCase: GetAuthorizationCommandsUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state
@@ -41,6 +45,10 @@ class MainViewModel(
     private val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
 
     init {
+        getAuthorizationCommandsUseCase().onEach {
+            loadCurrentUser()
+        }.launchIn(viewModelScope)
+
         loadCurrentUser()
     }
 

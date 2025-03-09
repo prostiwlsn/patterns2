@@ -1,7 +1,7 @@
 package com.example.h_bank.domain.useCase.storage
 
-import com.example.h_bank.domain.entity.CredentialsEntity
-import com.example.h_bank.domain.repository.IAuthorizationLocalRepository
+import com.example.h_bank.domain.entity.authorization.CredentialsEntity
+import com.example.h_bank.domain.repository.authorization.IAuthorizationLocalRepository
 
 class UpdateCredentialsUseCase(
     private val storageRepository: IAuthorizationLocalRepository,

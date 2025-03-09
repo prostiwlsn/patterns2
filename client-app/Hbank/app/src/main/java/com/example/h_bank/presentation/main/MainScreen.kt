@@ -174,8 +174,8 @@ fun MainScreen(
             ) {
                 AccountsBottomSheetContent(
                     accounts = state.accounts,
-                    onItemClick = { account ->
-                        viewModel.onAccountClicked(account)
+                    onCloseAccountClick = { account ->
+                        viewModel.onCloseAccountClicked(account)
                         viewModel.hideAccountsSheet()
                     },
                     onOpenAccountClick = { viewModel.onOpenAccountClicked() }

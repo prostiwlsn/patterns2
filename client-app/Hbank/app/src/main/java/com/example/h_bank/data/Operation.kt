@@ -1,5 +1,6 @@
 package com.example.h_bank.data
 
+import com.example.h_bank.data.dto.payment.OperationTypeDto
 import java.time.LocalDateTime
 
 data class Operation(
@@ -10,5 +11,5 @@ data class Operation(
     val amount: Double,
     val transactionDateTime: LocalDateTime,
     val message: String?,
-    val operationType: OperationType,
+    val operationType: OperationTypeDto,
 )

@@ -23,13 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
-import com.example.h_bank.data.Payment
-import com.example.h_bank.data.PaymentType
+import com.example.h_bank.domain.entity.payment.PaymentItemEntity
+import com.example.h_bank.domain.entity.filter.OperationType
+import com.example.h_bank.domain.entity.filter.OperationType.Companion.getText
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun PaymentItem(payment: Payment, onClick: () -> Unit) {
+fun PaymentItem(payment: PaymentItemEntity, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +51,7 @@ fun PaymentItem(payment: Payment, onClick: () -> Unit) {
                 painter = painterResource(id = R.drawable.arrow_downward),
                 contentDescription = null,
                 tint = Color.White,
-                modifier = Modifier.rotate(if (payment.type == PaymentType.INCOMING) 0f else 180f)
+                modifier = Modifier.rotate(if (payment.type == OperationType.REPLENISHMENT) 0f else 180f)
             )
         }
         Spacer(Modifier.width(16.dp))
@@ -61,7 +62,7 @@ fun PaymentItem(payment: Payment, onClick: () -> Unit) {
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "${payment.type.displayName} · ${
+                text = "${payment.type.getText()} · ${
                     payment.date.format(
                         DateTimeFormatter.ofPattern("dd MMM yyyy", Locale("ru"))
                     )
