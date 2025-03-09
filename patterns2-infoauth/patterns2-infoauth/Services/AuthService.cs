@@ -97,6 +97,8 @@ namespace patterns2_infoauth.Services
             if (user == null)
                 throw new ArgumentException("no user found");
 
+            if (user.IsBlocked) throw new InvalidOperationException();
+
             Guid newSessionId = Guid.NewGuid();
 
             try

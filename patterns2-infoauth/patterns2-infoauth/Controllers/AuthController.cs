@@ -80,6 +80,10 @@ namespace patterns2_infoauth.Controllers
             {
                 return NotFound(ex.Message);
             }
+            catch (InvalidOperationException invEx)
+            {
+                return Forbid();
+            }
         }
 
         [HttpPost("/logout")]
