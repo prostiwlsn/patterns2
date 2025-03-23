@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "patterns2-infoauth", "patterns2-infoauth\patterns2-infoauth.csproj", "{6B2684FF-3859-4231-8FD1-F63D48115453}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "patterns-settings", "patterns-settings\patterns-settings.csproj", "{18BE7DE3-641A-439B-A213-272E28C5E8B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6B2684FF-3859-4231-8FD1-F63D48115453}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B2684FF-3859-4231-8FD1-F63D48115453}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B2684FF-3859-4231-8FD1-F63D48115453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
