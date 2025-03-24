@@ -24,6 +24,7 @@ namespace patterns_settings.Services
             {
                 UserId = id,
                 Theme = model.Theme,
+                HiddenAccounts = model.HiddenAccounts
             };
 
             _dbContext.Add(newSettings);
@@ -36,7 +37,7 @@ namespace patterns_settings.Services
 
             if (settings == null) throw new ArgumentException();
 
-            return new BankClientSettingsDto { Theme = settings.Theme };
+            return new BankClientSettingsDto { Theme = settings.Theme, HiddenAccounts = settings.HiddenAccounts };
         }
     }
 }

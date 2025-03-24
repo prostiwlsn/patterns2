@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using patterns_settings.Data;
+using patterns_settings.Interfaces;
+using patterns_settings.Services;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -11,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<SettingsDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IAdminSettingsService, AdminSettingsService>();
+builder.Services.AddScoped<IBankSettingsService, BankSettingsService>();
 
 builder.Services.AddControllers().AddJsonOptions(opts =>
 {
