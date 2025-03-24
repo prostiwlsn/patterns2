@@ -1,6 +1,8 @@
-﻿namespace patterns_settings.Services
+﻿using patterns_settings.Interfaces;
+
+namespace patterns_settings.Services
 {
-    public class AdminSettingsService
+    public class AdminSettingsService : IAdminSettingsService
     {
     }
 }
