@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using patterns_settings.Models;
 
 namespace patterns_settings.Controllers
 {
@@ -16,7 +17,7 @@ namespace patterns_settings.Controllers
         }
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> PutAdminSettings()
+        public async Task<IActionResult> PutAdminSettings(AdminClientSettingsDto model)
         {
             return Ok();
         }
@@ -29,7 +30,7 @@ namespace patterns_settings.Controllers
         }
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> PutBankSettings()
+        public async Task<IActionResult> PutBankSettings(BankClientSettingsDto model)
         {
             return Ok();
         }
