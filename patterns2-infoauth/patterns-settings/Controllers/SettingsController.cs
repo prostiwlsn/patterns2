@@ -19,7 +19,7 @@ namespace patterns_settings.Controllers
             _adminSettingsService = adminSettingsService;
         }
 
-        [HttpGet]
+        [HttpGet("admin/settings")]
         [Authorize]
         public async Task<IActionResult> GetAdminSettings()
         {
@@ -29,7 +29,8 @@ namespace patterns_settings.Controllers
 
             try
             {
-                var settings = _adminSettingsService.GetSettings(id);
+                var settings = await _adminSettingsService.GetSettings(Guid.Parse(id));
+                return Ok(settings);
             }
             catch (ArgumentException ex) 
             {
@@ -39,20 +40,19 @@ namespace patterns_settings.Controllers
             {
                 return StatusCode(500);
             }
-
-            return Ok();
         }
-        [HttpPut]
+        [HttpPut("admin/settings")]
         [Authorize]
         public async Task<IActionResult> PutAdminSettings(AdminClientSettingsDto model)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
-                return BadRequest("no user id");
+                return Unauthorized("no user id");
 
             try
             {
-                var settings = _adminSettingsService.GetSettings(id);
+                await _adminSettingsService.EditSettings(Guid.Parse(id), model);
+                return Ok();
             }
             catch (ArgumentException ex)
             {
@@ -62,21 +62,20 @@ namespace patterns_settings.Controllers
             {
                 return StatusCode(500);
             }
-
-            return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("bank/settings")]
         [Authorize]
         public async Task<IActionResult> GetBankSettings()
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
-                return BadRequest("no user id");
+                return Unauthorized("no user id");
 
             try
             {
-                var settings = _adminSettingsService.GetSettings(id);
+                var settings = await _bankSettingsService.GetSettings(Guid.Parse(id));
+                return Ok(settings);
             }
             catch (ArgumentException ex)
             {
@@ -86,20 +85,19 @@ namespace patterns_settings.Controllers
             {
                 return StatusCode(500);
             }
-
-            return Ok();
         }
-        [HttpPut]
+        [HttpPut("bank/settings")]
         [Authorize]
         public async Task<IActionResult> PutBankSettings(BankClientSettingsDto model)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
-                return BadRequest("no user id");
+                return Unauthorized("no user id");
 
             try
             {
-                var settings = _adminSettingsService.GetSettings(id);
+                await _bankSettingsService.EditSettings(Guid.Parse(id), model);
+                return Ok();
             }
             catch (ArgumentException ex)
             {
@@ -109,8 +107,6 @@ namespace patterns_settings.Controllers
             {
                 return StatusCode(500);
             }
-
-            return Ok();
         }
     }
 }
