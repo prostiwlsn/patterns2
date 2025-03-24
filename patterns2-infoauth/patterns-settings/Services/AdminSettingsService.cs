@@ -12,14 +12,31 @@ namespace patterns_settings.Services
             _dbContext = dbContext;
         }
 
-        public Task EditSettings(Guid id, AdminClientSettingsDto model)
+        public async Task EditSettings(Guid id, AdminClientSettingsDto model)
         {
-            throw new NotImplementedException();
+            var settings = _dbContext.AdminClientSettings.Find(id);
+            if (settings != null)
+            {
+                _dbContext.AdminClientSettings.Remove(settings);
+            }
+
+            AdminClientSettings newSettings = new AdminClientSettings
+            {
+                UserId = id,
+                Theme = model.Theme,
+            };
+
+            _dbContext.Add(newSettings);
+            _dbContext.SaveChanges();
         }
 
-        public Task<AdminClientSettingsDto> GetSettings(Guid id)
+        public async Task<AdminClientSettingsDto> GetSettings(Guid id)
         {
-            throw new NotImplementedException();
+            var settings = _dbContext.AdminClientSettings.Find(id);
+
+            if (settings == null) throw new ArgumentException();
+
+            return new AdminClientSettingsDto { Theme = settings.Theme };
         }
     }
 }
