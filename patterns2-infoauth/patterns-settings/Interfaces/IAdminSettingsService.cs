@@ -1,6 +1,8 @@
-﻿namespace patterns_settings.Interfaces
+﻿using patterns_settings.Models;
+
+namespace patterns_settings.Interfaces
 {
-    public interface IAdminSettingsService
+    public interface IAdminSettingsService : ISettingsService<AdminClientSettingsDto>
     {
     }
 }

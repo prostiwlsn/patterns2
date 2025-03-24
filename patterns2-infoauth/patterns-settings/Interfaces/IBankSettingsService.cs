@@ -1,6 +1,8 @@
-﻿namespace patterns_settings.Interfaces
+﻿using patterns_settings.Models;
+
+namespace patterns_settings.Interfaces
 {
-    public interface IBankSettingsService
+    public interface IBankSettingsService : ISettingsService<BankClientSettingsDto>
     {
     }
 }
