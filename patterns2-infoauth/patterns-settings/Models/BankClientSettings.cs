@@ -6,7 +6,7 @@ namespace patterns_settings.Models
     {
         [Key]
         public Guid UserId { get; set; }
-        public bool IsDark { get; set; }
+        public Themes Theme { get; set; }
         public List<Guid> HiddenAccounts { get; set; } = [];
     }
 }
