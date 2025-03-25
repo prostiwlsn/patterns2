@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hits.core.domain.dto.currency.CurrencyEnum;
 import ru.hits.core.domain.dto.operation.*;
 import ru.hits.core.domain.enums.RoleEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
@@ -19,6 +20,7 @@ import ru.hits.core.exceptions.OperationNotFoundException;
 import ru.hits.core.mapper.OperationMapper;
 import ru.hits.core.repository.OperationRepository;
 import ru.hits.core.service.AccountService;
+import ru.hits.core.service.CurrencyService;
 import ru.hits.core.service.OperationService;
 import ru.hits.core.specification.OperationSpecification;
 
@@ -33,6 +35,7 @@ public class OperationServiceImpl implements OperationService {
     private final float MAX_MONEY_VALUE = 100000000f;
 
     private final AccountService accountService;
+    private final CurrencyService currencyService;
     private final OperationRepository operationRepository;
     private final OperationMapper operationMapper;
 
@@ -101,6 +104,9 @@ public class OperationServiceImpl implements OperationService {
                 .transactionDateTime(Instant.now())
                 .message(operationRequestBody.getMessage())
                 .operationType(operationRequestBody.getOperationType())
+                .conversionValue(
+                        currencyService.getCurrencyValue(senderAccount.getCurrency(), recipientAccount.getCurrency())
+                )
                 .build();
 
         return operationMapper.entityToDTO(
@@ -146,6 +152,9 @@ public class OperationServiceImpl implements OperationService {
                 .transactionDateTime(Instant.now())
                 .message(operationRequestBody.getMessage())
                 .operationType(operationRequestBody.getOperationType())
+                .conversionValue(
+                        currencyService.getCurrencyValue(senderAccount.getCurrency(), CurrencyEnum.USD)
+                )
                 .build();
 
         return operationMapper.entityToDTO(
@@ -179,6 +188,9 @@ public class OperationServiceImpl implements OperationService {
                 .transactionDateTime(Instant.now())
                 .message(operationRequestBody.getMessage())
                 .operationType(operationRequestBody.getOperationType())
+                .conversionValue(
+                        1f
+                )
                 .build();
 
         return operationMapper.entityToDTO(
@@ -212,6 +224,9 @@ public class OperationServiceImpl implements OperationService {
                 .transactionDateTime(Instant.now())
                 .message(operationRequestBody.getMessage())
                 .operationType(operationRequestBody.getOperationType())
+                .conversionValue(
+                        1f
+                )
                 .build();
 
         return operationMapper.entityToDTO(
@@ -272,7 +287,7 @@ public class OperationServiceImpl implements OperationService {
         List<UUID> accountIds = List.of(accountId);
 
         OperationEntity operation = operationRepository.findById(operationId)
-                        .orElseThrow(() -> new OperationNotFoundException(operationId));
+                .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         var user = rpcClientService.getUserInfo(
                 new UserInfoRequest(userId)

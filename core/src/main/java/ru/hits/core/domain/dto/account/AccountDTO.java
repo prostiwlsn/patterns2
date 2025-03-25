@@ -1,8 +1,12 @@
 package ru.hits.core.domain.dto.account;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import lombok.Builder;
 import lombok.Data;
+import ru.hits.core.domain.dto.currency.CurrencyEnum;
+import ru.hits.core.utils.CurrencyEnumConverter;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,6 +24,9 @@ public class AccountDTO {
 
     @Schema(description = "Баланс счёта", example = "1000.50")
     private Float balance;
+
+    @Schema(description = "валюта", example = "AMD")
+    private CurrencyEnum currency;
 
     @Schema(description = "Идентификатор пользователя, которому принадлежит счёт",
             example = "e0d1234c-7b4a-4b4f-9c1c-1e27b1f7f3af")

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hits.core.domain.dto.account.AccountDTO;
 import ru.hits.core.domain.dto.account.AccountFilters;
+import ru.hits.core.domain.dto.currency.CurrencyEnum;
 import ru.hits.core.domain.enums.RoleEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.entity.AccountEntity;
@@ -38,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public AccountDTO createAccount(UUID userId) throws JsonProcessingException {
+    public AccountDTO createAccount(UUID userId, CurrencyEnum currency) throws JsonProcessingException {
 
         var myUserEntity = rpcClientService.getUserInfo(
                 new UserInfoRequest(userId)
@@ -52,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
                         .createDateTime(Instant.now())
                         .balance(0f)
                         .isDeleted(false)
+                        .currency(currency)
                         .build()
         );
         return accountMapper.entityToDTO(accountEntity);

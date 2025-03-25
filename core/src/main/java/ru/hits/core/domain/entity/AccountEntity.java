@@ -1,13 +1,12 @@
 package ru.hits.core.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Builder;
+import ru.hits.core.domain.dto.currency.CurrencyEnum;
+import ru.hits.core.utils.CurrencyEnumConverter;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -29,6 +28,10 @@ public class AccountEntity {
 
     @Column(name = "balance", nullable = false)
     private Float balance = 0f;
+
+    @Convert(converter = CurrencyEnumConverter.class)
+    @Column(name = "currency", nullable = false)
+    private CurrencyEnum currency;
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;

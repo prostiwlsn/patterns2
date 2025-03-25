@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1-4" author="admin">
+        <addColumn tableName="account">
+            <column name="currency" type="TEXT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="v1-5" author="admin">
+        <addColumn tableName="operation">
+            <column name="conversion_value" type="FLOAT"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

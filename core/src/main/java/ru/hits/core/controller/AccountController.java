@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.hits.core.domain.dto.account.AccountDTO;
+import ru.hits.core.domain.dto.currency.CurrencyEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.dto.user.UserDTO;
 import ru.hits.core.service.impl.RpcClientService;
@@ -51,9 +52,10 @@ public class AccountController {
     )
     @PostMapping
     private AccountDTO createAccount(
-            @RequestHeader("Authorization") String authHeader
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam CurrencyEnum currency
     ) throws JsonProcessingException {
-        return accountService.createAccount(jwtService.getUserId(authHeader));
+        return accountService.createAccount(jwtService.getUserId(authHeader), currency);
     }
 
     @Operation(

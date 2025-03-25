@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
 import ru.hits.core.domain.enums.OperationTypeEnum;
+import ru.hits.core.utils.CurrencyEnumConverter;
 import ru.hits.core.utils.OperationTypeEnumConverter;
 
 import java.time.Instant;
@@ -35,6 +36,9 @@ public class OperationEntity {
 
     @Column(name = "amount", nullable = false)
     private Float amount;
+
+    @Column(name = "conversion_value", nullable = false)
+    private Float conversionValue;
 
     @Column(name = "transaction_date_time", nullable = false)
     private Instant transactionDateTime;
