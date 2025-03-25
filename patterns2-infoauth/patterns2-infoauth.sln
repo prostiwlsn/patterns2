@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "patterns2-infoauth", "patte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "patterns-settings", "patterns-settings\patterns-settings.csproj", "{18BE7DE3-641A-439B-A213-272E28C5E8B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "patterns-info", "patterns-info\patterns-info.csproj", "{F4D98FE6-418E-4399-A823-EAA078ACF106}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18BE7DE3-641A-439B-A213-272E28C5E8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4D98FE6-418E-4399-A823-EAA078ACF106}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D98FE6-418E-4399-A823-EAA078ACF106}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4D98FE6-418E-4399-A823-EAA078ACF106}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D98FE6-418E-4399-A823-EAA078ACF106}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
