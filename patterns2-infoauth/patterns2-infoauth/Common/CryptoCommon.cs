@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using patterns2_infoauth.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -83,6 +84,29 @@ namespace patterns2_infoauth.Common
             };
 
             return await GenerateToken(claims, DateTime.Now.AddMonths(1));
+        }
+
+        public IEnumerable<Claim> GetClaimsFromTokenString(string tokenString)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true, 
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key)),
+
+                ValidateIssuer = false, 
+                ValidateAudience = false, 
+
+                ValidateLifetime = true, 
+                ClockSkew = TimeSpan.Zero 
+            };
+
+            ClaimsPrincipal principal = handler.ValidateToken(tokenString, validationParameters, out SecurityToken validatedToken);
+
+            JwtSecurityToken jwtSecurityToken = handler.ReadJwtToken(tokenString);
+
+            return jwtSecurityToken.Claims;
         }
     }
 }

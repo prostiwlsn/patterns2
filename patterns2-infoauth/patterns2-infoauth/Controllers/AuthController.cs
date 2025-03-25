@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace patterns2_infoauth.Controllers
 {
@@ -90,6 +92,8 @@ namespace patterns2_infoauth.Controllers
         public async Task<IActionResult> Logout()
         {
             var sessionIdString = User.FindFirstValue("sessionId");
+
+            //Console.WriteLine(JsonSerializer.Serialize(User.Claims.Select(c => new { c.Type, c.Value }).ToList()));
 
             if (sessionIdString == null)
                 return BadRequest("no session id");

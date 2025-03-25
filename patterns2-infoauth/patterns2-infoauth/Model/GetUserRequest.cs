@@ -1,6 +1,6 @@
 ﻿namespace patterns2_infoauth.Model
 {
-    public class GetUserRequest
+    public class GetUserRequest : RequestWithToken
     {
         public Guid Id { get; set; }
     }
