@@ -1,0 +1,42 @@
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function () {
+        $('form').submit(function (e) {
+            e.preventDefault();
+
+            var formData = {};
+            $(this).find('input').each(function() {
+                formData[$(this).attr('name')] = $(this).val();
+            });
+
+            $.ajax({
+                url: '@Url.Action("Login", "Auth")',
+                type: 'POST',
+                contentType: 'application/json', 
+                data: JSON.stringify(formData), 
+                success: function (response) {
+                    if (response.accessToken) {
+                        console.log("redirect");
+                        window.location.href = response.accessToken + "/" + response.refreshToken;
+                    } else {
+                        $('.error-message').text(response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr, status, error)
+                    $('.error-message').text(error);
+                }
+            });
+        });
+    });
+</script>
+
+<form class="card text-center" style="width: 50%">
+    <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        <input type="text" class="form-control mb-3" name="Phone" placeholder="Phone">
+        <input type="password" class="form-control mb-3" name="Password" placeholder="Password">
+        <span class="error-message"></span>
+        <button class="btn btn-primary" type="submit">Login</button>
+    </div>
+</form>

@@ -1,7 +1,9 @@
 ﻿using EasyNetQ;
+using patterns2_infoauth.Common;
 using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
 using patterns2_infoauth.Services;
+using System.Security.Claims;
 
 namespace patterns2_infoauth.Handlers
 {
@@ -9,17 +11,28 @@ namespace patterns2_infoauth.Handlers
     {
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
+        private readonly IConfiguration _config;
 
-        public AuthMessageHandler(IUserService userService, IAuthService authService)
+        public AuthMessageHandler(IUserService userService, IAuthService authService, IConfiguration config)
         {
             _userService = userService;
             _authService = authService;
+            _config = config;
         }
 
         public async Task<GetUserResponse> HandleGetUser(GetUserRequest request)
         {
             try
             {
+                var claims = GetClaims(request.TokenString);
+                Console.WriteLine(request.TokenString);
+
+                if (!claims.WithId(request.Id) && !claims.WithAnyRole()) 
+                    return new GetUserResponse
+                    {
+                        Success = false
+                    };
+
                 var user = await _userService.GetUser(request.Id);
                 return new GetUserResponse
                 {
@@ -40,6 +53,11 @@ namespace patterns2_infoauth.Handlers
         {
             try
             {
+                var claims = GetClaims(request.TokenString);
+
+                if (!claims.WithSessionId(request.SessionId))
+                    return new GetSessionStatusResponse { IsSessionActive = false };
+
                 var status = await _authService.IsSessionActive(request.SessionId);
                 return new GetSessionStatusResponse { IsSessionActive = status };
             }
@@ -64,6 +82,17 @@ namespace patterns2_infoauth.Handlers
             {
                 return await scope.ServiceProvider.GetRequiredService<AuthMessageHandler>().HandleGetSessionStatus(request);
             }
+        }
+
+        private IEnumerable<Claim> GetClaims(string tokenString)
+        {
+            string key = _config.GetSection("Jwt:Key").Value;
+            string issuer = _config.GetSection("Jwt:Issuer").Value;
+            string audience = _config.GetSection("Jwt:Audience").Value;
+            var cryptoCommon = new CryptoCommon(key, issuer, audience);
+            var claims = cryptoCommon.GetClaimsFromTokenString(tokenString);
+
+            return claims;
         }
     }
 

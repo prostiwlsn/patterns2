@@ -5,17 +5,25 @@ using Microsoft.AspNetCore.Mvc;
 using patterns2_infoauth.Interfaces;
 using patterns2_infoauth.Model;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace patterns2_infoauth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private IAuthService _authService;
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+        }
+
+        [HttpGet("/register")]
+        public IActionResult Register()
+        {
+            return View();
         }
 
         [HttpPost("/register")]
@@ -31,6 +39,12 @@ namespace patterns2_infoauth.Controllers
                 Console.WriteLine(argEx.Message);
                 return BadRequest("This user already exists");
             }
+        }
+
+        [HttpGet("/login")]
+        public IActionResult Login()
+        {
+            return View();
         }
 
         [HttpPost("/login")]
@@ -90,6 +104,8 @@ namespace patterns2_infoauth.Controllers
         public async Task<IActionResult> Logout()
         {
             var sessionIdString = User.FindFirstValue("sessionId");
+
+            //Console.WriteLine(JsonSerializer.Serialize(User.Claims.Select(c => new { c.Type, c.Value }).ToList()));
 
             if (sessionIdString == null)
                 return BadRequest("no session id");

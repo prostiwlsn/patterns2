@@ -150,7 +150,7 @@ namespace patterns2_infoauth.Services
 
             user.UserRoles.ForEach(role =>
             {
-                additionalClaims.Add(new Claim(nameof(role.Role), Enum.GetName(typeof(RoleType), role.Role) ?? ""));
+                additionalClaims.Add(new Claim(CustomClaimTypes.Role, Enum.GetName(typeof(RoleType), role.Role) ?? ""));
             });
 
             additionalClaims.Add(new Claim("isBlocked", user.IsBlocked.ToString()));

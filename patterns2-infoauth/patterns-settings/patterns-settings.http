@@ -1,0 +1,6 @@
+@patterns_settings_HostAddress = http://localhost:5228
+
+GET {{patterns_settings_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
