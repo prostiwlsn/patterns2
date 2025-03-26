@@ -25,8 +25,9 @@ namespace patterns2_infoauth.Handlers
             try
             {
                 var claims = GetClaims(request.TokenString);
+                Console.WriteLine(request.TokenString);
 
-                if (!claims.WithId(request.Id)) 
+                if (!claims.WithId(request.Id) && !claims.WithAnyRole()) 
                     return new GetUserResponse
                     {
                         Success = false

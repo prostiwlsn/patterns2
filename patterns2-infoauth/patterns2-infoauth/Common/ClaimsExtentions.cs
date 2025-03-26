@@ -11,6 +11,13 @@ namespace patterns2_infoauth.Common
             return calimId;
         }
 
+        public static bool WithAnyRole(this IEnumerable<Claim> claims)
+        {
+            var roles = claims.Any(c => c.Type == CustomClaimTypes.Role);
+
+            return roles;
+        }
+
         public static bool WithSessionId(this IEnumerable<Claim> claims, Guid id)
         {
             var calimId = claims.Any(c => c.Type == "sessionId" && Guid.Parse(c.Value) == id);
