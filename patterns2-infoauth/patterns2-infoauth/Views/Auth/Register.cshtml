@@ -1,0 +1,39 @@
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function () {
+        $('form').submit(function (e) {
+            e.preventDefault();
+
+            var formData = {};
+            $(this).find('input').each(function() {
+                formData[$(this).attr('name')] = $(this).val();
+            });
+
+            $.ajax({
+                url: '@Url.Action("Register", "Auth")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    if (response.accessToken) {
+                        console.log("redirect");
+                        window.location.href = response.accessToken + "/" + response.refreshToken;
+                    } else {
+                        $('.error-message').text(response);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<form class="card text-center" style="width: 50%">
+    <div class="card-body">
+        <h5 class="card-title">Register</h5>
+        <input type="text" class="form-control mb-3" name="Phone" placeholder="Phone">
+        <input type="text" class="form-control mb-3" name="Name" placeholder="Name">
+        <input type="password" class="form-control mb-3" name="Password" placeholder="Password">
+        <span class="error-message text-danger"></span>
+        <button class="btn btn-primary" type="submit">Register</button>
+    </div>
+</form>

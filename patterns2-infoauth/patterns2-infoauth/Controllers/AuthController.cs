@@ -12,12 +12,18 @@ namespace patterns2_infoauth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private IAuthService _authService;
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+        }
+
+        [HttpGet("/register")]
+        public IActionResult Register()
+        {
+            return View();
         }
 
         [HttpPost("/register")]
@@ -33,6 +39,12 @@ namespace patterns2_infoauth.Controllers
                 Console.WriteLine(argEx.Message);
                 return BadRequest("This user already exists");
             }
+        }
+
+        [HttpGet("/login")]
+        public IActionResult Login()
+        {
+            return View();
         }
 
         [HttpPost("/login")]
