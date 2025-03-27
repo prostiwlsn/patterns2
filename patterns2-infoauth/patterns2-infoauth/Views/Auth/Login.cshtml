@@ -17,14 +17,16 @@
                 success: function (response) {
                     if (response.accessToken) {
                         console.log("redirect");
-                        window.location.href = response.accessToken + "/" + response.refreshToken;
+                        window.location = "hbank://auth/" + response.accessToken + "/" + response.refreshToken;
+                        localStorage.setItem("access", response.accessToken);
+                        localStorage.setItem("refresh", response.refreshToken);
                     } else {
                         $('.error-message').text(response);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.log(xhr, status, error)
-                    $('.error-message').text(error);
+                    $('.error-message').text("error");
                 }
             });
         });
