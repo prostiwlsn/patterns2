@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,14 +29,14 @@ fun ApplicationsBlock(
             text = stringResource(R.string.applications),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
-            color = Color.White,
-            border = BorderStroke(1.dp, Color(0xFFD9D9D9))
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
         ) {
             Column {
                 ApplicationItem(
@@ -47,7 +47,7 @@ fun ApplicationsBlock(
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 32.dp),
                     thickness = 1.dp,
-                    color = Color(0xFFD9D9D9)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                 )
                 ApplicationItem(
                     iconRes = R.drawable.add,

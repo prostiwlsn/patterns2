@@ -25,7 +25,6 @@ val userModule = module {
             userRepository = get()
         )
     }
-
     factory<GetCurrentUserUseCase> {
         GetCurrentUserUseCase(
             userRepository = get(),

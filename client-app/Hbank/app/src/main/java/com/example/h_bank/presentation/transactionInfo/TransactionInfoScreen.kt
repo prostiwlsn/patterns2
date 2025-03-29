@@ -22,15 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.h_bank.R
-import com.example.h_bank.data.dto.payment.OperationTypeDto
 import com.example.h_bank.domain.entity.filter.OperationType
 import com.example.h_bank.domain.entity.filter.OperationType.Companion.getText
 import com.example.h_bank.presentation.common.SuccessIcon
 import com.example.h_bank.presentation.common.TextField
 import com.example.h_bank.presentation.successfulTransfer.components.SuccessfulTransferHeader
 import org.koin.androidx.compose.koinViewModel
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun LoadingScreen() {

@@ -1,6 +1,7 @@
 package com.example.h_bank.data.repository
 
 import com.example.h_bank.data.dto.AccountDto
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.data.network.AccountApi
 import com.example.h_bank.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bank.data.utils.RequestResult
@@ -19,9 +20,11 @@ class AccountRepository(
         }
     }
 
-    override suspend fun openAccount(): RequestResult<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun openAccount(
+        currency: CurrencyDto,
+    ): RequestResult<Unit> = withContext(Dispatchers.IO) {
         return@withContext runResultCatching {
-            api.openAccount()
+            api.openAccount(currency)
         }
     }
 

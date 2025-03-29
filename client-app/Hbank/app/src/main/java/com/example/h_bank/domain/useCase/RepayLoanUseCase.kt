@@ -4,7 +4,6 @@ import com.example.h_bank.data.dto.OperationRequestBody
 import com.example.h_bank.data.dto.payment.OperationTypeDto
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.repository.IOperationRepository
-import java.math.BigDecimal
 
 class RepayLoanUseCase(
     private val operationRepository: IOperationRepository,

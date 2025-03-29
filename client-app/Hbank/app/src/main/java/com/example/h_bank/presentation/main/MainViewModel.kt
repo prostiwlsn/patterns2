@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.Loan
+import com.example.h_bank.data.ThemeMode
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.data.utils.RequestResult
@@ -12,6 +13,7 @@ import com.example.h_bank.domain.useCase.CloseAccountUseCase
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
+import com.example.h_bank.domain.useCase.SettingsUseCase
 import com.example.h_bank.domain.useCase.authorization.GetMainCommandsUseCase
 import com.example.h_bank.domain.useCase.authorization.LogoutUseCase
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
@@ -21,6 +23,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -35,14 +39,12 @@ class MainViewModel(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val settingsUseCase: SettingsUseCase,
     getAuthorizationCommandsUseCase: GetMainCommandsUseCase,
 ) : BaseViewModel() {
 
-    init {
-        viewModelScope
-    }
     private val _state = MutableStateFlow(MainState())
-    val state: StateFlow<MainState> = _state
+    val state: StateFlow<MainState> = _state.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<MainNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
@@ -50,10 +52,18 @@ class MainViewModel(
     private val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
 
     init {
-        getAuthorizationCommandsUseCase().onEach {
-            loadCurrentUser()
-        }.launchIn(viewModelScope)
-
+        viewModelScope.launch {
+            settingsUseCase.settingsFlow.collect { settings ->
+                println("MainViewModel: Collected settings = $settings")
+                _state.update {
+                    it.copy(
+                        themeMode = settings.theme,
+                        hiddenAccounts = settings.hiddenAccounts
+                    )
+                }
+            }
+        }
+        getAuthorizationCommandsUseCase().onEach { loadCurrentUser() }.launchIn(viewModelScope)
         loadCurrentUser()
     }
 
@@ -191,7 +201,7 @@ class MainViewModel(
 
     fun onOpenAccountClicked() {
         viewModelScope.launch {
-            openAccountUseCase().onSuccess {
+            openAccountUseCase(state.value.selectedCurrency).onSuccess {
                 _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
             }
                 .onFailure { }
@@ -218,6 +228,23 @@ class MainViewModel(
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }
                 }
+        }
+    }
+
+    fun toggleTheme() {
+        viewModelScope.launch {
+            println("ToggleTheme called")
+            val currentTheme = settingsUseCase.settingsFlow.first().theme
+            println("Current theme: $currentTheme")
+            val newTheme = if (currentTheme == ThemeMode.LIGHT) ThemeMode.DARK else ThemeMode.LIGHT
+            println("New theme: $newTheme")
+            settingsUseCase.setTheme(newTheme)
+        }
+    }
+
+    fun toggleAccountVisibility(accountId: String) {
+        viewModelScope.launch {
+            settingsUseCase.toggleAccountVisibility(accountId)
         }
     }
 }

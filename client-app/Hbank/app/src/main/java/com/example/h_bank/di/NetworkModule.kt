@@ -44,6 +44,14 @@ val networkModule = module {
             .build()
     }
 
+    single<Retrofit>(named("settingsApi")) {
+        Retrofit.Builder()
+            .client(get(named("authClient")))
+            .baseUrl("http://194.59.186.122:8050/")
+            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
     single<Retrofit>(named("accountApi")) {
         Retrofit.Builder()
             .client(get(named("authClient")))

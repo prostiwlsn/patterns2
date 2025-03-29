@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,6 +24,8 @@ import com.example.h_bank.data.Account
 @Composable
 fun AccountItem(
     account: Account,
+    isHidden: Boolean,
+    onToggleVisibility: (String) -> Unit,
     onCloseAccountClick: (Account) -> Unit
 ) {
     Row(
@@ -33,16 +35,32 @@ fun AccountItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = account.accountNumber, fontSize = 14.sp, color = Color.Black)
+            Text(
+                text = account.accountNumber,
+                fontSize = 14.sp,
+                color = if (isHidden) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = account.balance.toBigDecimal().toPlainString() + " ₽", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = "${account.balance.toBigDecimal().toPlainString()} ₽",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isHidden) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
+            )
+        }
+        IconButton(onClick = { onToggleVisibility(account.id) }) {
+            Icon(
+                painter = painterResource(if (isHidden) R.drawable.visibility_off else R.drawable.visibility_on),
+                contentDescription = "Toggle visibility",
+                tint = MaterialTheme.colorScheme.onSurface
+            )
         }
         IconButton(onClick = { onCloseAccountClick(account) }) {
             Icon(
-                painter = painterResource(id = R.drawable.delete),
-                contentDescription = "Back",
+                painter = painterResource(R.drawable.delete),
+                contentDescription = "Close",
                 modifier = Modifier.size(24.dp),
-                tint = Color.Red
+                tint = MaterialTheme.colorScheme.error
             )
         }
     }

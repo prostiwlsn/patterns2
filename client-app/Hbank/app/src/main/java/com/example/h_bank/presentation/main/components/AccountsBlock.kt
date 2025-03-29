@@ -2,21 +2,12 @@ package com.example.h_bank.presentation.main.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,6 +19,8 @@ import com.example.h_bank.presentation.common.AccountItem
 @Composable
 fun AccountsBlock(
     accounts: List<Account>,
+    hiddenAccounts: Set<String>,
+    onToggleVisibility: (String) -> Unit,
     onCloseAccountClick: (Account) -> Unit,
     onSeeAllClick: () -> Unit
 ) {
@@ -41,13 +34,13 @@ fun AccountsBlock(
                 text = stringResource(R.string.accounts),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = stringResource(R.string.all),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF5C49E0),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onSeeAllClick() }
             )
         }
@@ -55,20 +48,22 @@ fun AccountsBlock(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
-            color = Color.White,
-            border = BorderStroke(1.dp, Color(0xFFD9D9D9))
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
         ) {
             Column {
-                val itemsToShow = accounts.take(2)
-                itemsToShow.forEachIndexed { index, account ->
+                accounts.take(2).forEachIndexed { index, account ->
                     AccountItem(
                         account = account,
-                        onCloseAccountClick = { onCloseAccountClick(account) })
-                    if (index < itemsToShow.size - 1) {
+                        isHidden = hiddenAccounts.contains(account.id),
+                        onToggleVisibility = onToggleVisibility,
+                        onCloseAccountClick = onCloseAccountClick
+                    )
+                    if (index < accounts.size - 1) {
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             thickness = 1.dp,
-                            color = Color(0xFFD9D9D9)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                         )
                     }
                 }

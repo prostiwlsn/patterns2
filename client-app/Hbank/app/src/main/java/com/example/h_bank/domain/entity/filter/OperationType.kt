@@ -2,6 +2,7 @@ package com.example.h_bank.domain.entity.filter
 
 import com.example.h_bank.data.dto.payment.OperationTypeDto
 
+
 enum class OperationType {
     ALL,
     REPLENISHMENT,

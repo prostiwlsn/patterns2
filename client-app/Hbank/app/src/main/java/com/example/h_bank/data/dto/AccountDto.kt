@@ -11,6 +11,7 @@ data class AccountDto(
     val id: String,
     val accountNumber: String,
     val balance: Double,
+    val currency: CurrencyDto,
     val userId: String,
     val isDeleted: Boolean,
     val createDateTime: Instant
@@ -21,6 +22,7 @@ internal fun AccountDto.toDomain(): Account {
         id = id,
         accountNumber = accountNumber,
         balance = balance,
+        currency = currency,
         userId = userId,
         isDeleted = isDeleted,
         createDateTime = createDateTime.toJavaInstant()
