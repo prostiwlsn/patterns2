@@ -14,7 +14,6 @@ import com.example.h_bank.presentation.launch.LaunchScreen
 import com.example.h_bank.presentation.loan.LoanScreen
 import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
-import com.example.h_bank.presentation.login.LoginScreen
 import com.example.h_bank.presentation.main.MainScreen
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryScreen
 import com.example.h_bank.presentation.registration.RegistrationScreen
@@ -45,12 +44,12 @@ fun AppNavigation(
         composable("welcome") {
             WelcomeScreen(navController)
         }
-        composable("registration") {
-            RegistrationScreen(navController)
-        }
-        composable("login") {
-            LoginScreen(navController)
-        }
+//        composable("registration") {
+//            RegistrationScreen(navController)
+//        }
+//        composable("login") {
+//            LoginScreen(navController)
+//        }
         composable("main") {
             MainScreen(navController)
         }

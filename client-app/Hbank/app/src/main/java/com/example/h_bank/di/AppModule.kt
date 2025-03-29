@@ -24,7 +24,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    viewModel { WelcomeViewModel(get()) }
+    viewModel { WelcomeViewModel(get(), get()) }
     viewModel { LaunchViewModel(get(), get()) }
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->

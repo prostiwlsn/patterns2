@@ -64,6 +64,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.browser)
 
     // Date picker
     implementation ("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")

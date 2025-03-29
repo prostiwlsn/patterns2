@@ -30,10 +30,12 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
     override fun getCredentialsState() = credentials.value
 
     override suspend fun getToken(): TokenEntity? {
-        val accessToken = prefs.getString("access_token", null) ?: return null
-        val refreshToken = prefs.getString("refresh_token", null) ?: return null
-        val expiresAt = prefs.getLong("expires_at", -1).takeIf { it != -1L } ?: return null
-        return TokenEntity(accessToken, refreshToken, expiresAt)
+        val accessToken = prefs.getString("access_token", null)
+        val refreshToken = prefs.getString("refresh_token", null)
+        val expiresAt = prefs.getLong("expires_at", -1).takeIf { it != -1L }
+        return if (accessToken != null && refreshToken != null && expiresAt != null) {
+            TokenEntity(accessToken, refreshToken, expiresAt)
+        } else null
     }
 
     override suspend fun saveToken(token: TokenEntity) {

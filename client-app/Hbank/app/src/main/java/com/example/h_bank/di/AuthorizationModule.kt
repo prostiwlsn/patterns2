@@ -34,14 +34,12 @@ val authorizationModule = module {
 
     factory<SaveTokenUseCase> {
         SaveTokenUseCase(
-            tokenStorage = get()
+            tokenRepository = get()
         )
     }
 
     factory<IAuthorizationRemoteRepository> {
         AuthorizationRemoteRepository(
-            storageRepository = get(),
-            authApi = get(),
             logoutApi = get(),
             tokenRepository = get(),
         )
