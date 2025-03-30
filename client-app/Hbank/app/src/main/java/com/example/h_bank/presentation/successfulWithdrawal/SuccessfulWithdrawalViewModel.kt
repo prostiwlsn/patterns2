@@ -22,9 +22,16 @@ class SuccessfulWithdrawalViewModel(
 
     val amount: String = checkNotNull(savedStateHandle["amount"])
     val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+    val currency: String = checkNotNull(savedStateHandle["currency"])
 
     init {
-        _state.update { it.copy(accountNumber = accountNumber, amount = amount) }
+        _state.update {
+            it.copy(
+                accountNumber = accountNumber,
+                amount = amount,
+                currency = currency
+            )
+        }
     }
 
     fun onToMainClicked() {

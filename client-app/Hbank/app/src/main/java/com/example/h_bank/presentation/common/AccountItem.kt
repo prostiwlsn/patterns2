@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 import com.example.h_bank.data.Account
+import com.example.h_bank.data.dto.CurrencyDto
 
 @Composable
 fun AccountItem(
@@ -42,7 +43,13 @@ fun AccountItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${account.balance.toBigDecimal().toPlainString()} ₽",
+                text = "${account.balance.toBigDecimal().toPlainString()} ${
+                    when (account.currency) {
+                        CurrencyDto.RUB -> '₽'
+                        CurrencyDto.USD -> '$'
+                        CurrencyDto.AMD -> '֏'
+                    }
+                }",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isHidden) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface

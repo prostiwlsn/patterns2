@@ -112,7 +112,7 @@ fun LoanPaymentScreen(
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideAccountsSheet() },
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 LoanPaymentBottomSheetContent(

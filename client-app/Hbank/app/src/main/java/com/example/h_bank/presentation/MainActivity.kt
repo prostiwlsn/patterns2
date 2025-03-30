@@ -7,8 +7,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.view.WindowCompat
 import com.example.h_bank.data.ThemeMode
 import com.example.h_bank.data.UserSettings
 import com.example.h_bank.di.accountModule
@@ -26,9 +28,7 @@ import com.example.h_bank.di.paymentModule
 import com.example.h_bank.di.settingsModule
 import com.example.h_bank.domain.useCase.SettingsUseCase
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -38,7 +38,7 @@ import org.koin.core.context.GlobalContext.startKoin
 class MainActivity : ComponentActivity() {
     private val settingsUseCase: SettingsUseCase by inject()
 
-    @SuppressLint("NewApi")
+    @SuppressLint("NewApi", "UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,47 +62,22 @@ class MainActivity : ComponentActivity() {
         }
 
         handleIntent(intent)
-
         enableEdgeToEdge()
-//        enableEdgeToEdge(
-//            statusBarStyle = SystemBarStyle.auto(
-//                lightScrim = "#80000000".toColorInt(),
-//                darkScrim = "#80000000".toColorInt(),
-//                detectDarkMode = { initialTheme == ThemeMode.DARK }
-//            ),
-//            navigationBarStyle = SystemBarStyle.auto(
-//                lightScrim = "#80000000".toColorInt(),
-//                darkScrim = "#80000000".toColorInt(),
-//                detectDarkMode = { initialTheme == ThemeMode.DARK }
-//            )
-//        )
+
         setContent {
             val settings by settingsUseCase.settingsFlow.collectAsState(initial = UserSettings(theme = ThemeMode.LIGHT))
-            println("MainActivity: Current theme = ${settings.theme}")
+            if (settings.theme == ThemeMode.LIGHT) WindowCompat.getInsetsController(
+                window,
+                window.decorView
+            ).isAppearanceLightStatusBars = true
+            else WindowCompat.getInsetsController(window, window.decorView)
+                .isAppearanceLightStatusBars = false
             HbankTheme(themeMode = settings.theme) {
-//                LaunchedEffect(settings) {
-//                    updateStatusBarColor(settings.theme)
-//                }
-                AppNavigation()
+                Scaffold { AppNavigation() }
+
             }
         }
     }
-
-//    private fun updateStatusBarColor(themeMode: ThemeMode) {
-//        val window = window
-//        WindowCompat.setDecorFitsSystemWindows(window, false)
-//
-//        val statusBarColor = when (themeMode) {
-//            ThemeMode.LIGHT -> Color.White.toArgb()
-//            ThemeMode.DARK -> Color(0xFF121212).toArgb()
-//        }
-//
-//        window.statusBarColor = statusBarColor
-//
-//        val controller = WindowCompat.getInsetsController(window, window.decorView)
-//        controller.isAppearanceLightStatusBars = themeMode == ThemeMode.LIGHT
-//    }
-
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

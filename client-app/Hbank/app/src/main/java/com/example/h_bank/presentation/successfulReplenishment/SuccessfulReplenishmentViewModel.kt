@@ -1,8 +1,6 @@
 package com.example.h_bank.presentation.successfulReplenishment
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,9 +22,16 @@ class SuccessfulReplenishmentViewModel(
 
     private val amount: String = checkNotNull(savedStateHandle["amount"])
     private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+    private val currency: String = checkNotNull(savedStateHandle["currency"])
 
     init {
-        _state.update { it.copy(accountNumber = accountNumber, amount = amount) }
+        _state.update {
+            it.copy(
+                accountNumber = accountNumber,
+                amount = amount,
+                currency = currency
+            )
+        }
     }
 
     fun onToMainClicked() {

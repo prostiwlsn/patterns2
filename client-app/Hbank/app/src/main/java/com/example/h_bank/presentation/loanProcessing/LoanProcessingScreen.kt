@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.h_bank.R
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.presentation.common.CustomDisablableButton
 import com.example.h_bank.presentation.common.IconButtonField
 import com.example.h_bank.presentation.loanProcessing.components.RatesBottomSheetContent
@@ -94,7 +95,7 @@ fun LoanProcessingScreen(
                 labelRes = R.string.rate,
                 value = state.selectedRate?.name.orEmpty(),
                 icon = Icons.Default.Edit,
-                onIconClick = {viewModel.showRatesSheet() },
+                onIconClick = { viewModel.showRatesSheet() },
             )
             IconButtonField(
                 labelRes = R.string.account,
@@ -107,7 +108,12 @@ fun LoanProcessingScreen(
                 labelRes = R.string.loan_amount,
                 value = state.amount?.toString().orEmpty(),
                 error = state.fieldErrors?.amountError,
-                suffix = " ₽",
+                suffix = when (state.selectedAccount?.currency) {
+                    CurrencyDto.RUB -> "₽"
+                    CurrencyDto.USD -> "$"
+                    CurrencyDto.AMD -> "֏"
+                    null -> ""
+                },
                 onValueChange = { viewModel.onAmountChange(it) }
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -137,7 +143,7 @@ fun LoanProcessingScreen(
         if (state.isRatesSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideRatesSheet() },
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
             ) {
                 RatesBottomSheetContent(
@@ -150,11 +156,10 @@ fun LoanProcessingScreen(
             }
         }
 
-        // Выбор счета
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideAccountsSheet() },
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
             ) {
                 LoanPaymentBottomSheetContent(

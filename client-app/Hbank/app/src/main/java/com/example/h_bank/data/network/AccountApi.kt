@@ -16,7 +16,7 @@ interface AccountApi {
 
     @POST("account")
     suspend fun openAccount(
-        @Query("accountId") currency: CurrencyDto,
+        @Query("currency") currency: CurrencyDto,
     )
 
     @DELETE("account")

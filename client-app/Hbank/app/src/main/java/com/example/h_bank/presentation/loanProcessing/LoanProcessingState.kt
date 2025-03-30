@@ -2,11 +2,8 @@ package com.example.h_bank.presentation.loanProcessing
 
 import androidx.paging.PagingData
 import com.example.h_bank.data.Account
-import com.example.h_bank.data.Rate
 import com.example.h_bank.domain.entity.loan.TariffEntity
 import com.example.h_bank.presentation.loanProcessing.model.LoanProcessingErrorModel
-import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
-import com.example.h_bank.presentation.paymentHistory.utils.getAccounts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 

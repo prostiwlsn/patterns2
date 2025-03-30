@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 import com.example.h_bank.data.Account
+import com.example.h_bank.data.dto.CurrencyDto
 
 @Composable
 fun LoanPaymentAccountItem(
@@ -41,7 +42,11 @@ fun LoanPaymentAccountItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = account.balance.toString() + " ₽",
+                text = account.balance.toString() + when (account.currency) {
+                    CurrencyDto.RUB -> " ₽"
+                    CurrencyDto.USD -> " $"
+                    CurrencyDto.AMD -> " ֏"
+                },
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +33,8 @@ fun FilterButton(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
             .background(
-                color = if (isActive) Color(0xFF5C49E0) else Color(0xFFD9D9D9),
+                color = if (isActive) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
             )
             .clickable { onClick() }
             .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -42,9 +44,9 @@ fun FilterButton(
         Text(
             text = text,
             fontSize = 12.sp,
-            color = if (isActive) Color.White else Color.Black
+            color = if (isActive) Color.White else MaterialTheme.colorScheme.onSurface
         )
-        if (isActive && isCloseable){
+        if (isActive && isCloseable) {
             Icon(
                 modifier = Modifier
                     .clickable {
@@ -52,13 +54,13 @@ fun FilterButton(
                     },
                 imageVector = Icons.Default.Close,
                 contentDescription = null,
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onSurface
             )
         } else {
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = null,
-                tint = if (isActive) Color.White else Color(0xFF585858)
+                tint = if (isActive) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
             )
         }
     }

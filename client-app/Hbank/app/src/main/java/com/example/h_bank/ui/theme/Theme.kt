@@ -10,9 +10,9 @@ import com.example.h_bank.data.ThemeMode
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF5C49E0),
     onPrimary = Color.White,
-    background = Color(0xFF121212),
+    background = Color.Black,
     onBackground = Color.White,
-    surface = Color(0xFF121212),
+    surface = Color(0xFF070707),
     onSurface = Color.White
 )
 

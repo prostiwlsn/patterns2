@@ -3,8 +3,6 @@ package com.example.h_bank.presentation.main.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -18,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.Loan
@@ -58,7 +57,15 @@ fun AccountsBottomSheetContent(
                 Switch(
                     checked = showHidden,
                     onCheckedChange = { showHidden = it },
-                    colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary)
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f),
+                        checkedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f),
+                        uncheckedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f),
+
+                        )
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -78,15 +85,10 @@ fun AccountsBottomSheetContent(
         }
         item {
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
+            CustomButton(
                 onClick = onOpenAccountClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text(
-                    stringResource(R.string.main_screen_bottom_sheet_account_button),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
+                textRes = R.string.main_screen_bottom_sheet_account_button
+            )
         }
     }
 }

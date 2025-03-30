@@ -16,7 +16,6 @@ import com.example.h_bank.presentation.loanPayment.LoanPaymentScreen
 import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
 import com.example.h_bank.presentation.main.MainScreen
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryScreen
-import com.example.h_bank.presentation.registration.RegistrationScreen
 import com.example.h_bank.presentation.replenishment.ReplenishmentScreen
 import com.example.h_bank.presentation.successfulAccountClosure.SuccessfulAccountClosureScreen
 import com.example.h_bank.presentation.successfulAccountOpening.SuccessfulAccountOpeningScreen
@@ -44,12 +43,6 @@ fun AppNavigation(
         composable("welcome") {
             WelcomeScreen(navController)
         }
-//        composable("registration") {
-//            RegistrationScreen(navController)
-//        }
-//        composable("login") {
-//            LoginScreen(navController)
-//        }
         composable("main") {
             MainScreen(navController)
         }
@@ -96,7 +89,7 @@ fun AppNavigation(
         }
         composable(
             route = "transfer/{userId}",
-            arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) {
             TransferScreen(navController)
         }
@@ -138,19 +131,21 @@ fun AppNavigation(
             SuccessfulTransferScreen(navController)
         }
         composable(
-            route = "successful_replenishment/{accountNumber}/{amount}",
+            route = "successful_replenishment/{accountNumber}/{amount}/{currency}",
             arguments = listOf(
                 navArgument("accountNumber") { type = NavType.StringType },
-                navArgument("amount") { type = NavType.StringType }
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("currency") { type = NavType.StringType }
             ),
         ) {
             SuccessfulReplenishmentScreen(navController)
         }
         composable(
-            route = "successful_withdrawal/{accountNumber}/{amount}",
+            route = "successful_withdrawal/{accountNumber}/{amount}/{currency}",
             arguments = listOf(
                 navArgument("accountNumber") { type = NavType.StringType },
-                navArgument("amount") { type = NavType.StringType }
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("currency") { type = NavType.StringType }
             ),
         ) {
             SuccessfulWithdrawalScreen(navController)

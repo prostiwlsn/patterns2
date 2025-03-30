@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import com.example.h_bank.R
 import com.example.h_bank.presentation.common.CustomButton
 import com.example.h_bank.presentation.common.SuccessIcon
-import com.example.h_bank.presentation.common.SuccessMessage
 import com.example.h_bank.presentation.common.TextField
 import org.koin.androidx.compose.koinViewModel
 
@@ -62,7 +61,7 @@ fun SuccessfulLoanPaymentScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -75,7 +74,8 @@ fun SuccessfulLoanPaymentScreen(
             IconButton(onClick = { viewModel.onToMainClicked() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -85,14 +85,14 @@ fun SuccessfulLoanPaymentScreen(
         Text(
             text = state.amount + " ₽",
             fontSize = 30.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.loan_payment),
             fontSize = 14.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.weight(1f))
