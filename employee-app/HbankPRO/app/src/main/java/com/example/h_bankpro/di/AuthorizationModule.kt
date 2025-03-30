@@ -10,20 +10,13 @@ import com.example.h_bankpro.domain.repository.ICommandStorage
 import com.example.h_bankpro.domain.useCase.GetCommandUseCase
 import com.example.h_bankpro.domain.useCase.LoginUseCase
 import com.example.h_bankpro.domain.useCase.storage.GetCredentialsFlowUseCase
-import com.example.h_bankpro.domain.useCase.LoginValidationUseCase
 import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.domain.useCase.RegisterUseCase
-import com.example.h_bankpro.domain.useCase.RegistrationValidationUseCase
 import com.example.h_bankpro.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bankpro.domain.useCase.storage.UpdateCredentialsUseCase
-import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
-import com.example.h_bankpro.presentation.connectionError.ConnectionErrorScreen
 import com.example.h_bankpro.presentation.connectionError.ConnectionErrorViewModel
 import com.example.h_bankpro.presentation.launch.LaunchViewModel
-import com.example.h_bankpro.presentation.login.LoginViewModel
 import com.example.h_bankpro.presentation.navigation.NavigationViewModel
-import com.example.h_bankpro.presentation.registration.RegistrationViewModel
-import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -32,7 +25,9 @@ import retrofit2.Retrofit
 val authorizationModule = module {
 
     single<IAuthorizationLocalRepository> {
-        AuthorizationLocalStorage(androidContext())
+        AuthorizationLocalStorage(
+            context = get()
+        )
     }
 
     factory<GetCredentialsFlowUseCase> {
@@ -47,12 +42,6 @@ val authorizationModule = module {
         )
     }
 
-    factory<LoginValidationUseCase> {
-        LoginValidationUseCase(
-            storageRepository = get()
-        )
-    }
-
     factory<AuthorizationApi> {
         val retrofit = get<Retrofit>(named("infoAuthApi"))
         retrofit.create(AuthorizationApi::class.java)
@@ -60,8 +49,6 @@ val authorizationModule = module {
 
     single<IAuthorizationRemoteRepository> {
         AuthorizationRemoteRepository(
-            storageRepository = get(),
-            authApi = get(),
             tokenRepository = get(),
             logoutApi = get(),
         )
@@ -75,12 +62,6 @@ val authorizationModule = module {
 
     factory<ResetCredentialsUseCase> {
         ResetCredentialsUseCase(
-            storageRepository = get(),
-        )
-    }
-
-    factory<RegistrationValidationUseCase> {
-        RegistrationValidationUseCase(
             storageRepository = get(),
         )
     }
@@ -108,29 +89,7 @@ val authorizationModule = module {
         )
     }
 
-    viewModel { LaunchViewModel(get(), get()) }
+    viewModel { LaunchViewModel(get(), get(), get()) }
     viewModel { NavigationViewModel(get(), get()) }
     viewModel { ConnectionErrorViewModel(get()) }
-
-    viewModel {
-        LoginViewModel(
-            getCredentialsFlowUseCase = get(),
-            updateCredentialsUseCase = get(),
-            validationUseCase = get(),
-            loginUseCase = get(),
-            resetCredentialsUseCase = get(),
-            pushCommandUseCase = get(),
-        )
-    }
-
-    viewModel {
-        RegistrationViewModel(
-            updateCredentialsUseCase = get(),
-            getCredentialsFlowUseCase = get(),
-            resetCredentialsUseCase = get(),
-            validationUseCase = get(),
-            registerUseCase = get(),
-            pushCommandUseCase = get(),
-        )
-    }
 }

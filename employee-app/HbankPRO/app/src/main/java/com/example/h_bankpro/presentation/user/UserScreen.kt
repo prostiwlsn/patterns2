@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -63,7 +64,7 @@ fun UserScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -81,7 +82,7 @@ fun UserScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF5C49E0)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             } else {
@@ -99,7 +100,7 @@ fun UserScreen(
                         text = stringResource(R.string.blocked),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Red
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
                 if (state.accounts.isNotEmpty()) {
@@ -123,7 +124,7 @@ fun UserScreen(
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideAccountsSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 AccountsBottomSheetContent(
@@ -138,7 +139,7 @@ fun UserScreen(
         if (state.isLoansSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideLoansSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 LoansBottomSheetContent(

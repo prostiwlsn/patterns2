@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +32,7 @@ fun IconButtonField(
         Text(
             text = stringResource(labelRes),
             fontSize = 13.sp,
-            color = Color(0xFF282A31).copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -43,14 +43,18 @@ fun IconButtonField(
             Text(
                 text = value,
                 fontSize = 16.sp,
-                color = Color(0xFF282A31),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onIconClick) {
-                Icon(imageVector = icon, contentDescription = "Edit", tint = Color(0xFF282A31))
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
-        HorizontalDivider(color = Color(0xFF282A31).copy(alpha = 0.06f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
     }
 }

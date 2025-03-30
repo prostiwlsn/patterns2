@@ -1,11 +1,14 @@
 package com.example.h_bankpro.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.SavedStateHandle
 import com.example.h_bankpro.presentation.account.AccountViewModel
 import com.example.h_bankpro.presentation.loan.LoanViewModel
 import com.example.h_bankpro.presentation.main.MainViewModel
 import com.example.h_bankpro.presentation.rate.RateViewModel
-import com.example.h_bankpro.presentation.rateCreation.RateCreationViewModel
 import com.example.h_bankpro.presentation.rateEditing.RateEditingViewModel
 import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateCreationViewModel
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingViewModel
@@ -15,12 +18,16 @@ import com.example.h_bankpro.presentation.successfulRateDeletion.SuccessfulRateD
 import com.example.h_bankpro.presentation.user.UserViewModel
 import com.example.h_bankpro.presentation.userCreation.UserCreationViewModel
 import com.example.h_bankpro.presentation.welcome.WelcomeViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 val appModule = module {
-    viewModel { WelcomeViewModel(get()) }
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get()) }
+    single<DataStore<Preferences>> { androidContext().dataStore }
+    viewModel { WelcomeViewModel(get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SuccessfulRateCreationViewModel(get()) }
     viewModel { SuccessfulRateEditingViewModel(get()) }
     viewModel { SuccessfulRateDeletionViewModel(get()) }

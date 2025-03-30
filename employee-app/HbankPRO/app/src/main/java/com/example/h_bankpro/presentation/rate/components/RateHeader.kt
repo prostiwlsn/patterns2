@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +37,8 @@ fun RateHeader(
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back"
+                contentDescription = "Back",
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.width(32.dp))
@@ -44,13 +46,13 @@ fun RateHeader(
             text = stringResource(R.string.rate),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.width(12.dp))
         IconButton(onClick = onEditClick) {
             Icon(
                 imageVector = Icons.Outlined.Edit,
-                tint = Color.Black,
+                tint = MaterialTheme.colorScheme.onBackground,
                 contentDescription = "Edit"
             )
         }
@@ -58,7 +60,7 @@ fun RateHeader(
         IconButton(onClick = onDeleteClick) {
             Icon(
                 imageVector = Icons.Outlined.Delete,
-                tint = Color.Red,
+                tint = MaterialTheme.colorScheme.error,
                 contentDescription = "Delete"
             )
         }

@@ -13,6 +13,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -68,7 +69,7 @@ fun AccountScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(modifier = Modifier.height(46.dp))
         AccountHeader(
@@ -83,7 +84,7 @@ fun AccountScreen(
                 text = stringResource(R.string.transaction_history),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFF9B9CA1),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 modifier = Modifier
                     .align(Alignment.Center)
             )
@@ -124,7 +125,7 @@ fun AccountScreen(
         ) {
             Text(
                 text = stringResource(R.string.reset_filters),
-                color = Color(0xFF5C49E0),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -140,7 +141,7 @@ fun AccountScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF5C49E0)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -160,13 +161,14 @@ fun AccountScreen(
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
-                                color = Color(0xFFD9D9D9)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                             )
                         } else {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .padding(16.dp)
-                                    .align(Alignment.CenterHorizontally)
+                                    .align(Alignment.CenterHorizontally),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -177,7 +179,8 @@ fun AccountScreen(
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .padding(16.dp)
-                                        .align(Alignment.CenterHorizontally)
+                                        .align(Alignment.CenterHorizontally),
+                                    MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -186,7 +189,7 @@ fun AccountScreen(
                             item {
                                 Text(
                                     text = stringResource(R.string.loading_error),
-                                    color = Color.Red,
+                                    color = MaterialTheme.colorScheme.error,
                                     modifier = Modifier.padding(16.dp)
                                 )
                             }
@@ -202,7 +205,7 @@ fun AccountScreen(
     if (state.isTypesSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideTypesSheet() },
-            containerColor = Color(0xFFF9F9F9),
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
         ) {
             TypeBottomSheetContent(

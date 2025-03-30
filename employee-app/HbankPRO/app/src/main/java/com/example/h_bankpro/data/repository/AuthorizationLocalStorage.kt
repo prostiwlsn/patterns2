@@ -14,7 +14,7 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
 
     private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     private val prefs = EncryptedSharedPreferences.create(
-        "auth_prefs",
+        "auth_prefs_pro",
         masterKeyAlias,
         context,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
@@ -30,25 +30,27 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
     override fun getCredentialsState() = credentials.value
 
     override suspend fun getToken(): TokenEntity? {
-        val accessToken = prefs.getString("access_token", null) ?: return null
-        val refreshToken = prefs.getString("refresh_token", null) ?: return null
-        val expiresAt = prefs.getLong("expires_at", -1).takeIf { it != -1L } ?: return null
-        return TokenEntity(accessToken, refreshToken, expiresAt)
+        val accessToken = prefs.getString("access_token_pro", null)
+        val refreshToken = prefs.getString("refresh_token_pro", null)
+        val expiresAt = prefs.getLong("expires_at_pro", -1).takeIf { it != -1L }
+        return if (accessToken != null && refreshToken != null && expiresAt != null) {
+            TokenEntity(accessToken, refreshToken, expiresAt)
+        } else null
     }
 
     override suspend fun saveToken(token: TokenEntity) {
         prefs.edit()
-            .putString("access_token", token.accessToken)
-            .putString("refresh_token", token.refreshToken)
-            .putLong("expires_at", token.expiresAt ?: -1L)
+            .putString("access_token_pro", token.accessToken)
+            .putString("refresh_token_pro", token.refreshToken)
+            .putLong("expires_at_pro", token.expiresAt ?: -1L)
             .apply()
     }
 
     override suspend fun clearToken() {
         prefs.edit()
-            .remove("access_token")
-            .remove("refresh_token")
-            .remove("expires_at")
+            .remove("access_token_pro")
+            .remove("refresh_token_pro")
+            .remove("expires_at_pro")
             .apply()
     }
 

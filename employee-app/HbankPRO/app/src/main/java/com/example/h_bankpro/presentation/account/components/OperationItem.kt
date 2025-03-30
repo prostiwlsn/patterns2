@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,7 +43,7 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = Color(0xFF5C49E0),
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(8.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -59,7 +59,7 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
             Icon(
                 painter = painterResource(id = iconResId),
                 contentDescription = null,
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(Modifier.width(16.dp))
@@ -67,7 +67,8 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
             Text(
                 text = "${operation.amount} ₽",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = "${operation.operationType.displayName} · ${
@@ -75,7 +76,7 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
                         .let { it.format(dateFormatter) + ", " + it.format(timeFormatter) }
                 }",
                 fontSize = 12.sp,
-                color = Color(0xFF9B9CA1)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
         }
     }

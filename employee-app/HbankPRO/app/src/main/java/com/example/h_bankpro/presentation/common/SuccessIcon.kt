@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ fun SuccessIcon() {
     Box(
         modifier = Modifier
             .size(78.dp)
-            .background(Color(0xFF5C49E0), shape = CircleShape),
+            .background(MaterialTheme.colorScheme.primary, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Icon(

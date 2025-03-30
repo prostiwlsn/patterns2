@@ -9,6 +9,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -24,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.R
+import com.example.h_bankpro.data.ThemeMode
 import com.example.h_bankpro.presentation.main.components.UsersBottomSheetContent
 import com.example.h_bankpro.presentation.main.components.ActionBlock
 import com.example.h_bankpro.presentation.main.components.TariffsBlock
@@ -73,7 +75,7 @@ fun MainScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -92,17 +94,29 @@ fun MainScreen(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 0.05.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
-                IconButton(
-                    onClick = { viewModel.onLogoutClicked() }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.logout),
-                        contentDescription = "Profile",
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Black
-                    )
+                Row {
+                    IconButton(onClick = {
+                        viewModel.toggleTheme()
+                    }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                if (state.themeMode == ThemeMode.LIGHT) R.drawable.moon else R.drawable.sun
+                            ),
+                            contentDescription = "Toggle theme",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    IconButton(onClick = { viewModel.onLogoutClicked() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.logout),
+                            contentDescription = "Logout",
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -115,7 +129,7 @@ fun MainScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF5C49E0)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             } else {
@@ -146,7 +160,7 @@ fun MainScreen(
         if (state.isUsersSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideUsersSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 UsersBottomSheetContent(
@@ -161,7 +175,7 @@ fun MainScreen(
         if (state.isTariffsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideRatesSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 TariffsBottomSheetContent(
