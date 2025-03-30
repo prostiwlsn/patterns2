@@ -23,6 +23,7 @@ import ru.hits.core.service.AccountService;
 import ru.hits.core.service.CurrencyService;
 import ru.hits.core.service.OperationService;
 import ru.hits.core.specification.OperationSpecification;
+import ru.hits.core.websocket.OperationsWebSocketHandler;
 
 import java.time.Instant;
 import java.util.List;
@@ -38,6 +39,7 @@ public class OperationServiceImpl implements OperationService {
     private final CurrencyService currencyService;
     private final OperationRepository operationRepository;
     private final OperationMapper operationMapper;
+    private final OperationsWebSocketHandler operationsWebSocketHandler;
 
     private final RpcClientService rpcClientService;
 
@@ -109,12 +111,25 @@ public class OperationServiceImpl implements OperationService {
                 )
                 .build();
 
-        return operationMapper.entityToDTO(
+        var operationDto = operationMapper.entityToDTO(
                 operationRepository.save(operation),
                 List.of(operationRequestBody.getSenderAccountId()),
                 senderAccount.getAccountNumber(),
                 recipientAccount.getAccountNumber()
         );
+
+        operationsWebSocketHandler.sendUpdate(senderAccount.getAccountNumber(), operationDto.toString());
+        operationsWebSocketHandler.sendUpdate(
+                recipientAccount.getAccountNumber(),
+                operationMapper.entityToDTO(
+                        operationRepository.save(operation),
+                        List.of(operationRequestBody.getRecipientAccountId()),
+                        recipientAccount.getAccountNumber(),
+                        senderAccount.getAccountNumber()
+                ).toString()
+        );
+
+        return operationDto;
     }
 
     private OperationDTO createLoanPaymentOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException {
@@ -157,12 +172,16 @@ public class OperationServiceImpl implements OperationService {
                 )
                 .build();
 
-        return operationMapper.entityToDTO(
+        var operationDto = operationMapper.entityToDTO(
                 operationRepository.save(operation),
                 List.of(operationRequestBody.getSenderAccountId()),
                 senderAccount.getAccountNumber(),
                 null
         );
+
+        operationsWebSocketHandler.sendUpdate(senderAccount.getAccountNumber(), operationDto.toString());
+
+        return operationDto;
     }
 
     private OperationDTO createReplenishmentOperation(OperationRequestBody operationRequestBody) {
@@ -193,12 +212,16 @@ public class OperationServiceImpl implements OperationService {
                 )
                 .build();
 
-        return operationMapper.entityToDTO(
+        var operationDto = operationMapper.entityToDTO(
                 operationRepository.save(operation),
                 null,
                 null,
                 recipientAccount.getAccountNumber()
         );
+
+        operationsWebSocketHandler.sendUpdate(recipientAccount.getAccountNumber(), operationDto.toString());
+
+        return operationDto;
     }
 
     private OperationDTO createWithdrawalOperation(UUID userId, OperationRequestBody operationRequestBody) {
@@ -229,12 +252,16 @@ public class OperationServiceImpl implements OperationService {
                 )
                 .build();
 
-        return operationMapper.entityToDTO(
+        var operationDto = operationMapper.entityToDTO(
                 operationRepository.save(operation),
                 List.of(operationRequestBody.getSenderAccountId()),
                 senderAccount.getAccountNumber(),
                 null
         );
+
+        operationsWebSocketHandler.sendUpdate(senderAccount.getAccountNumber(), operationDto.toString());
+
+        return operationDto;
     }
 
     @Transactional(readOnly = true)
