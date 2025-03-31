@@ -272,10 +272,11 @@ public class OperationServiceImpl implements OperationService {
             Instant timeStart,
             Instant timeEnd,
             OperationTypeEnum operationType,
-            Pageable pageable
+            Pageable pageable,
+            String token
     ) throws JsonProcessingException {
         var user = rpcClientService.getUserInfo(
-                new UserInfoRequest(userId)
+                new UserInfoRequest(userId, token)
         );
         var account = accountService.getRawAccount(accountId);
 
@@ -309,7 +310,8 @@ public class OperationServiceImpl implements OperationService {
     public OperationDTO getOperation(
             UUID userId,
             UUID accountId,
-            UUID operationId
+            UUID operationId,
+            String token
     ) throws JsonProcessingException {
         List<UUID> accountIds = List.of(accountId);
 
@@ -317,7 +319,7 @@ public class OperationServiceImpl implements OperationService {
                 .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         var user = rpcClientService.getUserInfo(
-                new UserInfoRequest(userId)
+                new UserInfoRequest(userId, token)
         );
 
         AccountEntity recipientAccount = null;

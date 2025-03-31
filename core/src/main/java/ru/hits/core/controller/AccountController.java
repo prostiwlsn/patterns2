@@ -38,7 +38,7 @@ public class AccountController {
 
             var id = jwtService.getUserId(authHeader);
             return rpcClientService.getUserInfo(
-                    new UserInfoRequest(id)
+                    new UserInfoRequest(id, authHeader.substring(7))
             );
 
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class AccountController {
             @RequestHeader("Authorization") String authHeader,
             @RequestParam CurrencyEnum currency
     ) throws JsonProcessingException {
-        return accountService.createAccount(jwtService.getUserId(authHeader), currency);
+        return accountService.createAccount(jwtService.getUserId(authHeader), currency, authHeader.substring(7));
     }
 
     @Operation(
@@ -80,7 +80,7 @@ public class AccountController {
             @PathVariable("userId") UUID userId,
             @RequestParam(required = false) Boolean isDeleted
     ) throws JsonProcessingException {
-        return accountService.getAccounts(jwtService.getUserId(authHeader), userId, isDeleted);
+        return accountService.getAccounts(jwtService.getUserId(authHeader), userId, isDeleted, authHeader.substring(7));
     }
 
     @Operation(

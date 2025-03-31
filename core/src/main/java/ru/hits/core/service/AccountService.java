@@ -12,11 +12,11 @@ import java.util.UUID;
 
 public interface AccountService {
 
-    AccountDTO createAccount(UUID userId, CurrencyEnum currency) throws JsonProcessingException;
+    AccountDTO createAccount(UUID userId, CurrencyEnum currency, String token) throws JsonProcessingException;
 
     AccountDTO deleteAccount(UUID userId, UUID accountId);
 
-    List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted) throws JsonProcessingException;
+    List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted, String token) throws JsonProcessingException;
 
     List<AccountDTO> getAccounts(AccountFilters request);
 

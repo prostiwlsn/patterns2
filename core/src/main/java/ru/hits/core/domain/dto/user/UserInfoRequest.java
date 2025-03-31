@@ -17,4 +17,7 @@ public class UserInfoRequest {
     @JsonProperty("Id")
     private UUID Id;
 
+    @JsonProperty("TokenString")
+    private String TokenString;
+
 }

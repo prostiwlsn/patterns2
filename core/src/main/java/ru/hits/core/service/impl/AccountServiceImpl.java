@@ -39,10 +39,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public AccountDTO createAccount(UUID userId, CurrencyEnum currency) throws JsonProcessingException {
+    public AccountDTO createAccount(UUID userId, CurrencyEnum currency, String token) throws JsonProcessingException {
 
         var myUserEntity = rpcClientService.getUserInfo(
-                new UserInfoRequest(userId)
+                new UserInfoRequest(userId, token)
         );
 
         var accountEntity = accountRepository.save(
@@ -75,9 +75,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted) throws JsonProcessingException {
+    public List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted, String token) throws JsonProcessingException {
         var myUserEntity = rpcClientService.getUserInfo(
-                new UserInfoRequest(userId)
+                new UserInfoRequest(userId, token)
         );
 
         isDeleted = isDeleted == null ? false : isDeleted;

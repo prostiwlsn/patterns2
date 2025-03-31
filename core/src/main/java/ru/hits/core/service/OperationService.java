@@ -21,9 +21,10 @@ public interface OperationService {
             Instant timeStart,
             Instant timeEnd,
             OperationTypeEnum operationType,
-            Pageable pageable
+            Pageable pageable,
+            String token
     ) throws JsonProcessingException;
 
-    OperationDTO getOperation(UUID userId, UUID accountId, UUID operationId) throws JsonProcessingException;
+    OperationDTO getOperation(UUID userId, UUID accountId, UUID operationId, String token) throws JsonProcessingException;
 
 }

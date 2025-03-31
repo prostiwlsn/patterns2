@@ -60,7 +60,8 @@ public class OperationController {
                 timeStart,
                 timeEnd,
                 operationType,
-                pageable
+                pageable,
+                authHeader.substring(7)
         );
     }
 
@@ -74,7 +75,7 @@ public class OperationController {
             @PathVariable("accountId") UUID accountId,
             @PathVariable("operationId") UUID operationId
     ) throws JsonProcessingException {
-        return operationService.getOperation(jwtService.getUserId(authHeader), accountId, operationId);
+        return operationService.getOperation(jwtService.getUserId(authHeader), accountId, operationId, authHeader.substring(7));
     }
 
 }

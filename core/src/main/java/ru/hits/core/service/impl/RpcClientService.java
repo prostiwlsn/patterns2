@@ -25,6 +25,8 @@ public class RpcClientService {
 
     private final RabbitTemplate rabbitTemplate;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     public RpcClientService(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -35,8 +37,7 @@ public class RpcClientService {
             String replyQueueName,
             byte[] requestBytes
     ) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
 
         String correlationId = UUID.randomUUID().toString();
 
@@ -69,7 +70,6 @@ public class RpcClientService {
     public UserDTO getUserInfo(
             UserInfoRequest requestMessage
     ) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
         byte[] requestBytes;
 
@@ -92,7 +92,6 @@ public class RpcClientService {
     public LoanPaymentSuccessResponse loanPaymentRequest(
             LoanPaymentRequest requestMessage
     ) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
         byte[] requestBytes;
 
