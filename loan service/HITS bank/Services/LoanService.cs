@@ -256,6 +256,7 @@ public class LoanService : ILoanService
             {
                 SenderAccountId = loanPayment.SenderAccountId,
                 ReturnedAmount = loanPayment.Amount,
+                IsPaymentExpired = loan.EndDate < DateTime.Now,
             },
             ErrorMessage = "Что-то пошло не так",
             ErrorStatusCode = StatusCodes.Status500InternalServerError,

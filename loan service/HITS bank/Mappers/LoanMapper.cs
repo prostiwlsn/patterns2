@@ -27,6 +27,7 @@ public class LoanMapper : Profile
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTime.Now.AddYears(src.DurationInYears)))
             .ForMember(dest => dest.Debt, opt => opt.MapFrom(src => src.Amount));
 
-        CreateMap<LoanEntity, LoanDto>();
+        CreateMap<LoanEntity, LoanDto>()
+            .ForMember(dest => dest.IsExpired, opt => opt.MapFrom(src => src.EndDate < DateTime.Now));
     }
 }

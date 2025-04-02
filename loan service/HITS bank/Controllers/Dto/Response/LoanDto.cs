@@ -16,6 +16,8 @@ public class LoanDto
     
     public double RatePercent { get; set; }
     
+    public bool IsExpired { get; set; }
+    
     public DateTime IssueDate { get; init; }
     
     public DateTime EndDate { get; init; }
