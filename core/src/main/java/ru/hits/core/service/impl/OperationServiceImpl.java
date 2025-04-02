@@ -118,9 +118,9 @@ public class OperationServiceImpl implements OperationService {
                 recipientAccount.getAccountNumber()
         );
 
-        operationsWebSocketHandler.sendUpdate(senderAccount.getAccountNumber(), operationDto.toString());
+        operationsWebSocketHandler.sendUpdate(senderAccount.getId().toString(), operationDto.toString());
         operationsWebSocketHandler.sendUpdate(
-                recipientAccount.getAccountNumber(),
+                recipientAccount.getId().toString(),
                 operationMapper.entityToDTO(
                         operationRepository.save(operation),
                         List.of(operationRequestBody.getRecipientAccountId()),
@@ -179,7 +179,7 @@ public class OperationServiceImpl implements OperationService {
                 null
         );
 
-        operationsWebSocketHandler.sendUpdate(senderAccount.getAccountNumber(), operationDto.toString());
+        operationsWebSocketHandler.sendUpdate(senderAccount.getId().toString(), operationDto.toString());
 
         return operationDto;
     }
@@ -219,7 +219,7 @@ public class OperationServiceImpl implements OperationService {
                 recipientAccount.getAccountNumber()
         );
 
-        operationsWebSocketHandler.sendUpdate(recipientAccount.getAccountNumber(), operationDto.toString());
+        operationsWebSocketHandler.sendUpdate(recipientAccount.getId().toString(), operationDto.toString());
 
         return operationDto;
     }
@@ -259,7 +259,7 @@ public class OperationServiceImpl implements OperationService {
                 null
         );
 
-        operationsWebSocketHandler.sendUpdate(senderAccount.getAccountNumber(), operationDto.toString());
+        operationsWebSocketHandler.sendUpdate(senderAccount.getId().toString(), operationDto.toString());
 
         return operationDto;
     }
