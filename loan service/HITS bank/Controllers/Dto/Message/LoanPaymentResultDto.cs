@@ -20,6 +20,8 @@ public class LoanPaymentResultData
     public Guid SenderAccountId { get; set; }
 
     public double ReturnedAmount { get; set; }
+    
+    public bool IsPaymentExpired { get; set; }
 }
 
 public class LoanPaymentResultMessage

@@ -9,6 +9,21 @@
             Пагинация ответа
             </summary>
         </member>
+        <member name="T:HITS_bank.Controllers.Dto.Message.GetLoanDto">
+            <summary>
+            Получение суммы кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Controllers.Dto.Message.LoanPaymentDto">
+            <summary>
+            Погашение кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Controllers.Dto.Message.LoanPaymentResultDto">
+            <summary>
+            Результат погашения кредита
+            </summary>
+        </member>
         <member name="T:HITS_bank.Controllers.Dto.Request.CreateLoanRequestDto">
             <summary>
             Создание кредита
@@ -32,6 +47,11 @@
         <member name="T:HITS_bank.Controllers.Dto.Request.UpdateTariffRequestDto">
             <summary>
             Изменение тарифа кредита
+            </summary>
+        </member>
+        <member name="T:HITS_bank.Controllers.Dto.Response.CreditRatingDto">
+            <summary>
+            Кредитный рейтинг
             </summary>
         </member>
         <member name="T:HITS_bank.Controllers.Dto.Response.LoanDto">
@@ -89,9 +109,9 @@
             Получение кредитов пользователя
             </summary>
         </member>
-        <member name="M:HITS_bank.Controllers.LoanController.PayForLoan(System.Guid,HITS_bank.Controllers.Dto.Request.PaymentLoanRequestDto)">
+        <member name="M:HITS_bank.Controllers.LoanController.GetUserCreditRating(System.Guid)">
             <summary>
-            Оплатить кредит
+            Получение кредитного рейтинга
             </summary>
         </member>
         <member name="M:HITS_bank.Controllers.LoanController.GetResponseResult``1(HITS_bank.Utils.IResult)">
@@ -144,6 +164,11 @@
             Получение списка кредитов пользователя
             </summary>
         </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.GetAllUserLoansList(System.Guid)">
+            <summary>
+            Получение всей истории кредитов пользователя
+            </summary>
+        </member>
         <member name="M:HITS_bank.Repositories.ILoanRepository.GetLoan(System.Guid)">
             <summary>
             Получение кредита
@@ -187,6 +212,11 @@
         <member name="M:HITS_bank.Repositories.LoanRepository.GetUserLoansList(System.Guid,System.Int32,System.Int32)">
             <summary>
             Получение списка кредитов пользователя
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.GetAllUserLoansList(System.Guid)">
+            <summary>
+            Получение полной истории кредитов пользователя
             </summary>
         </member>
         <member name="M:HITS_bank.Repositories.LoanRepository.GetLoan(System.Guid)">
@@ -234,9 +264,9 @@
             Получение списко кредитов пользователя
             </summary>
         </member>
-        <member name="M:HITS_bank.Services.ILoanService.PayForLoan(System.Guid,HITS_bank.Controllers.Dto.Request.PaymentLoanRequestDto)">
+        <member name="M:HITS_bank.Services.ILoanService.GetCreditRating(System.Guid)">
             <summary>
-            Оплатить кредит
+            Получение кредитного рейтинга
             </summary>
         </member>
         <member name="T:HITS_bank.Services.LoanService">
@@ -269,14 +299,24 @@
             Создание кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Services.LoanService.SendMoney(HITS_bank.Controllers.Dto.Message.GetLoanDto)">
+            <summary>
+            Отправка суммы кредита на счет
+            </summary>
+        </member>
         <member name="M:HITS_bank.Services.LoanService.GetUserLoansList(System.Guid,System.Int32,System.Int32)">
             <summary>
             Получение списка кредитов пользователя
             </summary>
         </member>
-        <member name="M:HITS_bank.Services.LoanService.PayForLoan(System.Guid,HITS_bank.Controllers.Dto.Request.PaymentLoanRequestDto)">
+        <member name="M:HITS_bank.Services.LoanService.PayForLoan(HITS_bank.Controllers.Dto.Message.LoanPaymentDto)">
             <summary>
             Оплатить кредит
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.LoanService.GetCreditRating(System.Guid)">
+            <summary>
+            Получение кредитного рейтинга
             </summary>
         </member>
         <member name="M:HITS_bank.Services.LoanService.ValidatePagination(System.Int32,System.Int32)">

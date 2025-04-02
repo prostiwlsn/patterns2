@@ -95,6 +95,14 @@ public class LoanRepository : ILoanRepository
     }
 
     /// <summary>
+    /// Получение полной истории кредитов пользователя
+    /// </summary>
+    public async Task<List<LoanEntity>> GetAllUserLoansList(Guid userId)
+    {
+        return await _context.Loans.Where(x => x.UserId == userId).ToListAsync();
+    }
+
+    /// <summary>
     /// Получение кредита
     /// </summary>
     public async Task<LoanEntity?> GetLoan(Guid loanId)

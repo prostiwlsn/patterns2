@@ -41,6 +41,11 @@ public interface ILoanRepository
     /// Получение списка кредитов пользователя
     /// </summary>
     Task<List<LoanEntity>> GetUserLoansList(Guid userId, int offset = 0, int limit = 20);
+
+    /// <summary>
+    /// Получение всей истории кредитов пользователя
+    /// </summary>
+    Task<List<LoanEntity>> GetAllUserLoansList(Guid userId);
     
     /// <summary>
     /// Получение кредита

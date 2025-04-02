@@ -13,16 +13,14 @@ namespace HITS_bank.Services.BackgroundServices;
 
 public class LoanPaymentConsumer : BackgroundService
 {
-    private IConnection _connection;
-    private IModel _channel;
-    private string _queueName;
-    private readonly string _loanPaymentExchange;
+    private readonly IModel _channel;
+    private readonly string _queueName;
     private readonly string _loanPaymentResultExchange;
     private readonly string _amqpConnectionString;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private string? _correlationId;
     
-    public LoanPaymentConsumer(IServiceScopeFactory serviceScopeFactory)
+    public LoanPaymentConsumer(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
     {
         _serviceScopeFactory = serviceScopeFactory;
         
@@ -30,20 +28,20 @@ public class LoanPaymentConsumer : BackgroundService
             .AddJsonFile("appsettings.json")
             .Build();
         
-        _loanPaymentExchange = configurationRoot.GetSection("Exchanges")["LoanPayment"] ?? throw new InvalidOperationException();
+        var loanPaymentExchange = configurationRoot.GetSection("Exchanges")["LoanPayment"] ?? throw new InvalidOperationException();
         _loanPaymentResultExchange = configurationRoot.GetSection("Exchanges")["LoanPaymentResponse"] ?? throw new InvalidOperationException();
         _amqpConnectionString = configurationRoot.GetSection("ConnectionStrings")["BusConnection"] ?? throw new InvalidOperationException();
 
         // Создание очереди сообщений
         var factory = new ConnectionFactory { HostName = _amqpConnectionString };
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(exchange: _loanPaymentExchange, type: ExchangeType.Direct, durable: true);
+        var connection = factory.CreateConnection();
+        _channel = connection.CreateModel();
+        _channel.ExchangeDeclare(exchange: loanPaymentExchange, type: ExchangeType.Direct, durable: true);
 
         _queueName = "LoanPayment";
         _channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false);
         _channel.QueueBind(queue: _queueName,
-            exchange: _loanPaymentExchange,
+            exchange: loanPaymentExchange,
             routingKey: "LoanPayment");
         
         _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
