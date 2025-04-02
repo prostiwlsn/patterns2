@@ -43,7 +43,7 @@ public interface ILoanService
     Task<IResult> GetUserLoansList(Guid userId, int pageNumber, int pageSize);
 
     /// <summary>
-    /// Оплатить кредит
+    /// Получение кредитного рейтинга
     /// </summary>
-    Task<LoanPaymentResultMessage> PayForLoan(LoanPaymentDto loanPayment);
+    Task<IResult> GetCreditRating(Guid userId);
 }

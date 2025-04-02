@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
 using AutoMapper;
-using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
 using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
@@ -9,10 +8,9 @@ using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
 using HITS_bank.Utils;
-using Microsoft.Extensions.Logging.Abstractions;
 using RabbitMQ.Client;
 using IResult = HITS_bank.Utils.IResult;
-
+// ReSharper disable PossibleLossOfFraction
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace HITS_bank.Services;
@@ -263,6 +261,50 @@ public class LoanService : ILoanService
         };
     }
 
+    /// <summary>
+    /// Получение кредитного рейтинга
+    /// </summary>
+    public async Task<IResult> GetCreditRating(Guid userId)
+    {
+        // Получение кредитной истории
+        var loansHistory = await _loanRepository.GetAllUserLoansList(userId);
+
+        // Если кредитов не было, кредитный рейтинг максимальный
+        /*if (loansHistory == null)
+        {
+            var creditRating = new CreditRatingDto
+            {
+                CreditRating = 999
+            };
+
+            return new Success<CreditRatingDto>(creditRating);
+        } */
+        
+        // Вычисление кредитного рейтинга
+        double expiredCount = loansHistory.Count(x => x.EndDate < DateTime.Now && x.Debt > 0);
+        double totalLoansCount = loansHistory.Count;
+        double currentLoansCount = loansHistory.Count(x => x.Debt > 0);
+        double currentDebt = loansHistory.Sum(x => x.Debt);
+
+        double maxRating = 999;
+        double maxLoanAmount = 100000000;
+        double maxLoansCount = 100;
+
+        double rating = maxRating * 
+                     ((maxLoanAmount - currentDebt) / maxLoanAmount) *
+                     ((maxLoansCount - currentLoansCount) / maxLoansCount) *
+                     ((totalLoansCount - expiredCount) / totalLoansCount);
+
+        rating = Math.Max(rating, 1);
+        
+        var resultRating = new CreditRatingDto
+        {
+            CreditRating = (int)rating,
+        };
+        
+        return new Success<CreditRatingDto>(resultRating);
+    }
+    
     /// <summary>
     /// Валидация пагинации
     /// </summary>

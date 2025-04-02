@@ -20,7 +20,7 @@ public class LoanPaymentConsumer : BackgroundService
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private string? _correlationId;
     
-    public LoanPaymentConsumer(IServiceScopeFactory serviceScopeFactory)
+    public LoanPaymentConsumer(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
     {
         _serviceScopeFactory = serviceScopeFactory;
         

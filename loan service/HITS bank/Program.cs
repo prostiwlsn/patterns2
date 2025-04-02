@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -73,7 +74,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Слушатели RabbitMq
-builder.Services.AddHostedService<LoanPaymentConsumer>();
+builder.Services.AddSingleton<LoanPaymentConsumer>(sp =>
+{
+    var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+    var config = sp.GetRequiredService<IConfiguration>();
+    return new LoanPaymentConsumer(scopeFactory, config);
+});
+
+builder.Services.AddHostedService(sp => sp.GetRequiredService<LoanPaymentConsumer>());
 
 // Мапперы
 builder.Services.AddAutoMapper(typeof(LoanMapper));

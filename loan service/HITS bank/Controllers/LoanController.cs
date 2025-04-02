@@ -96,6 +96,19 @@ public class LoanController : ControllerBase
         
         return GetResponseResult<LoansListResponseDto>(response);
     }
+
+    /// <summary>
+    /// Получение кредитного рейтинга
+    /// </summary>
+    [HttpGet]
+    [Route("{userId}/creditRating")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreditRatingDto))]
+    public async Task<IActionResult> GetUserCreditRating(Guid userId)
+    {
+        var response = await _loanService.GetCreditRating(userId);
+
+        return GetResponseResult<CreditRatingDto>(response);
+    }
     
     /// <summary>
     /// Формирование ответа
