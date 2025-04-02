@@ -1,6 +1,7 @@
 ﻿using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
+using HITS_bank.Controllers.Dto.Response;
 using IResult = HITS_bank.Utils.IResult;
 
 #pragma warning disable 1591
@@ -45,5 +46,5 @@ public interface ILoanService
     /// <summary>
     /// Получение кредитного рейтинга
     /// </summary>
-    Task<IResult> GetCreditRating(Guid userId);
+    Task<CreditRatingDto> GetCreditRating(Guid userId);
 }

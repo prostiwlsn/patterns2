@@ -107,7 +107,7 @@ public class LoanController : ControllerBase
     {
         var response = await _loanService.GetCreditRating(userId);
 
-        return GetResponseResult<CreditRatingDto>(response);
+        return Ok(response);
     }
     
     /// <summary>
