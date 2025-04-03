@@ -12,12 +12,12 @@ import ru.hits.core.domain.dto.currency.CurrencyEnum;
 import ru.hits.core.domain.enums.RoleEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.entity.AccountEntity;
-import ru.hits.core.exceptions.AccountNotFoundException;
 import ru.hits.core.exceptions.BadRequestException;
 import ru.hits.core.exceptions.ForbiddenException;
 import ru.hits.core.mapper.AccountMapper;
 import ru.hits.core.repository.AccountRepository;
 import ru.hits.core.service.AccountService;
+import ru.hits.core.service.impl.rabbitmq.rpc.UserInfoService;
 import ru.hits.core.specification.AccountSpecification;
 
 import java.time.Instant;
@@ -33,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
 
-    private final RpcClientService rpcClientService;
+    private final UserInfoService userInfoService;
 
     private static final Random RANDOM = new Random();
 
@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDTO createAccount(UUID userId, CurrencyEnum currency, String token) throws JsonProcessingException {
 
-        var myUserEntity = rpcClientService.getUserInfo(
+        var myUserEntity = userInfoService.getUserInfo(
                 new UserInfoRequest(userId, token)
         );
 
@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(readOnly = true)
     @Override
     public List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted, String token) throws JsonProcessingException {
-        var myUserEntity = rpcClientService.getUserInfo(
+        var myUserEntity = userInfoService.getUserInfo(
                 new UserInfoRequest(userId, token)
         );
 

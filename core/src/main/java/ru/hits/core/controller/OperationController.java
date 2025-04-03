@@ -37,7 +37,7 @@ public class OperationController {
             @RequestHeader("Authorization") String authHeader,
             @RequestBody(required = true) OperationRequestBody operationRequestBody
     ) throws JsonProcessingException {
-        return operationService.createOperation(jwtService.getUserId(authHeader), operationRequestBody);
+        return operationService.sendCreateOperationMessage(jwtService.getUserId(authHeader), operationRequestBody);
     }
 
     @Operation(
@@ -75,7 +75,10 @@ public class OperationController {
             @PathVariable("accountId") UUID accountId,
             @PathVariable("operationId") UUID operationId
     ) throws JsonProcessingException {
-        return operationService.getOperation(jwtService.getUserId(authHeader), accountId, operationId, authHeader.substring(7));
+        return operationService
+                .getOperation(
+                        jwtService.getUserId(authHeader), accountId, operationId, authHeader.substring(7)
+                );
     }
 
 }

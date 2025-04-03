@@ -9,9 +9,9 @@ import ru.hits.core.domain.dto.account.AccountDTO;
 import ru.hits.core.domain.dto.currency.CurrencyEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.domain.dto.user.UserDTO;
-import ru.hits.core.service.impl.RpcClientService;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.service.impl.JwtService;
+import ru.hits.core.service.impl.rabbitmq.rpc.UserInfoService;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,27 +24,6 @@ public class AccountController {
 
     private final AccountService accountService;
     private final JwtService jwtService;
-    private final RpcClientService rpcClientService;
-
-    @Operation(
-            summary = "Тест для получения профиля"
-    )
-    @GetMapping("/test")
-    public UserDTO test(@RequestHeader("Authorization") String authHeader) {
-        try {
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new RuntimeException("Invalid Authorization header");
-            }
-
-            var id = jwtService.getUserId(authHeader);
-            return rpcClientService.getUserInfo(
-                    new UserInfoRequest(id, authHeader.substring(7))
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid token");
-        }
-    }
 
     @Operation(
             summary = "Создание счета",
@@ -55,7 +34,8 @@ public class AccountController {
             @RequestHeader("Authorization") String authHeader,
             @RequestParam CurrencyEnum currency
     ) throws JsonProcessingException {
-        return accountService.createAccount(jwtService.getUserId(authHeader), currency, authHeader.substring(7));
+        return accountService
+                .createAccount(jwtService.getUserId(authHeader), currency, authHeader.substring(7));
     }
 
     @Operation(
@@ -80,7 +60,8 @@ public class AccountController {
             @PathVariable("userId") UUID userId,
             @RequestParam(required = false) Boolean isDeleted
     ) throws JsonProcessingException {
-        return accountService.getAccounts(jwtService.getUserId(authHeader), userId, isDeleted, authHeader.substring(7));
+        return accountService
+                .getAccounts(jwtService.getUserId(authHeader), userId, isDeleted, authHeader.substring(7));
     }
 
     @Operation(

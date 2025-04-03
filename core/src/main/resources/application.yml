@@ -15,7 +15,12 @@ spring:
     host: 194.59.186.122
     username: guest
     password: guest
-
+    queues:
+      operation: operation
+      operation-reply: operationReply
+      loan: GetLoan
+      user-info: userinfo
+      user-info-reply: userInfoResponseQueue
 security:
   jwt:
     secret: "somejwttokenlmaosomejwttokenlmaosomejwttokenlmaosomejwttokenlmao"

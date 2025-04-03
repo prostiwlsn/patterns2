@@ -1,8 +1,10 @@
 package ru.hits.core.domain.dto.operation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.hits.core.domain.enums.OperationTypeEnum;
 
 import java.time.Instant;
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "DTO, представляющий операцию со счётом")
 public class OperationDTO {
 

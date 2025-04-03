@@ -22,6 +22,9 @@ import ru.hits.core.repository.OperationRepository;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.service.CurrencyService;
 import ru.hits.core.service.OperationService;
+import ru.hits.core.service.impl.rabbitmq.RabbitMQMessageSender;
+import ru.hits.core.service.impl.rabbitmq.rpc.LoanPaymentService;
+import ru.hits.core.service.impl.rabbitmq.rpc.UserInfoService;
 import ru.hits.core.specification.OperationSpecification;
 import ru.hits.core.websocket.OperationsWebSocketHandler;
 
@@ -40,8 +43,24 @@ public class OperationServiceImpl implements OperationService {
     private final OperationRepository operationRepository;
     private final OperationMapper operationMapper;
     private final OperationsWebSocketHandler operationsWebSocketHandler;
+    private final RabbitMQMessageSender rabbitMQMessageSender;
 
-    private final RpcClientService rpcClientService;
+    private final UserInfoService userInfoService;
+    private final LoanPaymentService loanPaymentService;
+
+    @Override
+    public OperationDTO sendCreateOperationMessage(UUID userId, OperationRequestBody operationRequestBody) {
+        return rabbitMQMessageSender.sendMessageAndWait(
+                new CreateOperationDTO(
+                        operationRequestBody.getSenderAccountId(),
+                        operationRequestBody.getRecipientAccountId(),
+                        operationRequestBody.getAmount(),
+                        operationRequestBody.getMessage(),
+                        operationRequestBody.getOperationType(),
+                        userId
+                )
+        );
+    }
 
     @Transactional
     @Override
@@ -147,7 +166,7 @@ public class OperationServiceImpl implements OperationService {
             throw new BadRequestException("Превышено максимальное значение деняг");
         }
 
-        rpcClientService.loanPaymentRequest(
+        loanPaymentService.loanPaymentRequest(
                 new LoanPaymentRequest(
                         senderAccount.getId(),
                         operationRequestBody.getRecipientAccountId(),
@@ -275,7 +294,7 @@ public class OperationServiceImpl implements OperationService {
             Pageable pageable,
             String token
     ) throws JsonProcessingException {
-        var user = rpcClientService.getUserInfo(
+        var user = userInfoService.getUserInfo(
                 new UserInfoRequest(userId, token)
         );
         var account = accountService.getRawAccount(accountId);
@@ -318,7 +337,7 @@ public class OperationServiceImpl implements OperationService {
         OperationEntity operation = operationRepository.findById(operationId)
                 .orElseThrow(() -> new OperationNotFoundException(operationId));
 
-        var user = rpcClientService.getUserInfo(
+        var user = userInfoService.getUserInfo(
                 new UserInfoRequest(userId, token)
         );
 

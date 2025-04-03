@@ -8,7 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
 import ru.hits.core.service.impl.JwtService;
-import ru.hits.core.service.impl.RpcClientService;
+import ru.hits.core.service.impl.rabbitmq.rpc.UserInfoService;
 
 import java.io.IOException;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class OperationsWebSocketHandler extends TextWebSocketHandler {
 
-    private final RpcClientService rpcClientService;
+    private final UserInfoService userInfoService;
 
     private final JwtService jwtService;
 
@@ -29,7 +29,7 @@ public class OperationsWebSocketHandler extends TextWebSocketHandler {
         Map<String, Object> attributes = session.getAttributes();
         String token = (String) attributes.get("token");
 
-        rpcClientService.getUserInfo(new UserInfoRequest(
+        userInfoService.getUserInfo(new UserInfoRequest(
                 jwtService.getUserId("Bearer " + token),
                 token
         ));

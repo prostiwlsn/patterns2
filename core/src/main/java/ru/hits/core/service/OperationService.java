@@ -13,6 +13,8 @@ import java.util.UUID;
 
 public interface OperationService {
 
+    OperationDTO sendCreateOperationMessage(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException;
+
     OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException;
 
     Page<OperationShortDTO> getOperations(

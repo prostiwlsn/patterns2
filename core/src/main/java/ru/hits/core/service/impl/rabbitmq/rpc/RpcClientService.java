@@ -1,4 +1,4 @@
-package ru.hits.core.service.impl;
+package ru.hits.core.service.impl.rabbitmq.rpc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -32,7 +32,7 @@ public class RpcClientService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    private Map<String, Object> sendRequest(
+    protected Map<String, Object> sendRequest(
             String routingKey,
             String replyQueueName,
             byte[] requestBytes
@@ -65,51 +65,6 @@ public class RpcClientService {
         }
 
         throw new RuntimeException("Timeout or correlation ID mismatch");
-    }
-
-    public UserDTO getUserInfo(
-            UserInfoRequest requestMessage
-    ) throws JsonProcessingException {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
-        byte[] requestBytes;
-
-        try {
-            requestBytes = objectMapper.writeValueAsBytes(requestMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error serializing request");
-        }
-
-        var responseMap = sendRequest("userinfo", "userInfoResponseQueue", requestBytes);
-
-        if (responseMap.containsKey("Success") && responseMap.get("Success").equals(false)) {
-            throw new RuntimeException("Ошибка в получении информации о пользователе");
-        }
-
-        return parseUserDto((Map<String, Object>) responseMap.get("Data"));
-    }
-
-    public LoanPaymentSuccessResponse loanPaymentRequest(
-            LoanPaymentRequest requestMessage
-    ) throws JsonProcessingException {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.UPPER_CAMEL_CASE);
-        byte[] requestBytes;
-
-        try {
-            requestBytes = objectMapper.writeValueAsBytes(requestMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error serializing request");
-        }
-
-        var responseMap = sendRequest("LoanPayment", "LoanPaymentResponse", requestBytes);
-
-        if (responseMap.containsKey("Success") && responseMap.get("Success").equals(false)) {
-            var response = (String) responseMap.get("ErrorMessage");
-            throw new RuntimeException(response.toString());
-        }
-
-        return parseLoanPaymentSuccessResponse((Map<String, Object>) responseMap.get("Data"));
     }
 
 }

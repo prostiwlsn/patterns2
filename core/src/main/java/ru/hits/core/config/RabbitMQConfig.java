@@ -6,6 +6,7 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
@@ -15,9 +16,14 @@ import ru.hits.core.service.impl.RabbitMQListener;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String REQUEST_QUEUE = "userinfo";
-    public static final String LOAN_REQUEST_QUEUE = "GetLoan";
-    public static final String REPLY_QUEUE = "userInfoResponseQueue";
+    @Value("${spring.rabbitmq.queues.user-info}")
+    private String REQUEST_QUEUE;
+    @Value("${spring.rabbitmq.queues.loan}")
+    private String LOAN_REQUEST_QUEUE;
+    @Value("${spring.rabbitmq.queues.operation}")
+    private String OPERATION_REQUEST_QUEUE;
+    @Value("${spring.rabbitmq.queues.user-info-reply}")
+    private String REPLY_QUEUE;
 
     @Bean
     public Queue requestQueue() {
@@ -27,6 +33,11 @@ public class RabbitMQConfig {
     @Bean
     public Queue loanRequestQueue() {
         return new Queue(LOAN_REQUEST_QUEUE, true);
+    }
+
+    @Bean
+    public Queue operationRequestQueue() {
+        return new Queue(OPERATION_REQUEST_QUEUE, true);
     }
 
     @Bean
@@ -52,6 +63,11 @@ public class RabbitMQConfig {
     @Bean
     public Binding loanRequestBinding(Queue loanRequestQueue, DirectExchange loanExchange) {
         return BindingBuilder.bind(loanRequestQueue).to(loanExchange).with(LOAN_REQUEST_QUEUE);
+    }
+
+    @Bean
+    public Binding operationRequestBinding(Queue operationRequestQueue, DirectExchange loanExchange) {
+        return BindingBuilder.bind(operationRequestQueue).to(loanExchange).with(OPERATION_REQUEST_QUEUE);
     }
 
     @Bean
