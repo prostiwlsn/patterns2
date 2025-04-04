@@ -104,13 +104,17 @@ public class OperationServiceImpl implements OperationService {
             throw new BadRequestException("Недостаточно средств на счете отправителя.");
         }
 
+        var conversationValue = currencyService.getCurrencyValue(
+                senderAccount.getCurrency(), recipientAccount.getCurrency()
+        );
+
         accountService.updateBalance(
                 senderAccount,
                 senderAccount.getBalance() - operationRequestBody.getAmount()
         );
         accountService.updateBalance(
                 recipientAccount,
-                recipientAccount.getBalance() + operationRequestBody.getAmount()
+                recipientAccount.getBalance() + (operationRequestBody.getAmount() * conversationValue)
         );
 
         if (MAX_MONEY_VALUE < recipientAccount.getBalance()) {
