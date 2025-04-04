@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.dto.Pageable
+import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.entity.loan.TariffEntity
@@ -174,6 +175,16 @@ class LoanProcessingViewModel(
                     pushCommandUseCase(Command.RefreshMainScreen)
                     _navigationEvent.emit(LoanProcessingNavigationEvent.NavigateToSuccessfulLoanProcessing)
                     resetLoanUseCase()
+                }.onFailure { error ->
+                    if (error.code == 400) {
+                        _state.update {
+                            it.copy(
+                                errorMessage = "Ну и ну!\n\nВы разочаровать партия\n\n-10,000,000,000 Social Credit ⬇"
+
+
+                            )
+                        }
+                    }
                 }
             }
         }

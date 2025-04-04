@@ -21,4 +21,5 @@ data class LoanProcessingState(
     val isRatesSheetVisible: Boolean = false,
     val isAccountsSheetVisible: Boolean = false,
     val fieldErrors: LoanProcessingErrorModel? = null,
+    val errorMessage: String? = null,
 )

@@ -159,7 +159,12 @@ class MainViewModel(
         viewModelScope.launch {
             getCreditRatingUseCase(state.value.currentUserId)
                 .onSuccess { result ->
-                    _state.update { it.copy(creditRating = result.data.creditRating, isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            creditRating = result.data.creditRating,
+                            isLoading = false
+                        )
+                    }
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }
@@ -236,7 +241,12 @@ class MainViewModel(
         viewModelScope.launch {
             closeAccountUseCase(account.id).onSuccess {
                 settingsUseCase.removeAccountFromHidden(account.id)
-            }.onFailure { }
+            }.onSuccess {
+                _navigationEvent.emit(
+                    MainNavigationEvent.NavigateToSuccessfulAccountClosure
+                )
+            }
+                .onFailure { }
         }
     }
 
