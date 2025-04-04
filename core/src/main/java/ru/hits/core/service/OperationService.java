@@ -27,6 +27,13 @@ public interface OperationService {
             String token
     ) throws JsonProcessingException;
 
+    Page<OperationShortDTO> getExpiredOperations(
+            UUID userId,
+            UUID loanAccountId,
+            Pageable pageable,
+            String token
+    ) throws JsonProcessingException;
+
     OperationDTO getOperation(UUID userId, UUID accountId, UUID operationId, String token) throws JsonProcessingException;
 
 }

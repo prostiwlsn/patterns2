@@ -46,4 +46,7 @@ public class OperationDTO {
 
     @Schema(description = "Тип операции", example = "replenishment")
     private OperationTypeEnum operationType;
+
+    @Schema(description = "Флаг просроченной оплаты кредита", example = "false")
+    private Boolean isPaymentExpired;
 }

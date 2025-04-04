@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDTO> getAccounts(UUID myUserId, UUID userId, Boolean isDeleted, String token) throws JsonProcessingException {
         var myUserEntity = userInfoService.getUserInfo(
-                new UserInfoRequest(userId, token)
+                new UserInfoRequest(myUserId, token)
         );
 
         isDeleted = isDeleted == null ? false : isDeleted;

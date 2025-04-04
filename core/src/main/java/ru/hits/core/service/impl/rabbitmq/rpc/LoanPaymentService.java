@@ -3,6 +3,8 @@ package ru.hits.core.service.impl.rabbitmq.rpc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import ru.hits.core.domain.dto.operation.LoanPaymentRequest;
@@ -13,14 +15,14 @@ import java.util.Map;
 import static ru.hits.core.utils.ParserUtils.parseLoanPaymentSuccessResponse;
 
 @Service
+@Slf4j
 public class LoanPaymentService extends RpcClientService {
 
-
-    public LoanPaymentService(RabbitTemplate rabbitTemplate) {
-        super(rabbitTemplate);
-    }
-
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    public LoanPaymentService(RabbitTemplate rabbitTemplate, RabbitAdmin rabbitAdmin) {
+        super(rabbitTemplate, rabbitAdmin);
+    }
 
     public LoanPaymentSuccessResponse loanPaymentRequest(
             LoanPaymentRequest requestMessage
@@ -35,9 +37,10 @@ public class LoanPaymentService extends RpcClientService {
             throw new RuntimeException("Error serializing request");
         }
 
-        var responseMap = sendRequest("LoanPayment", "LoanPaymentResponse", requestBytes);
+        var responseMap = sendRequest("LoanPayment", requestBytes);
 
         if (responseMap.containsKey("Success") && responseMap.get("Success").equals(false)) {
+            log.error("Неудачное сообщение: " + responseMap);
             var response = (String) responseMap.get("ErrorMessage");
             throw new RuntimeException(response.toString());
         }

@@ -39,6 +39,18 @@ public class OperationSpecification {
                 ) : criteriaBuilder.conjunction();
     }
 
+    public static Specification<OperationEntity> isExpired(Boolean isExpired) {
+        return (root, query, criteriaBuilder) ->
+                isExpired != null ?
+                        criteriaBuilder.equal(root.get("isPaymentExpired"), isExpired) : criteriaBuilder.conjunction();
+    }
+
+    public static Specification<OperationEntity> loanAccountId(UUID accountId) {
+        return (root, query, criteriaBuilder) ->
+                accountId != null ?
+                        criteriaBuilder.equal(root.get("recipientAccountId"), accountId) : criteriaBuilder.conjunction();
+    }
+
     public static Specification<OperationEntity> timeStart(Instant timeStart) {
         return (root, query, criteriaBuilder) ->
                 timeStart != null ? criteriaBuilder.greaterThanOrEqualTo(root.get("transactionDateTime"), timeStart)

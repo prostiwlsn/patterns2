@@ -12,5 +12,6 @@ public class LoanPaymentSuccessResponse {
     private UUID senderAccountId;
     private UUID recipientAccountId;
     private float amount;
+    private Boolean isPaymentExpired;
 
 }

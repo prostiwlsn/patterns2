@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.hits.core.domain.dto.operation.CreateOperationDTO;
 import ru.hits.core.domain.dto.operation.OperationDTO;
+import ru.hits.core.domain.dto.operation.OperationResponseWrapper;
 
 @Component
 @Slf4j
@@ -32,15 +33,21 @@ public class RabbitMQMessageSender {
     public OperationDTO sendMessageAndWait(CreateOperationDTO createOperationDTO) {
         objectMapper.registerModule(new JavaTimeModule());
 
-        var message = objectMapper.writeValueAsString(createOperationDTO);
+        String message = objectMapper.writeValueAsString(createOperationDTO);
 
-        var response = (String) rabbitTemplate.convertSendAndReceive(operationQueue, message, msg -> {
+        String response = (String) rabbitTemplate.convertSendAndReceive(operationQueue, message, msg -> {
             MessageProperties props = msg.getMessageProperties();
             props.setReplyTo(replyQueue);
             return msg;
         });
 
-        return objectMapper.readValue(response, OperationDTO.class);
+        OperationResponseWrapper wrapper = objectMapper.readValue(response, OperationResponseWrapper.class);
+
+        if (!wrapper.isSuccess()) {
+            throw new RuntimeException("Ошибка при создании операции: " + wrapper.getErrorMessage());
+        }
+
+        return wrapper.getData();
     }
 
 }

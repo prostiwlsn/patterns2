@@ -166,7 +166,7 @@ public class OperationServiceImpl implements OperationService {
             throw new BadRequestException("Превышено максимальное значение деняг");
         }
 
-        loanPaymentService.loanPaymentRequest(
+        var response = loanPaymentService.loanPaymentRequest(
                 new LoanPaymentRequest(
                         senderAccount.getId(),
                         operationRequestBody.getRecipientAccountId(),
@@ -189,6 +189,7 @@ public class OperationServiceImpl implements OperationService {
                 .conversionValue(
                         currencyService.getCurrencyValue(senderAccount.getCurrency(), CurrencyEnum.USD)
                 )
+                .isPaymentExpired(response.getIsPaymentExpired())
                 .build();
 
         var operationDto = operationMapper.entityToDTO(
@@ -318,10 +319,33 @@ public class OperationServiceImpl implements OperationService {
         );
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Page<OperationShortDTO> getExpiredOperations(
+            UUID userId,
+            UUID loanAccountId,
+            Pageable pageable,
+            String token
+    ) throws JsonProcessingException {
+        var user = userInfoService.getUserInfo(
+                new UserInfoRequest(userId, token)
+        );
+        var accounts = accountService.getMyAccountIds(userId);
+
+        return getOperations(
+                OperationFilters.builder()
+                        .userId(userId)
+                        .isExpired(true)
+                        .loanAccountId(loanAccountId)
+                        .build(),
+                pageable,
+                accounts
+        );
+    }
+
     private Page<OperationShortDTO> getOperations(OperationFilters filters, Pageable pageable, List<UUID> accountIds) {
         var spec = getSpecByFilters(filters);
-        var test = operationRepository.findAll(spec, pageable).map(o -> operationMapper.entityToShortDTO(o, accountIds));
-        return test;
+        return operationRepository.findAll(spec, pageable).map(o -> operationMapper.entityToShortDTO(o, accountIds));
     }
 
     @Transactional(readOnly = true)
@@ -375,6 +399,8 @@ public class OperationServiceImpl implements OperationService {
                 .and(OperationSpecification.accountIdEquals(request.getAccountId()))
                 .and(OperationSpecification.timeStart(request.getTimeStart()))
                 .and(OperationSpecification.timeEnd(request.getTimeEnd()))
-                .and(OperationSpecification.operationType(request.getOperationType()));
+                .and(OperationSpecification.operationType(request.getOperationType()))
+                .and(OperationSpecification.isExpired(request.getIsExpired()))
+                .and(OperationSpecification.loanAccountId(request.getLoanAccountId()));
     }
 }

@@ -26,6 +26,7 @@ public interface OperationMapper {
     );
 
     @Mapping(target = "directionToMe", expression = "java(getMoneyDirection(operationEntity, myAccountIds))")
+    @Mapping(target = "amount", expression = "java(getAmountForMe(operationEntity, myAccountIds))")
     OperationShortDTO entityToShortDTO(OperationEntity operationEntity, List<UUID> myAccountIds);
 
     @Named("moneyDirectionMapper")

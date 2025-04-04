@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1-7" author="admin">
+        <addColumn tableName="account">
+            <column name="is_master_account" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <insert tableName="account">
+            <column name="id">9c385d3d-5a11-4ddf-add0-71e1ff26951f</column>
+            <column name="account_number">0000 0000 0000 0000</column>
+            <column name="balance">1000000000</column>
+            <column name="user_id">9c385d3d-5a11-4ddf-add0-71e1ff26951f</column>
+            <column name="is_deleted">false</column>
+            <column name="create_date_time">2025-03-31 10:22:38.360354</column>
+            <column name="currency">Доллар США</column>
+            <column name="is_master_account">true</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

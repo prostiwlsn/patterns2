@@ -7,5 +7,7 @@ https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <include file="/db/changelog/changesets/2502221240_create_operation_table.xml"/>
     <include file="/db/changelog/changesets/2503061400_update_account_number.xml"/>
     <include file="/db/changelog/changesets/2503251700_add_currencies.xml"/>
+    <include file="/db/changelog/changesets/2504032300_update_operation_table_expired_flag.xml"/>
+    <include file="/db/changelog/changesets/2504032301_update_account_master.xml"/>
 
 </databaseChangeLog>

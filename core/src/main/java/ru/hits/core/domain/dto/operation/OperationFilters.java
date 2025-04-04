@@ -16,5 +16,7 @@ public class OperationFilters {
     private Instant timeStart;
     private Instant timeEnd;
     private OperationTypeEnum operationType;
+    private Boolean isExpired;
+    private UUID loanAccountId;
 
 }

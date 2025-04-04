@@ -66,6 +66,25 @@ public class OperationController {
     }
 
     @Operation(
+            summary = "История просроченных платежей",
+            description = "Позволяет пользователю посмотреть историю операций по счету"
+    )
+    @GetMapping("/expiredLoanPayment")
+    private Page<OperationShortDTO> getExpiredOperations(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam("loanAccountId") UUID loanAccountId,
+            @PageableDefault(size = 10, page = 0, sort = "transactionDateTime", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) throws JsonProcessingException {
+        return operationService.getExpiredOperations(
+                jwtService.getUserId(authHeader),
+                loanAccountId,
+                pageable,
+                authHeader.substring(7)
+        );
+    }
+
+    @Operation(
             summary = "Полная операция по счету",
             description = "Позволяет пользователю посмотреть полную операцию по счету"
     )

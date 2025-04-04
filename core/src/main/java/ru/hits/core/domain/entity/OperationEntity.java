@@ -50,4 +50,7 @@ public class OperationEntity {
     @Column(name = "operation_type", nullable = false)
     private OperationTypeEnum operationType;
 
+    @Column(name = "is_payment_expired", nullable = true)
+    private Boolean isPaymentExpired;
+
 }
