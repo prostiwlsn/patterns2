@@ -16,7 +16,8 @@ class OperationWebSocketClient(
     private val client: OkHttpClient,
 ) : OperationWebSocketApi {
     private var webSocket: WebSocket? = null
-    private val _operationsFlow = MutableSharedFlow<OperationShortDto>(replay = 0, extraBufferCapacity = 10)
+    private val _operationsFlow =
+        MutableSharedFlow<OperationShortDto>(replay = 0, extraBufferCapacity = 10)
 
     override fun connect(accountId: String): Flow<OperationShortDto> {
         val wsUrl = "ws://83.222.27.120:8080/ws/operations?accountid=$accountId"
@@ -50,7 +51,8 @@ class OperationWebSocketClient(
 
     private fun parseOperationDtoString(text: String): OperationShortDto? {
         return try {
-            val regex = """OperationDTO\(id=([^,]+),\s*senderAccountId=[^,]+,\s*senderAccountNumber=[^,]+,\s*recipientAccountId=[^,]+,\s*recipientAccountNumber=[^,]+,\s*directionToMe=([^,]+),\s*amount=([^,]+),\s*transactionDateTime=([^,]+),\s*message=[^,]+,\s*operationType=([^)]+)\)""".toRegex()
+            val regex =
+                """OperationDTO\(id=([^,]+),\s*senderAccountId=[^,]+,\s*senderAccountNumber=[^,]+,\s*recipientAccountId=[^,]+,\s*recipientAccountNumber=[^,]+,\s*directionToMe=([^,]+),\s*amount=([^,]+),\s*transactionDateTime=([^,]+),\s*message=[^,]+,\s*operationType=([^,)]+)(?:,\s*isPaymentExpired=[^)]+)?\)""".toRegex()
             regex.matchEntire(text)?.let { match ->
                 val (id, directionToMe, amount, transactionDateTime, operationType) = match.destructured
                 OperationShortDto(

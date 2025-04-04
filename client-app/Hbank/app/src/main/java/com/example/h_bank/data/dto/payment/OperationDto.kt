@@ -16,6 +16,7 @@ data class OperationDto(
     val transactionDateTime: Instant,
     val message: String?,
     val operationType: OperationTypeDto,
+    val isPaymentExpired: Boolean?,
 )
 
 internal fun OperationDto.toDomain(): Operation =
@@ -26,8 +27,9 @@ internal fun OperationDto.toDomain(): Operation =
         directionToMe = directionToMe,
         amount = amount,
         transactionDateTime = transactionDateTime.toJavaInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDateTime(),
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime(),
         message = message,
-        operationType = operationType
+        operationType = operationType,
+        isPaymentExpired = isPaymentExpired
     )

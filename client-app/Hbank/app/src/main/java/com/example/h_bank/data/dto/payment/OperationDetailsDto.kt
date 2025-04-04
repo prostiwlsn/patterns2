@@ -14,4 +14,5 @@ class OperationDetailsDto(
     val transactionDateTime: String,
     val message: String?,
     val operationType: OperationTypeDto,
+    val isPaymentExpired: Boolean?,
 )
