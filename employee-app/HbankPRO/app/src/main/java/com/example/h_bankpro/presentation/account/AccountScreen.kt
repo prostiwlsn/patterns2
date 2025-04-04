@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerDialog
@@ -20,7 +21,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +65,13 @@ fun AccountScreen(
             }
         }
     }
+
+//    LaunchedEffect(state.operations.size) {
+//        if (state.operations.isNotEmpty()) {
+//            lazyListState.animateScrollToItem(0)
+//        }
+//    }
+
 
     Column(
         modifier = Modifier
@@ -152,6 +159,17 @@ fun AccountScreen(
                         .fillMaxSize()
                         .weight(1f)
                 ) {
+                    items(state.realtimeOperations) { operation ->
+                        OperationItem(
+                            operation = operation,
+                            onClick = { viewModel.onOperationClicked(operation) }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        )
+                    }
+                    // Затем операции из Paging
                     items(lazyPagingItems.itemCount) { index ->
                         val operation = lazyPagingItems[index]
                         if (operation != null) {
@@ -163,16 +181,8 @@ fun AccountScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                             )
-                        } else {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                color = MaterialTheme.colorScheme.primary
-                            )
                         }
                     }
-
                     when (lazyPagingItems.loadState.append) {
                         is LoadState.Loading -> {
                             item {
@@ -180,11 +190,10 @@ fun AccountScreen(
                                     modifier = Modifier
                                         .padding(16.dp)
                                         .align(Alignment.CenterHorizontally),
-                                    MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
-
                         is LoadState.Error -> {
                             item {
                                 Text(
@@ -194,7 +203,6 @@ fun AccountScreen(
                                 )
                             }
                         }
-
                         else -> {}
                     }
                 }

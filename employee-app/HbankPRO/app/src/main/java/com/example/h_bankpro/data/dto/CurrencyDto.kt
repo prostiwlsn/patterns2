@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class CurrencyDto(val displayName: String) {
     @SerialName("Рубль")
-    RUB("Рубли"),
+    RUB("₽ Рубли"),
 
     @SerialName("Доллар США")
-    USD("Доллары"),
+    USD("$ Доллары"),
 
     @SerialName("Армянский драм")
-    AMD("Армянские драмы");
+    AMD("֏ Армянские драмы");
 }

@@ -5,14 +5,17 @@ import com.example.h_bankpro.data.dto.OperationShortDto
 import com.example.h_bankpro.data.dto.PageResponse
 import com.example.h_bankpro.data.dto.Pageable
 import com.example.h_bankpro.data.network.OperationApi
+import com.example.h_bankpro.data.network.OperationWebSocketApi
 import com.example.h_bankpro.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.repository.IOperationRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class OperationRepository(
     private val api: OperationApi,
+    private val webSocketApi: OperationWebSocketApi
 ) : IOperationRepository {
     override suspend fun getOperationsByAccount(
         accountId: String,
@@ -41,5 +44,14 @@ class OperationRepository(
         return@withContext runResultCatching {
             api.getOperationInfo(accountId, operationId)
         }
+    }
+
+    override fun getOperationsFlow(accountId: String): Flow<OperationShortDto> {
+        webSocketApi.disconnect()
+        return webSocketApi.connect(accountId)
+    }
+
+    override fun disconnectWebSocket() {
+        webSocketApi.disconnect()
     }
 }
