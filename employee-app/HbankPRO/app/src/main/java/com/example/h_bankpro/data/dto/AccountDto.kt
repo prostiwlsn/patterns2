@@ -11,7 +11,7 @@ import kotlinx.datetime.toLocalDateTime
 data class AccountDTO(
     val id: String,
     val accountNumber: String,
-    val balance: Float,
+    val balance: Double,
     val currency: CurrencyDto,
     val userId: String,
     val isDeleted: Boolean,
