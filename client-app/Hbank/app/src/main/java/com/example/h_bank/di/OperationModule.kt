@@ -1,6 +1,8 @@
 package com.example.h_bank.di
 
 import com.example.h_bank.data.network.OperationApi
+import com.example.h_bank.data.network.OperationWebSocketApi
+import com.example.h_bank.data.network.OperationWebSocketClient
 import com.example.h_bank.data.repository.payment.OperationRepository
 import com.example.h_bank.domain.repository.IOperationRepository
 import com.example.h_bank.domain.useCase.GetOperationInfoUseCase
@@ -16,7 +18,8 @@ import retrofit2.Retrofit
 val operationModule = module {
     single<IOperationRepository> {
         OperationRepository(
-            api = get()
+            api = get(),
+            webSocketApi = get()
         )
     }
 
@@ -60,5 +63,9 @@ val operationModule = module {
     factory<OperationApi> {
         val retrofit = get<Retrofit>(named("accountApi"))
         retrofit.create(OperationApi::class.java)
+    }
+
+    single<OperationWebSocketApi> {
+        OperationWebSocketClient(client = get(named("authClient")))
     }
 }

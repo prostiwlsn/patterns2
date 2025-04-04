@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bank.R
 import com.example.h_bank.data.dto.payment.OperationTypeDto
 import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
-import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -72,7 +71,7 @@ fun OperationItem(operation: OperationShortModel, onClick: () -> Unit) {
             )
             Text(
                 text = "${operation.operationType.displayName} · ${
-                    operation.transactionDateTime.toJavaLocalDateTime()
+                    operation.transactionDateTime
                         .let { it.format(dateFormatter) + ", " + it.format(timeFormatter) }
                 }",
                 fontSize = 12.sp,

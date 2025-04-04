@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,8 +62,9 @@ fun PaymentHistoryScreen(
     viewModel: PaymentHistoryViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val interactionSource = remember { MutableInteractionSource()  }
+    val interactionSource = remember { MutableInteractionSource() }
     val operationsPagingItems = state.operationsPager.collectAsLazyPagingItems()
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
@@ -71,6 +74,12 @@ fun PaymentHistoryScreen(
 
                 is PaymentHistoryNavigationEvent.NavigateBack -> navController.popBackStack()
             }
+        }
+    }
+
+    LaunchedEffect(state.operations.size) {
+        if (state.operations.isNotEmpty()) {
+            lazyListState.animateScrollToItem(0)
         }
     }
 
@@ -119,8 +128,6 @@ fun PaymentHistoryScreen(
                 )
             }
         }
-
-        // Список операций
         when (operationsPagingItems.loadState.refresh) {
             is LoadState.Loading -> {
                 Box(
@@ -137,11 +144,19 @@ fun PaymentHistoryScreen(
             }
 
             else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
+                LazyColumn(modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f), state = lazyListState) {
+                    items(state.operations, key = { it.id }) { operation ->
+                        OperationItem(
+                            operation = operation,
+                            onClick = { viewModel.onPaymentClicked(operation) }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        )
+                    }
                     items(operationsPagingItems.itemCount) { index ->
                         val operation = operationsPagingItems[index]
                         if (operation != null) {
@@ -166,8 +181,6 @@ fun PaymentHistoryScreen(
             }
         }
     }
-
-    // Выбор типа операции
     if (state.isTypesSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideTypesSheet() },
@@ -183,7 +196,6 @@ fun PaymentHistoryScreen(
         }
     }
 
-    // Выбор счета
     if (state.isAccountsSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideAccountsSheet() },
@@ -200,7 +212,6 @@ fun PaymentHistoryScreen(
         }
     }
 
-    // Календарь
     val calendarState = rememberSheetState(
         onDismissRequest = {
             viewModel.hideDatePicker()

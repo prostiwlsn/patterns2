@@ -23,4 +23,5 @@ data class PaymentHistoryState(
     val filterModel: OperationsFilterModel = OperationsFilterModel(),
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
+    val operations: List<OperationShortModel> = emptyList(),
 )

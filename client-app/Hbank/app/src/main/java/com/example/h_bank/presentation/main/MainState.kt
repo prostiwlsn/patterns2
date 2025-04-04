@@ -15,6 +15,7 @@ data class MainState(
     val loansFlow: Flow<PagingData<Loan>> = MutableStateFlow(PagingData.empty()),
     val isAccountsSheetVisible: Boolean = false,
     val isLoansSheetVisible: Boolean = false,
+    val isCurrenciesSheetVisible: Boolean = false,
     val isLoading: Boolean = false,
     val selectedCurrency: CurrencyDto = CurrencyDto.RUB,
     val hiddenAccounts: Set<String> = emptySet(),

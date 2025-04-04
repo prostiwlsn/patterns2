@@ -1,7 +1,7 @@
 package com.example.h_bank.presentation.paymentHistory.model
 
 import com.example.h_bank.data.dto.payment.OperationTypeDto
-import kotlinx.datetime.LocalDateTime
+import java.time.LocalDateTime
 
 data class OperationShortModel(
     val id: String,

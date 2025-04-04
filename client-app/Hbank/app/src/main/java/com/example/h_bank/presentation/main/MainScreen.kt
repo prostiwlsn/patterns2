@@ -28,6 +28,7 @@ import com.example.h_bank.data.ThemeMode
 import com.example.h_bank.presentation.main.components.AccountsBlock
 import com.example.h_bank.presentation.main.components.AccountsBottomSheetContent
 import com.example.h_bank.presentation.main.components.ApplicationsBlock
+import com.example.h_bank.presentation.main.components.CurrenciesBottomSheetContent
 import com.example.h_bank.presentation.main.components.LoansBlock
 import com.example.h_bank.presentation.main.components.LoansBottomSheetContent
 import com.example.h_bank.presentation.main.components.TransfersBlock
@@ -176,7 +177,7 @@ fun MainScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 ApplicationsBlock(
                     onProcessLoanClick = { viewModel.onProcessLoanClicked() },
-                    onOpenAccountClick = { viewModel.onOpenAccountClicked() }
+                    onOpenAccountClick = { viewModel.showCurrenciesSheet() }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
             }
@@ -195,8 +196,7 @@ fun MainScreen(
                     onCloseAccountClick = { account ->
                         viewModel.onCloseAccountClicked(account)
                         viewModel.hideAccountsSheet()
-                    },
-                    onOpenAccountClick = { viewModel.onOpenAccountClicked() }
+                    }
                 )
             }
         }
@@ -213,6 +213,17 @@ fun MainScreen(
                         viewModel.hideLoansSheet()
                     },
                     onProcessLoanClick = { viewModel.onProcessLoanClicked() }
+                )
+            }
+        }
+        if (state.isCurrenciesSheetVisible) {
+            ModalBottomSheet(
+                onDismissRequest = { viewModel.hideCurrenciesSheet() },
+                containerColor = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
+            ) {
+                CurrenciesBottomSheetContent(
+                    onCurrencyClick = { viewModel.onCurrencyClicked(it) }
                 )
             }
         }

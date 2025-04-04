@@ -25,7 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.h_bank.R
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.presentation.common.AccountItem
+import com.example.h_bank.presentation.common.CurrencyItem
 import com.example.h_bank.presentation.common.CustomButton
 
 @Composable
@@ -34,7 +36,6 @@ fun AccountsBottomSheetContent(
     hiddenAccounts: Set<String>,
     onToggleVisibility: (String) -> Unit,
     onCloseAccountClick: (Account) -> Unit,
-    onOpenAccountClick: () -> Unit
 ) {
     var showHidden by remember { mutableStateOf(false) }
     val filteredAccounts =
@@ -81,13 +82,6 @@ fun AccountsBottomSheetContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            CustomButton(
-                onClick = onOpenAccountClick,
-                textRes = R.string.main_screen_bottom_sheet_account_button
             )
         }
     }
@@ -164,6 +158,34 @@ fun LoansBottomSheetContent(
             CustomButton(
                 onClick = onProcessLoanClick,
                 textRes = R.string.main_screen_bottom_sheet_credit_button
+            )
+        }
+    }
+}
+
+@Composable
+fun CurrenciesBottomSheetContent(
+    onCurrencyClick: (CurrencyDto) -> Unit
+) {
+    LazyColumn(modifier = Modifier.padding(16.dp)) {
+        item {
+            Text(
+                text = stringResource(R.string.choose_currency),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        items(CurrencyDto.entries.toTypedArray()) { currency ->
+            CurrencyItem(
+                currency = currency,
+                onCurrencyClick = { onCurrencyClick(currency) }
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
             )
         }
     }

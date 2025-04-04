@@ -52,7 +52,7 @@ fun LoanHeader(
                 text = "№ $documentNumber",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
             )
         }
     }

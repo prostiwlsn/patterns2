@@ -15,7 +15,7 @@ class OperationsPagingSource(
         val page = params.key ?: 0
         val pageable = Pageable(page = page, size = params.loadSize)
 
-        return when (val result = getOperationsHistoryUseCase(pageable)) {
+        return when (val result = getOperationsHistoryUseCase.getInitialOperations(pageable)) {
             is RequestResult.Success<PageResponse<OperationShortModel>> -> {
                 val operations = result.data.content
                 LoadResult.Page(

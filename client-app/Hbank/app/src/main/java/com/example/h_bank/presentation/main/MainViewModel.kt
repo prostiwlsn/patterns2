@@ -6,6 +6,7 @@ import androidx.paging.cachedIn
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.Loan
 import com.example.h_bank.data.ThemeMode
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.data.utils.RequestResult
@@ -81,6 +82,14 @@ class MainViewModel(
 
     fun hideLoansSheet() {
         _state.update { it.copy(isLoansSheetVisible = false) }
+    }
+
+    fun showCurrenciesSheet() {
+        _state.update { it.copy(isCurrenciesSheetVisible = true) }
+    }
+
+    fun hideCurrenciesSheet() {
+        _state.update { it.copy(isCurrenciesSheetVisible = false) }
     }
 
     private fun loadCurrentUser() {
@@ -161,6 +170,15 @@ class MainViewModel(
         }
     }
 
+    fun onCurrencyClicked(currency: CurrencyDto) {
+        viewModelScope.launch {
+            openAccountUseCase(currency).onSuccess {
+                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
+            }
+                .onFailure { }
+        }
+    }
+
     fun onTransferClicked() {
         viewModelScope.launch {
             _navigationEvent.emit(MainNavigationEvent.NavigateToTransfer(state.value.currentUserId))
@@ -199,21 +217,11 @@ class MainViewModel(
         }
     }
 
-    fun onOpenAccountClicked() {
-        viewModelScope.launch {
-            openAccountUseCase(state.value.selectedCurrency).onSuccess {
-                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
-            }
-                .onFailure { }
-        }
-    }
-
     fun onCloseAccountClicked(account: Account) {
         viewModelScope.launch {
             closeAccountUseCase(account.id).onSuccess {
-                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountClosure)
-            }
-                .onFailure { }
+                settingsUseCase.removeAccountFromHidden(account.id)
+            }.onFailure { }
         }
     }
 
@@ -233,11 +241,8 @@ class MainViewModel(
 
     fun toggleTheme() {
         viewModelScope.launch {
-            println("ToggleTheme called")
             val currentTheme = settingsUseCase.settingsFlow.first().theme
-            println("Current theme: $currentTheme")
             val newTheme = if (currentTheme == ThemeMode.LIGHT) ThemeMode.DARK else ThemeMode.LIGHT
-            println("New theme: $newTheme")
             settingsUseCase.setTheme(newTheme)
         }
     }

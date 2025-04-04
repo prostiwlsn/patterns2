@@ -8,12 +8,15 @@ import com.example.h_bank.data.dto.payment.OperationDto
 import com.example.h_bank.data.dto.payment.OperationShortDto
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.entity.filter.OperationFilterEntity
+import kotlinx.coroutines.flow.Flow
 
 interface IOperationRepository {
     suspend fun getOperationsByAccount(
         filters: OperationFilterEntity,
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>>
+
+    fun getOperationsFlow(filters: OperationFilterEntity): Flow<OperationShortDto>
 
     suspend fun getOperationDetails(
         accountId: String,
@@ -23,4 +26,6 @@ interface IOperationRepository {
     suspend fun getOperationInfo(operationId: String): RequestResult<OperationDto>
 
     suspend fun createOperation(request: OperationRequestBody): RequestResult<Unit>
+
+    fun disconnectWebSocket()
 }

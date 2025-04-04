@@ -130,7 +130,7 @@ fun TransactionInfoScreen(
                 )
             }
 
-            OperationType.LOAN_PAYMENT -> {
+            OperationType.LOAN_REPAYMENT -> {
                 TextField(
                     labelRes = R.string.payment_account,
                     value = state.senderAccount.orEmpty(),
