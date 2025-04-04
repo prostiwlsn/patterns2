@@ -43,6 +43,7 @@ fun UserScreen(
                 is UserNavigationEvent.NavigateToLoan ->
                     navController.navigate(
                         "loan" +
+                                "/${event.loanId}" +
                                 "/${event.documentNumber}" +
                                 "/${event.amount}" +
                                 "/${event.endDate}" +
@@ -119,7 +120,15 @@ fun UserScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            if (state.creditRating != null) {
+                Text(
+                    text = "Social Credit: ${state.creditRating}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(

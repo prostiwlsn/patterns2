@@ -3,9 +3,10 @@ package com.example.h_bankpro.data.dto
 import com.example.h_bankpro.data.OperationType
 import com.example.h_bankpro.domain.model.OperationShort
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.toJavaInstant
+
 import kotlinx.serialization.Serializable
+import java.time.ZoneId
 
 @Serializable
 data class OperationShortDto(
@@ -21,6 +22,8 @@ internal fun OperationShortDto.toDomain(): OperationShort =
         id = id,
         amount = amount,
         directionToMe = directionToMe,
-        transactionDateTime = transactionDateTime.toLocalDateTime(TimeZone.currentSystemDefault()),
+        transactionDateTime = transactionDateTime.toJavaInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime(),
         operationType = operationType
     )

@@ -50,7 +50,7 @@ class OperationWebSocketClient(
 
     private fun parseOperationDtoString(text: String): OperationShortDto? {
         return try {
-            val regex = """OperationDTO\(id=([^,]+),\s*senderAccountId=[^,]+,\s*senderAccountNumber=[^,]+,\s*recipientAccountId=[^,]+,\s*recipientAccountNumber=[^,]+,\s*directionToMe=([^,]+),\s*amount=([^,]+),\s*transactionDateTime=([^,]+),\s*message=[^,]+,\s*operationType=([^)]+)\)""".toRegex()
+            val regex = """OperationDTO\(id=([^,]+),\s*senderAccountId=[^,]+,\s*senderAccountNumber=[^,]+,\s*recipientAccountId=[^,]+,\s*recipientAccountNumber=[^,]+,\s*directionToMe=([^,]+),\s*amount=([^,]+),\s*transactionDateTime=([^,]+),\s*message=[^,]+,\s*operationType=([^,)]+)(?:,\s*isPaymentExpired=[^)]+)?\)""".toRegex()
             regex.matchEntire(text)?.let { match ->
                 val (id, directionToMe, amount, transactionDateTime, operationType) = match.destructured
                 OperationShortDto(

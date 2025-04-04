@@ -169,7 +169,6 @@ fun AccountScreen(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                         )
                     }
-                    // Затем операции из Paging
                     items(lazyPagingItems.itemCount) { index ->
                         val operation = lazyPagingItems[index]
                         if (operation != null) {

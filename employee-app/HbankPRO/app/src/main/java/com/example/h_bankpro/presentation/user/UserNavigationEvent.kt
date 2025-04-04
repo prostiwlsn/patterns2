@@ -2,6 +2,7 @@ package com.example.h_bankpro.presentation.user
 
 sealed class UserNavigationEvent {
     data class NavigateToLoan(
+        val loanId: String,
         val documentNumber: String,
         val amount: String,
         val endDate: String,

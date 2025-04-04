@@ -5,6 +5,7 @@ import com.example.h_bankpro.data.network.OperationWebSocketApi
 import com.example.h_bankpro.data.network.OperationWebSocketClient
 import com.example.h_bankpro.data.repository.OperationRepository
 import com.example.h_bankpro.domain.repository.IOperationRepository
+import com.example.h_bankpro.domain.useCase.GetExpiredLoanPaymentsUseCase
 import com.example.h_bankpro.domain.useCase.GetOperationInfoUseCase
 import com.example.h_bankpro.domain.useCase.GetOperationsByAccountUseCase
 import org.koin.core.qualifier.named
@@ -16,6 +17,12 @@ val operationModule = module {
         OperationRepository(
             api = get(),
             webSocketApi = get()
+        )
+    }
+
+    factory<GetExpiredLoanPaymentsUseCase> {
+        GetExpiredLoanPaymentsUseCase(
+            operationRepository = get()
         )
     }
 

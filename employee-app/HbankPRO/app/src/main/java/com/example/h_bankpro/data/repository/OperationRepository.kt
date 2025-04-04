@@ -54,4 +54,18 @@ class OperationRepository(
     override fun disconnectWebSocket() {
         webSocketApi.disconnect()
     }
+
+    override suspend fun getExpiredLoanPayments(
+        loanId: String,
+        pageable: Pageable
+    ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
+            api.expiredLoanPayment(
+                loanId = loanId,
+                size = pageable.size,
+                page = pageable.page,
+                sort = emptyList()
+            )
+        }
+    }
 }

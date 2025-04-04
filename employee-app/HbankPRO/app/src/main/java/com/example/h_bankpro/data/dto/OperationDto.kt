@@ -3,9 +3,9 @@ package com.example.h_bankpro.data.dto
 import com.example.h_bankpro.data.OperationType
 import com.example.h_bankpro.domain.model.Operation
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
+import java.time.ZoneId
 
 @Serializable
 data class OperationDto(
@@ -15,10 +15,11 @@ data class OperationDto(
     val recipientAccountId: String?,
     val recipientAccountNumber: String?,
     val directionToMe: Boolean,
-    val amount: Float,
+    val amount: Double,
     val transactionDateTime: Instant,
     val message: String?,
     val operationType: OperationType,
+    val isPaymentExpired: Boolean?
 )
 
 internal fun OperationDto.toDomain(): Operation =
@@ -30,7 +31,10 @@ internal fun OperationDto.toDomain(): Operation =
         recipientAccountNumber = recipientAccountNumber,
         directionToMe = directionToMe,
         amount = amount,
-        transactionDateTime = transactionDateTime.toLocalDateTime(TimeZone.currentSystemDefault()),
+        transactionDateTime = transactionDateTime.toJavaInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime(),
         message = message,
-        operationType = operationType
+        operationType = operationType,
+        isPaymentExpired = isPaymentExpired
     )

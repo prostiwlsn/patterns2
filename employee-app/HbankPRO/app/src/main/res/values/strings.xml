@@ -60,6 +60,7 @@
     <string name="due_date">Дата окончания договора</string>
     <string name="debt">Задолженность</string>
     <string name="employee">Сотрудник</string>
+    <string name="expired_loan_payments">Просроченные платежи</string>
     <string name="client">Клиент</string>
     <string name="phone">Номер телефона</string>
     <string name="period">Период</string>

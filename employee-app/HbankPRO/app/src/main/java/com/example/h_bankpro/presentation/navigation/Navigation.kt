@@ -57,8 +57,9 @@ fun AppNavigation(
             RateScreen(navController)
         }
         composable(
-            route = "loan/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
+            route = "loan/{loanId}/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
             arguments = listOf(
+                navArgument("loanId") { type = NavType.StringType },
                 navArgument("documentNumber") { type = NavType.StringType },
                 navArgument("amount") { type = NavType.StringType },
                 navArgument("endDate") { type = NavType.StringType },

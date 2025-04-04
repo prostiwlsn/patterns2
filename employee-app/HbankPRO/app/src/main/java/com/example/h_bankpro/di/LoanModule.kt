@@ -7,6 +7,7 @@ import com.example.h_bankpro.domain.repository.ILoanRepository
 import com.example.h_bankpro.domain.repository.ILoanStorageRepository
 import com.example.h_bankpro.domain.useCase.CreateTariffUseCase
 import com.example.h_bankpro.domain.useCase.DeleteTariffUseCase
+import com.example.h_bankpro.domain.useCase.GetCreditRatingUseCase
 import com.example.h_bankpro.domain.useCase.GetTariffListUseCase
 import com.example.h_bankpro.domain.useCase.GetUserLoansUseCase
 import com.example.h_bankpro.domain.useCase.UpdateTariffUseCase
@@ -22,6 +23,12 @@ val loanModule = module {
     single<ILoanRepository> {
         LoanRepository(
             loanApi = get()
+        )
+    }
+
+    factory<GetCreditRatingUseCase> {
+        GetCreditRatingUseCase(
+            loanRepository = get()
         )
     }
 

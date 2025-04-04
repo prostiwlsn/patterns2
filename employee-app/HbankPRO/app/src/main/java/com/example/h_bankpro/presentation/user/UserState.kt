@@ -14,5 +14,6 @@ data class UserState(
     val accounts: List<Account> = emptyList(),
     val isAccountsSheetVisible: Boolean = false,
     val isLoansSheetVisible: Boolean = false,
+    val creditRating: Int? = null,
     val isLoading: Boolean = false
 )

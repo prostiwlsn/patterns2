@@ -38,13 +38,13 @@ val appModule = module {
         RateEditingViewModel(get(), savedStateHandle, get())
     }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        LoanViewModel(get(), savedStateHandle)
+        LoanViewModel(get(), get(), savedStateHandle)
     }
     viewModel { UserCreationViewModel(get(), get()) }
     viewModel { SuccessfulUserCreationViewModel(get()) }
     viewModel { AccountViewModel(get(), get(), get()) }
     viewModel { OperationInfoViewModel(get(), get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        UserViewModel(get(), savedStateHandle, get(), get(), get(), get(), get())
+        UserViewModel(get(), savedStateHandle, get(), get(), get(), get(), get(), get())
     }
 }

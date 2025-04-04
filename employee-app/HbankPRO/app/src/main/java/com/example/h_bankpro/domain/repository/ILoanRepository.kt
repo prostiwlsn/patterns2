@@ -1,5 +1,6 @@
 package com.example.h_bankpro.domain.repository
 
+import com.example.h_bankpro.data.dto.CreditRatingDto
 import com.example.h_bankpro.data.dto.LoanListResponseDto
 import com.example.h_bankpro.data.dto.TariffListResponseDto
 import com.example.h_bankpro.data.dto.TariffRequestDto
@@ -15,4 +16,8 @@ interface ILoanRepository {
         pageNumber: Int,
         pageSize: Int
     ): RequestResult<LoanListResponseDto>
+
+    suspend fun getCreditRating(
+        userId: String,
+    ): RequestResult<CreditRatingDto>
 }
