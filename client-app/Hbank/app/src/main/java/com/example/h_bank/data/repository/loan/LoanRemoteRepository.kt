@@ -1,5 +1,6 @@
 package com.example.h_bank.data.repository.loan
 
+import com.example.h_bank.data.dto.CreditRatingDto
 import com.example.h_bank.data.dto.loan.GetLoanDto
 import com.example.h_bank.data.dto.loan.LoanListResponseDto
 import com.example.h_bank.data.dto.loan.TariffListResponseDto
@@ -34,5 +35,11 @@ class LoanRemoteRepository(
         return@withContext runResultCatching {
             loanApi.getLoan(request)
         }
+    }
+
+    override suspend fun getCreditRating(
+        userId: String
+    ): RequestResult<CreditRatingDto> =  withContext(Dispatchers.IO) {
+        return@withContext runResultCatching { loanApi.getCreditRating(userId) }
     }
 }

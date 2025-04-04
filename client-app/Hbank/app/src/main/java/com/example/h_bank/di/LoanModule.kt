@@ -6,6 +6,7 @@ import com.example.h_bank.data.repository.loan.LoanStorageRepository
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.repository.loan.ILoanRemoteRepository
 import com.example.h_bank.domain.repository.loan.ILoanStorageRepository
+import com.example.h_bank.domain.useCase.GetCreditRatingUseCase
 import com.example.h_bank.domain.useCase.loan.GetLoanFlowUseCase
 import com.example.h_bank.domain.useCase.loan.GetLoanUseCase
 import com.example.h_bank.domain.useCase.loan.GetTariffListUseCase
@@ -57,6 +58,12 @@ val loanModule = module {
     factory<ILoanRemoteRepository> {
         LoanRemoteRepository(
             loanApi = get()
+        )
+    }
+
+    factory<GetCreditRatingUseCase> {
+        GetCreditRatingUseCase(
+            loanRepository = get()
         )
     }
 

@@ -1,7 +1,11 @@
 package com.example.h_bank.presentation.loan
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
+import com.example.h_bank.domain.useCase.payment.GetExpiredLoanPaymentsUseCase
 import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class LoanViewModel(
     override val pushCommandUseCase: PushCommandUseCase,
+    private val getExpiredLoanPaymentsUseCase: GetExpiredLoanPaymentsUseCase,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel() {
 
@@ -37,6 +42,22 @@ class LoanViewModel(
                 ratePercent = ratePercent,
                 debt = debt,
             )
+        }
+        viewModelScope.launch {
+            val pager = Pager(
+                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                pagingSourceFactory = {
+                    ExpiredLoanPaymentsPagingSource(
+                        loanId = loanId,
+                        getExpiredLoanPaymentsUseCase = getExpiredLoanPaymentsUseCase
+                    )
+                }
+            ).flow.cachedIn(viewModelScope)
+            _state.update {
+                it.copy(
+                    expiredPayments = pager
+                )
+            }
         }
     }
 

@@ -13,6 +13,7 @@ data class LoanDto(
     val amount: Double,
     val debt: Double,
     val ratePercent: Double,
+    val isExpired: Boolean,
     val issueDate: Instant,
     val endDate: Instant,
 )
@@ -24,6 +25,7 @@ internal fun LoanDto.toDomain(): Loan {
         amount = amount,
         debt = debt,
         ratePercent = ratePercent,
+        isExpired = isExpired,
         issueDate = issueDate.toJavaInstant()
             .atZone(ZoneId.systemDefault())
             .toLocalDate(),

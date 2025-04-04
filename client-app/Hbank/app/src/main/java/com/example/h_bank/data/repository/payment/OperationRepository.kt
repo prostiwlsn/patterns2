@@ -30,7 +30,8 @@ class OperationRepository(
         filters: OperationFilterEntity,
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
-        val accountId = filters.accountId ?: return@withContext RequestResult.Error(404, "Account not found")
+        val accountId =
+            filters.accountId ?: return@withContext RequestResult.Error(404, "Account not found")
         return@withContext retry(3, delayMillis = 1000) {
             runResultCatching(noConnectionCatching = true) {
                 api.getOperationsByAccount(
@@ -44,6 +45,20 @@ class OperationRepository(
                 )
             }.onFailure { e ->
             }
+        }
+    }
+
+    override suspend fun getExpiredLoanPayments(
+        loanId: String,
+        pageable: Pageable
+    ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
+        return@withContext runResultCatching {
+            api.expiredLoanPayment(
+                loanId = loanId,
+                size = pageable.size,
+                page = pageable.page,
+                sort = emptyList()
+            )
         }
     }
 
@@ -82,6 +97,7 @@ class OperationRepository(
     override fun disconnectWebSocket() {
         webSocketApi.disconnect()
     }
+
     private suspend fun <T> retry(
         times: Int,
         delayMillis: Long,

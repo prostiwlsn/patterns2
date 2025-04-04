@@ -21,7 +21,9 @@ import androidx.compose.ui.unit.dp
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.Loan
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.h_bank.R
@@ -91,12 +93,14 @@ fun AccountsBottomSheetContent(
 fun LoansBottomSheetContent(
     lazyPagingItems: LazyPagingItems<Loan>,
     onItemClick: (Loan) -> Unit,
-    onProcessLoanClick: () -> Unit
+    onProcessLoanClick: () -> Unit,
+    creditRating: Int?
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
             Text(
@@ -106,6 +110,15 @@ fun LoansBottomSheetContent(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            if (creditRating != null) {
+                Text(
+                    text = "Social Credit: $creditRating",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
         }
         items(lazyPagingItems.itemCount) { index ->

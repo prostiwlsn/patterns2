@@ -16,6 +16,11 @@ interface IOperationRepository {
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>>
 
+    suspend fun getExpiredLoanPayments(
+        loanId: String,
+        pageable: Pageable
+    ): RequestResult<PageResponse<OperationShortDto>>
+
     fun getOperationsFlow(filters: OperationFilterEntity): Flow<OperationShortDto>
 
     suspend fun getOperationDetails(

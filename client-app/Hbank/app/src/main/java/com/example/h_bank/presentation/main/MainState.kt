@@ -16,6 +16,7 @@ data class MainState(
     val isAccountsSheetVisible: Boolean = false,
     val isLoansSheetVisible: Boolean = false,
     val isCurrenciesSheetVisible: Boolean = false,
+    val creditRating: Int? = null,
     val isLoading: Boolean = false,
     val selectedCurrency: CurrencyDto = CurrencyDto.RUB,
     val hiddenAccounts: Set<String> = emptySet(),

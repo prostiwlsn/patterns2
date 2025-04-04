@@ -11,6 +11,7 @@ import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.useCase.CloseAccountUseCase
+import com.example.h_bank.domain.useCase.GetCreditRatingUseCase
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
@@ -41,6 +42,7 @@ class MainViewModel(
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val settingsUseCase: SettingsUseCase,
+    private val getCreditRatingUseCase: GetCreditRatingUseCase,
     getAuthorizationCommandsUseCase: GetMainCommandsUseCase,
 ) : BaseViewModel() {
 
@@ -55,7 +57,6 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             settingsUseCase.settingsFlow.collect { settings ->
-                println("MainViewModel: Collected settings = $settings")
                 _state.update {
                     it.copy(
                         themeMode = settings.theme,
@@ -99,6 +100,7 @@ class MainViewModel(
                 _state.update { it.copy(currentUserId = result.data.id) }
                 loadInitialLoans()
                 loadUserAccounts()
+                loadCreditRating()
             }
                 .onFailure { }
         }
@@ -145,6 +147,19 @@ class MainViewModel(
             getUserAccountsUseCase(state.value.currentUserId)
                 .onSuccess { result ->
                     _state.update { it.copy(accounts = result.data, isLoading = false) }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+    private fun loadCreditRating() {
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            getCreditRatingUseCase(state.value.currentUserId)
+                .onSuccess { result ->
+                    _state.update { it.copy(creditRating = result.data.creditRating, isLoading = false) }
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }

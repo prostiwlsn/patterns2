@@ -212,7 +212,8 @@ fun MainScreen(
                         viewModel.onLoanClicked(it)
                         viewModel.hideLoansSheet()
                     },
-                    onProcessLoanClick = { viewModel.onProcessLoanClicked() }
+                    onProcessLoanClick = { viewModel.onProcessLoanClicked() },
+                    creditRating = state.creditRating
                 )
             }
         }

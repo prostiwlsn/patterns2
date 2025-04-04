@@ -33,7 +33,20 @@ val appModule = module {
     single<DataStore<Preferences>> { androidContext().dataStore }
     viewModel { WelcomeViewModel(get(), get(), get()) }
     viewModel { LaunchViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel {
+        MainViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         LoanPaymentViewModel(
             get(),
@@ -44,7 +57,12 @@ val appModule = module {
         )
     }
     viewModel { SuccessfulAccountClosureViewModel(get()) }
-    viewModel { NavigationViewModel(getAuthorizationCommandsUseCase = get(), pushCommandUseCase = get()) }
+    viewModel {
+        NavigationViewModel(
+            getAuthorizationCommandsUseCase = get(),
+            pushCommandUseCase = get()
+        )
+    }
     viewModel { ConnectionErrorViewModel() }
     viewModel { SuccessfulLoanProcessingViewModel(get()) }
     viewModel { SuccessfulLoanPaymentViewModel(get(), get()) }
@@ -66,7 +84,13 @@ val appModule = module {
             getOperationDetailsUseCase = get(),
         )
     }
-    viewModel { (savedStateHandle: SavedStateHandle) -> LoanViewModel(get(), savedStateHandle) }
+    viewModel { (savedStateHandle: SavedStateHandle) ->
+        LoanViewModel(
+            get(),
+            get(),
+            savedStateHandle
+        )
+    }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         SuccessfulTransferViewModel(savedStateHandle)
     }

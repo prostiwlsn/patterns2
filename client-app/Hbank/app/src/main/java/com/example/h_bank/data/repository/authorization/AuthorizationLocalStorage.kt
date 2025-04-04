@@ -14,7 +14,7 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
 
     private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     private val prefs = EncryptedSharedPreferences.create(
-        "auth_prefs",
+        "auth_prefs_client",
         masterKeyAlias,
         context,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,

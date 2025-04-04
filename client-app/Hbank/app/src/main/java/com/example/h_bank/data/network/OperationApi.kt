@@ -24,6 +24,14 @@ interface OperationApi {
         @Query("sort") sort: List<String>
     ): PageResponse<OperationShortDto>
 
+    @GET("operation/expiredLoanPayment")
+    suspend fun expiredLoanPayment(
+        @Query("loanAccountId") loanId: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: List<String>
+    ): PageResponse<OperationShortDto>
+
     @GET("operation/{accountId}/{operationId}")
     suspend fun getOperationDetails(
         @Path("accountId") accountId: String,

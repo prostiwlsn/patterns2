@@ -11,6 +11,7 @@ import com.example.h_bank.domain.useCase.RepayLoanUseCase
 import com.example.h_bank.domain.useCase.ReplenishUseCase
 import com.example.h_bank.domain.useCase.TransferUseCase
 import com.example.h_bank.domain.useCase.WithdrawUseCase
+import com.example.h_bank.domain.useCase.payment.GetExpiredLoanPaymentsUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -38,6 +39,12 @@ val operationModule = module {
 
     factory<TransferUseCase> {
         TransferUseCase(
+            operationRepository = get()
+        )
+    }
+
+    factory<GetExpiredLoanPaymentsUseCase> {
+        GetExpiredLoanPaymentsUseCase(
             operationRepository = get()
         )
     }

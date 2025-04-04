@@ -39,6 +39,7 @@
     <string name="take_out_loan">Взять кредит</string>
     <string name="open_account">Открыть счёт</string>
     <string name="all_loans">Все кредиты</string>
+    <string name="expired_loan_payments">Просроченные платежи</string>
     <string name="all_rates">Все тарифы</string>
     <string name="all_accounts">Все счета</string>
     <string name="choose_currency">Выберите валюту</string>
