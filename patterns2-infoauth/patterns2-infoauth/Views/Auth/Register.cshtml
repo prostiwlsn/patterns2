@@ -33,13 +33,40 @@
     });
 </script>
 
-<form class="card text-center" style="width: 50%">
+<style>
+    .card{
+        display: flex;
+        justify-content: center;
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 75%;
+    }
+
+    .error-message {
+        background-color: red;
+        color: white;
+    }
+
+    button {
+        background-color: transparent;
+    }
+
+    .mb-3 {
+        margin-bottom: 3px;
+    }
+</style>
+
+<form class="card text-center" style="width: 100%">
     <div class="card-body">
         <h5 class="card-title">Register</h5>
         <input type="text" class="form-control mb-3" name="Phone" placeholder="Phone">
         <input type="text" class="form-control mb-3" name="Name" placeholder="Name">
         <input type="password" class="form-control mb-3" name="Password" placeholder="Password">
-        <span class="error-message text-danger"></span>
+        <span class="error-message"></span>
         <button class="btn btn-primary" type="submit">Register</button>
     </div>
 </form>
