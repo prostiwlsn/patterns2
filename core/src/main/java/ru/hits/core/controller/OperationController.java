@@ -37,7 +37,7 @@ public class OperationController {
             @RequestHeader("Authorization") String authHeader,
             @RequestBody(required = true) OperationRequestBody operationRequestBody
     ) throws JsonProcessingException {
-        return operationService.sendCreateOperationMessage(jwtService.getUserId(authHeader), operationRequestBody);
+        return operationService.sendCreateOperationMessage(authHeader, jwtService.getUserId(authHeader), operationRequestBody);
     }
 
     @Operation(

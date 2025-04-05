@@ -137,6 +137,11 @@ public class AccountServiceImpl implements AccountService {
         return account.getId();
     }
 
+    @Override
+    public AccountDTO getMasterAccount() {
+        return accountMapper.entityToDTO(accountRepository.getMasterAccount().orElseThrow(RuntimeException::new));
+    }
+
     private String generateAccountNumber() {
         StringBuilder sb = new StringBuilder(19);
         for (int i = 0; i < 19; i++) {

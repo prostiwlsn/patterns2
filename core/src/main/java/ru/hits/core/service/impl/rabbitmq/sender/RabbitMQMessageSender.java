@@ -1,4 +1,4 @@
-package ru.hits.core.service.impl.rabbitmq;
+package ru.hits.core.service.impl.rabbitmq.sender;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

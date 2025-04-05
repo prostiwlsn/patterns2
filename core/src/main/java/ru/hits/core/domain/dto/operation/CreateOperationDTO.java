@@ -35,4 +35,6 @@ public class CreateOperationDTO {
 
     private UUID userId;
 
+    private String token;
+
 }

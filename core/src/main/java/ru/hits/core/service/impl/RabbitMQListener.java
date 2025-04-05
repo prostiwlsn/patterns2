@@ -1,7 +1,5 @@
 package ru.hits.core.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +19,6 @@ import java.util.UUID;
 public class RabbitMQListener {
 
     private final OperationService operationService;
-    private final ObjectMapper objectMapper;
 
     public void receiveMessage(LinkedHashMap<String, Object> messageMap) {
         System.out.println("Получено сообщение из RabbitMQ:");
@@ -42,6 +39,10 @@ public class RabbitMQListener {
                             null,
                             OperationTypeEnum.REPLENISHMENT
                     )
+            );
+
+            operationService.masterAccountWithdrawal(
+                    request.getAmount()
             );
         } catch (Exception e) {
             log.error("Ошибка обработки сообщения: " + e.getMessage());

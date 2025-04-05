@@ -30,4 +30,6 @@ public interface AccountService {
 
     UUID getAccountId(String accountNumber);
 
+    AccountDTO getMasterAccount();
+
 }

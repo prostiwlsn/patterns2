@@ -21,4 +21,12 @@ public interface AccountRepository extends JpaRepository<AccountEntity, UUID>, J
 
     Optional<AccountEntity> findByAccountNumber(String accountNumber);
 
+    @Query(nativeQuery = true, value = """
+                select * from account a
+                where a.is_master_account = true
+                order by create_date_time DESC
+                limit 1
+            """)
+    Optional<AccountEntity> getMasterAccount();
+
 }

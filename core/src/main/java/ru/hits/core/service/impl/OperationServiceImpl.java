@@ -2,6 +2,7 @@ package ru.hits.core.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,7 +23,7 @@ import ru.hits.core.repository.OperationRepository;
 import ru.hits.core.service.AccountService;
 import ru.hits.core.service.CurrencyService;
 import ru.hits.core.service.OperationService;
-import ru.hits.core.service.impl.rabbitmq.RabbitMQMessageSender;
+import ru.hits.core.service.impl.rabbitmq.sender.RabbitMQMessageSender;
 import ru.hits.core.service.impl.rabbitmq.rpc.LoanPaymentService;
 import ru.hits.core.service.impl.rabbitmq.rpc.UserInfoService;
 import ru.hits.core.specification.OperationSpecification;
@@ -49,7 +50,7 @@ public class OperationServiceImpl implements OperationService {
     private final LoanPaymentService loanPaymentService;
 
     @Override
-    public OperationDTO sendCreateOperationMessage(UUID userId, OperationRequestBody operationRequestBody) {
+    public OperationDTO sendCreateOperationMessage(String token, UUID userId, OperationRequestBody operationRequestBody) {
         return rabbitMQMessageSender.sendMessageAndWait(
                 new CreateOperationDTO(
                         operationRequestBody.getSenderAccountId(),
@@ -57,7 +58,8 @@ public class OperationServiceImpl implements OperationService {
                         operationRequestBody.getAmount(),
                         operationRequestBody.getMessage(),
                         operationRequestBody.getOperationType(),
-                        userId
+                        userId,
+                        token
                 )
         );
     }
@@ -178,10 +180,22 @@ public class OperationServiceImpl implements OperationService {
                 )
         );
 
+        var conversionValue = currencyService.getCurrencyValue(senderAccount.getCurrency(), CurrencyEnum.USD);
+
         accountService.updateBalance(
                 senderAccount,
                 senderAccount.getBalance() - operationRequestBody.getAmount()
         );
+
+        var masterAccount = accountService.getMasterAccount();
+
+        createOperation(masterAccount.getUserId(), new OperationRequestBody(
+                masterAccount.getId(),
+                null,
+                operationRequestBody.getAmount() * conversionValue,
+                null,
+                OperationTypeEnum.WITHDRAWAL
+        ));
 
         var operation = OperationEntity.builder()
                 .id(UUID.randomUUID())
@@ -191,7 +205,7 @@ public class OperationServiceImpl implements OperationService {
                 .message(operationRequestBody.getMessage())
                 .operationType(operationRequestBody.getOperationType())
                 .conversionValue(
-                        currencyService.getCurrencyValue(senderAccount.getCurrency(), CurrencyEnum.USD)
+                        conversionValue
                 )
                 .isPaymentExpired(response.getIsPaymentExpired())
                 .build();
@@ -396,6 +410,21 @@ public class OperationServiceImpl implements OperationService {
                 senderAccount == null ? null : senderAccount.getAccountNumber(),
                 recipientAccount == null ? null : recipientAccount.getAccountNumber()
         );
+    }
+
+    @Override
+    @SneakyThrows
+    @Transactional
+    public void masterAccountWithdrawal(Float amount) {
+        var masterAccount = accountService.getMasterAccount();
+
+        createOperation(masterAccount.getUserId(), new OperationRequestBody(
+                masterAccount.getId(),
+                null,
+                amount,
+                null,
+                OperationTypeEnum.WITHDRAWAL
+        ));
     }
 
     private Specification<OperationEntity> getSpecByFilters(OperationFilters request) {

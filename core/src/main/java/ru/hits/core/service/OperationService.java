@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface OperationService {
 
-    OperationDTO sendCreateOperationMessage(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException;
+    OperationDTO sendCreateOperationMessage(String token, UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException;
 
     OperationDTO createOperation(UUID userId, OperationRequestBody operationRequestBody) throws JsonProcessingException;
 
@@ -35,5 +35,7 @@ public interface OperationService {
     ) throws JsonProcessingException;
 
     OperationDTO getOperation(UUID userId, UUID accountId, UUID operationId, String token) throws JsonProcessingException;
+
+    void masterAccountWithdrawal(Float amount);
 
 }

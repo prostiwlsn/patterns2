@@ -43,14 +43,4 @@ public class JwtService {
         }
     }
 
-//    public RoleEnum getUserRole(String token) {
-//        try {
-//            Claims claims = extractAllClaims(token.substring(7));
-//            return RoleEnum.fromValue((String) claims.get("Role"));
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//            throw new RuntimeException("Произошла ошибка в обработке токена");
-//        }
-//    }
-
 }

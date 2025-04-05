@@ -52,6 +52,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue masterAccountQueue() {
+        return new Queue("masterAccount", true);
+    }
+
+    @Bean
     public DirectExchange exchange() {
         return new DirectExchange("");
     }

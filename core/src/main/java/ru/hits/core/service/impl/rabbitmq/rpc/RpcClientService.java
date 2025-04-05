@@ -69,6 +69,8 @@ public class RpcClientService {
             }
         }
 
+        rabbitAdmin.deleteQueue(replyQueueName);
+
         throw new RuntimeException("Timeout or correlation ID mismatch");
     }
 
