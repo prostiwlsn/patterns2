@@ -63,17 +63,18 @@ public class LoanPaymentConsumer : BackgroundService
     private void Consume(object? ch, BasicDeliverEventArgs eventArgs)
     {
         var content = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+        var replyTo = eventArgs.BasicProperties.ReplyTo;
         _correlationId = eventArgs.BasicProperties.CorrelationId;
         _channel.BasicAck(eventArgs.DeliveryTag, false);
 
         Task.Run(async () =>
         {
-            await ReturnAnswer(content);
+            await ReturnAnswer(content, replyTo);
         }).GetAwaiter().GetResult();
     }
     
     // Возврат ответа на сообщение
-    private async Task ReturnAnswer(string content)
+    private async Task ReturnAnswer(string content, string replyTo)
     {
         // Получение ответа
         LoanPaymentDto? loanPayment = JsonSerializer.Deserialize<LoanPaymentDto>(content);
@@ -97,12 +98,6 @@ public class LoanPaymentConsumer : BackgroundService
         // Отправка ответа
         var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
         
-        _channel.ExchangeDeclare(exchange: _loanPaymentResultExchange, type: ExchangeType.Direct, durable: true);
-        _channel.QueueDeclare(queue: "LoanPaymentResponse", durable: true, exclusive: false, autoDelete: false);
-        _channel.QueueBind(queue: "LoanPaymentResponse",
-            exchange: _loanPaymentResultExchange,
-            routingKey: "LoanPaymentResponse");
-        
         using (var connection = factory.CreateConnection())
         using (var channel = connection.CreateModel())
         {
@@ -113,8 +108,8 @@ public class LoanPaymentConsumer : BackgroundService
             properties.Persistent = true;
             properties.CorrelationId = _correlationId;
 
-            channel.BasicPublish(exchange: _loanPaymentResultExchange,
-                routingKey: "LoanPaymentResponse",
+            channel.BasicPublish(exchange: "",
+                routingKey: replyTo,
                 basicProperties: properties,
                 body: body);
         }

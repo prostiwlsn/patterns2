@@ -299,6 +299,16 @@
             Создание кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Services.LoanService.GetMasterAccountResponse">
+            <summary>
+            Получение мастер счета
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Services.LoanService.SendGetMasterAccountMessage(System.String,System.String)">
+            <summary>
+            Отправка сообщения для получнеия мастер счета
+            </summary>
+        </member>
         <member name="M:HITS_bank.Services.LoanService.SendMoney(HITS_bank.Controllers.Dto.Message.GetLoanDto)">
             <summary>
             Отправка суммы кредита на счет
@@ -324,9 +334,9 @@
             Валидация пагинации
             </summary>
         </member>
-        <member name="M:HITS_bank.Services.LoanService.ValidateAccountNumber(System.String)">
+        <member name="T:HITS_bank.Utils.Constants">
             <summary>
-            Валидация номера счета
+            Общие константы
             </summary>
         </member>
         <member name="T:HITS_bank.Utils.IResult">
