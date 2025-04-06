@@ -1,5 +1,6 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.LoanRemoteDataSource
 import com.example.h_bankpro.data.network.LoanApi
 import com.example.h_bankpro.data.repository.LoanRepository
 import com.example.h_bankpro.data.repository.LoanStorageRepository
@@ -20,9 +21,11 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val loanModule = module {
+    single { LoanRemoteDataSource(loanApi = get()) }
+
     single<ILoanRepository> {
         LoanRepository(
-            loanApi = get()
+            remoteDataSource = get()
         )
     }
 

@@ -1,5 +1,6 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.UserRemoteDataSource
 import com.example.h_bankpro.data.network.UserApi
 import com.example.h_bankpro.data.repository.UserRepository
 import com.example.h_bankpro.domain.repository.IUserRepository
@@ -14,9 +15,11 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val userModule = module {
+    single { UserRemoteDataSource(api = get()) }
+
     single<IUserRepository> {
         UserRepository(
-            api = get()
+            remoteDataSource = get()
         )
     }
 

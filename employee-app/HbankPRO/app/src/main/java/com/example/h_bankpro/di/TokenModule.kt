@@ -1,5 +1,6 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.TokenRemoteDataSource
 import com.example.h_bankpro.data.network.TokenApi
 import com.example.h_bankpro.data.repository.TokenRepository
 import com.example.h_bankpro.domain.repository.ITokenRepository
@@ -23,10 +24,12 @@ val tokenModule = module {
         )
     }
 
+    single { TokenRemoteDataSource(tokenApi = get()) }
+
     single<ITokenRepository> {
         TokenRepository(
-            localRepository = get(),
-            tokenApi = get()
+            localDataSource = get(),
+            remoteDataSource = get()
         )
     }
 

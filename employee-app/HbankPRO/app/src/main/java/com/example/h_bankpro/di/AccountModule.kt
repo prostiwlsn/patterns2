@@ -1,5 +1,6 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.AccountRemoteDataSource
 import com.example.h_bankpro.data.network.AccountApi
 import com.example.h_bankpro.data.repository.AccountRepository
 import com.example.h_bankpro.domain.repository.IAccountRepository
@@ -9,9 +10,10 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val accountModule = module {
+    single { AccountRemoteDataSource(api = get()) }
     single<IAccountRepository> {
         AccountRepository(
-            api = get()
+            remoteDataSource = get()
         )
     }
 

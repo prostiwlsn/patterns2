@@ -1,7 +1,9 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.local.AuthorizationLocalDataSource
+import com.example.h_bankpro.data.dataSource.remote.AuthorizationRemoteDataSource
 import com.example.h_bankpro.data.network.AuthorizationApi
-import com.example.h_bankpro.data.repository.AuthorizationLocalStorage
+import com.example.h_bankpro.data.repository.AuthorizationLocalRepository
 import com.example.h_bankpro.data.repository.AuthorizationRemoteRepository
 import com.example.h_bankpro.data.repository.CommandStorage
 import com.example.h_bankpro.domain.repository.IAuthorizationLocalRepository
@@ -24,9 +26,20 @@ import retrofit2.Retrofit
 
 val authorizationModule = module {
 
+    single { AuthorizationLocalDataSource(context = get()) }
+
     single<IAuthorizationLocalRepository> {
-        AuthorizationLocalStorage(
-            context = get()
+        AuthorizationLocalRepository(
+            localDataSource = get()
+        )
+    }
+
+    single { AuthorizationRemoteDataSource(logoutApi = get()) }
+
+    single<IAuthorizationRemoteRepository> {
+        AuthorizationRemoteRepository(
+            remoteDataSource = get(),
+            tokenRepository = get()
         )
     }
 
@@ -45,13 +58,6 @@ val authorizationModule = module {
     factory<AuthorizationApi> {
         val retrofit = get<Retrofit>(named("infoAuthApi"))
         retrofit.create(AuthorizationApi::class.java)
-    }
-
-    single<IAuthorizationRemoteRepository> {
-        AuthorizationRemoteRepository(
-            tokenRepository = get(),
-            logoutApi = get(),
-        )
     }
 
     factory<LoginUseCase> {

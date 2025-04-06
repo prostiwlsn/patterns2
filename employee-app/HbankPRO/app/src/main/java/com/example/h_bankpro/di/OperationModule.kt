@@ -1,5 +1,6 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.OperationRemoteDataSource
 import com.example.h_bankpro.data.network.OperationApi
 import com.example.h_bankpro.data.network.OperationWebSocketApi
 import com.example.h_bankpro.data.network.OperationWebSocketClient
@@ -13,10 +14,11 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val operationModule = module {
+    single { OperationRemoteDataSource(api = get(), webSocketApi = get()) }
+
     single<IOperationRepository> {
         OperationRepository(
-            api = get(),
-            webSocketApi = get()
+            remoteDataSource = get()
         )
     }
 
