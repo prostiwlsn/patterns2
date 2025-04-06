@@ -28,6 +28,7 @@ public interface OperationService {
     ) throws JsonProcessingException;
 
     Page<OperationShortDTO> getExpiredOperations(
+            UUID myUserId,
             UUID userId,
             UUID loanAccountId,
             Pageable pageable,

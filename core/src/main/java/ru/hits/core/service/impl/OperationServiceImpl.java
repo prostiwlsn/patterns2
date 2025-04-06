@@ -341,11 +341,26 @@ public class OperationServiceImpl implements OperationService {
     @Transactional(readOnly = true)
     @Override
     public Page<OperationShortDTO> getExpiredOperations(
+            UUID myUserId,
             UUID userId,
             UUID loanAccountId,
             Pageable pageable,
             String token
-    ) {
+    ) throws JsonProcessingException {
+        if (userId == null) {
+            userId = myUserId;
+        }
+        var user = userInfoService.getUserInfo(
+                new UserInfoRequest(myUserId, token)
+        );
+
+        if (
+                user.getRoles().stream().noneMatch(r -> r.equals(RoleEnum.ADMIN) || r.equals(RoleEnum.MANAGER))
+                        && !user.getId().equals(userId)
+        ) {
+            throw new ForbiddenException();
+        }
+
         var accounts = accountService.getMyAccountIds(userId);
 
         return getOperations(
