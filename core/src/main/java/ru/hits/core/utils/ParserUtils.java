@@ -47,7 +47,9 @@ public class ParserUtils {
             builder.recipientAccountId(UUID.fromString(data.get("RecipientAccountId").toString()));
         }
         if (data.containsKey("ReturnedAmount")) {
-            builder.amount((float) data.get("Amount"));
+            var amount = ((Number) data.get("ReturnedAmount")).floatValue();
+
+            builder.amount(amount);
         }
         if (data.containsKey("IsPaymentExpired")) {
             builder.isPaymentExpired((Boolean) data.get("IsPaymentExpired"));

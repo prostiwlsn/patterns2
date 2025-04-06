@@ -52,7 +52,7 @@ public class RpcClientService {
         rabbitTemplate.send("", routingKey, message);
 
         long startTime = System.currentTimeMillis();
-        long timeout = 3000;
+        long timeout = 10000;
 
         while (System.currentTimeMillis() - startTime < timeout) {
             Message responseMessage = rabbitTemplate.receive(replyQueueName);

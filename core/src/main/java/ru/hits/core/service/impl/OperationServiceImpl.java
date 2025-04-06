@@ -180,21 +180,21 @@ public class OperationServiceImpl implements OperationService {
                 )
         );
 
-        var conversionValue = currencyService.getCurrencyValue(senderAccount.getCurrency(), CurrencyEnum.USD);
+        var masterAccount = accountService.getMasterAccount();
+
+        var conversionValue = currencyService.getCurrencyValue(senderAccount.getCurrency(), masterAccount.getCurrency());
 
         accountService.updateBalance(
                 senderAccount,
                 senderAccount.getBalance() - operationRequestBody.getAmount()
         );
 
-        var masterAccount = accountService.getMasterAccount();
-
         createOperation(masterAccount.getUserId(), new OperationRequestBody(
-                masterAccount.getId(),
                 null,
+                masterAccount.getId(),
                 operationRequestBody.getAmount() * conversionValue,
                 null,
-                OperationTypeEnum.WITHDRAWAL
+                OperationTypeEnum.REPLENISHMENT
         ));
 
         var operation = OperationEntity.builder()
