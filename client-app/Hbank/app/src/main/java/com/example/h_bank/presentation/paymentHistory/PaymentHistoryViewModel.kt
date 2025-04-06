@@ -20,12 +20,12 @@ import com.example.h_bank.presentation.paymentHistory.model.OperationShortModel
 import com.example.h_bank.presentation.paymentHistory.model.OperationsFilterModel
 import com.example.h_bank.presentation.paymentHistory.paging.OperationsPagingSource
 import com.example.h_bank.presentation.paymentHistory.utils.DateFormatter.toStringFormat
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -44,41 +44,56 @@ class PaymentHistoryViewModel(
     private val _navigationEvent = MutableSharedFlow<PaymentHistoryNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
+    private var realTimeJob: Job? = null
+
     init {
         val userId = getUserIdUseCase().orEmpty()
 
-        getOperationsFiltersFlowUseCase().onEach {
-            updatePager()
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getUserAccountsUseCase(userId).onSuccess { accountsResult ->
+                _state.update { it.copy(accounts = accountsResult.data) }
+                val firstAccount = accountsResult.data.first()
+                _state.update {
+                    it.copy(
+                        filterModel = it.filterModel.copy(
+                            accountFilter = AccountFilter(firstAccount.accountNumber)
+                        )
+                    )
+                }
+                updateOperationsFilterUseCase { copy(accountId = firstAccount.id) }
+                updatePager()
+                loadRealTimeOperations()
+            }
+        }
 
         viewModelScope.launch {
-            getUserAccountsUseCase(userId)
-                .onSuccess { accountsResult ->
-                    _state.update {
-                        it.copy(
-                            accounts = accountsResult.data
-                        )
-                    }
-                    _state.value.filterModel.updateFilter(
-                        AccountFilter(accountsResult.data.first().accountNumber)
-                    )
-                    updateOperationsFilterUseCase { copy(accountId = accountsResult.data.first().id) }
-                }
+            getOperationsFiltersFlowUseCase().collectLatest { filters ->
+                _state.update { it.copy(operations = emptyList()) }
+                updatePager()
+                loadRealTimeOperations()
+            }
         }
-        _state.update { it.copy(filteredPayments = state.value.allPayments) }
     }
 
     private fun updatePager() {
         val pager = Pager(
             config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-            pagingSourceFactory = {
-                OperationsPagingSource(getOperationsHistoryUseCase)
-            }
+            pagingSourceFactory = { OperationsPagingSource(getOperationsHistoryUseCase) }
         )
-        _state.update {
-            it.copy(
-                operationsPager = pager.flow
-            )
+        _state.update { currentState ->
+            currentState.copy(operationsPager = pager.flow)
+        }
+    }
+
+    private fun loadRealTimeOperations() {
+        realTimeJob?.cancel()
+        realTimeJob = viewModelScope.launch {
+            getOperationsHistoryUseCase.getOperationsFlow().collectLatest { operation ->
+                _state.update { currentState ->
+                    val updatedOps = listOf(operation) + currentState.operations
+                    currentState.copy(operations = updatedOps)
+                }
+            }
         }
     }
 
@@ -92,30 +107,20 @@ class PaymentHistoryViewModel(
 
     fun onFilterClose(filterItem: FilterItem) {
         val currentFilters = _state.value.filterModel.getFiltersList()
-
-        _state.update {
-            it.copy(
-                filterModel = OperationsFilterModel()
-            )
-        }
+        _state.update { it.copy(filterModel = OperationsFilterModel()) }
         currentFilters.filterNot { it == filterItem }.forEach {
             _state.value.filterModel.updateFilter(it)
         }
         when (filterItem) {
-            is AccountFilter -> {
-                updateOperationsFilterUseCase { copy(accountId = null) }
+            is AccountFilter -> updateOperationsFilterUseCase { copy(accountId = null) }
+            is PeriodFilter -> updateOperationsFilterUseCase {
+                copy(
+                    startDate = null,
+                    endDate = null
+                )
             }
-            is PeriodFilter -> {
-                updateOperationsFilterUseCase {
-                    copy(
-                        startDate = null,
-                        endDate = null,
-                    )
-                }
-            }
-            is OperationTypeFilter -> {
-                updateOperationsFilterUseCase { copy(operationType = null) }
-            }
+
+            is OperationTypeFilter -> updateOperationsFilterUseCase { copy(operationType = null) }
         }
     }
 
@@ -144,25 +149,22 @@ class PaymentHistoryViewModel(
     }
 
     fun onDateRangeSelected(startDate: LocalDateTime, endDate: LocalDateTime) {
-        _state.value = _state.value.copy(
-            isDatePickerVisible = false,
-        )
-        _state.value.filterModel.updateFilter(
-            PeriodFilter(startDate.toStringFormat() + " - " + endDate.toStringFormat())
-        )
-        updateOperationsFilterUseCase {
-            copy(
-                startDate = startDate,
-                endDate = endDate,
+        _state.update {
+            it.copy(
+                isDatePickerVisible = false,
+                filterModel = it.filterModel.updateFilter(
+                    PeriodFilter("${startDate.toStringFormat()} - ${endDate.toStringFormat()}")
+                )
             )
         }
+        updateOperationsFilterUseCase { copy(startDate = startDate, endDate = endDate) }
     }
 
     fun resetFilters() {
         _state.update {
             it.copy(
                 filterModel = OperationsFilterModel().copy(
-                    accountFilter = _state.value.filterModel.accountFilter,
+                    accountFilter = _state.value.filterModel.accountFilter
                 )
             )
         }
@@ -170,40 +172,46 @@ class PaymentHistoryViewModel(
             copy(
                 startDate = null,
                 endDate = null,
-                operationType = null,
+                operationType = null
             )
         }
     }
 
     fun onAccountClicked(account: Account) {
-        _state.value.filterModel.updateFilter(
-            AccountFilter(
-                account.accountNumber,
+        _state.update {
+            it.copy(
+                filterModel = it.filterModel.updateFilter(AccountFilter(account.accountNumber))
             )
-        )
+        }
         updateOperationsFilterUseCase { copy(accountId = account.id) }
     }
 
     fun onPaymentClicked(payment: OperationShortModel) {
         viewModelScope.launch {
-            _navigationEvent.emit(
-                PaymentHistoryNavigationEvent.NavigateToTransactionInfo(
-                    payment.id,
-                )
-            )
+            _navigationEvent.emit(PaymentHistoryNavigationEvent.NavigateToTransactionInfo(payment.id))
         }
     }
 
     fun onTypeClicked(type: OperationType) {
-        _state.value.filterModel.updateFilter(
-            OperationTypeFilter(type)
-        )
+        _state.update {
+            it.copy(
+                filterModel = it.filterModel.updateFilter(OperationTypeFilter(type))
+            )
+        }
         updateOperationsFilterUseCase { copy(operationType = type) }
     }
 
     fun onBackClicked() {
         viewModelScope.launch {
+            realTimeJob?.cancel()
+            getOperationsHistoryUseCase.disconnect()
             _navigationEvent.emit(PaymentHistoryNavigationEvent.NavigateBack)
         }
+    }
+
+    override fun onCleared() {
+        realTimeJob?.cancel()
+        getOperationsHistoryUseCase.disconnect()
+        super.onCleared()
     }
 }

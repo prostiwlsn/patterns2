@@ -1,7 +1,6 @@
 package com.example.h_bank.presentation.paymentHistory
 
 import android.os.Build
-import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,25 +9,23 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,12 +34,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.util.toRange
 import androidx.navigation.NavController
 import androidx.paging.LoadState
@@ -52,16 +47,12 @@ import com.example.h_bank.presentation.loanPayment.components.LoanPaymentBottomS
 import com.example.h_bank.presentation.paymentHistory.components.FilterButton
 import com.example.h_bank.presentation.paymentHistory.components.OperationItem
 import com.example.h_bank.presentation.paymentHistory.components.PaymentHistoryHeader
-import com.example.h_bank.presentation.paymentHistory.components.PaymentItem
 import com.example.h_bank.presentation.paymentHistory.components.TypeBottomSheetContent
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,8 +62,9 @@ fun PaymentHistoryScreen(
     viewModel: PaymentHistoryViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val interactionSource = remember { MutableInteractionSource()  }
+    val interactionSource = remember { MutableInteractionSource() }
     val operationsPagingItems = state.operationsPager.collectAsLazyPagingItems()
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = true) {
         viewModel.navigationEvent.collect { event ->
@@ -85,10 +77,16 @@ fun PaymentHistoryScreen(
         }
     }
 
+    LaunchedEffect(state.operations.size) {
+        if (state.operations.isNotEmpty()) {
+            lazyListState.animateScrollToItem(0)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         PaymentHistoryHeader(onBackClick = { viewModel.onBackClicked() })
@@ -124,14 +122,12 @@ fun PaymentHistoryScreen(
                             viewModel.resetFilters()
                         },
                     text = stringResource(R.string.reset_filters),
-                    color = Color(0xFF5C49E0),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                 )
             }
         }
-
-        // Список операций
         when (operationsPagingItems.loadState.refresh) {
             is LoadState.Loading -> {
                 Box(
@@ -142,17 +138,25 @@ fun PaymentHistoryScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF5C49E0)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
 
             else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f)
-                ) {
+                LazyColumn(modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f), state = lazyListState) {
+                    items(state.operations, key = { it.id }) { operation ->
+                        OperationItem(
+                            operation = operation,
+                            onClick = { viewModel.onPaymentClicked(operation) }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        )
+                    }
                     items(operationsPagingItems.itemCount) { index ->
                         val operation = operationsPagingItems[index]
                         if (operation != null) {
@@ -162,13 +166,14 @@ fun PaymentHistoryScreen(
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
-                                color = Color(0xFFD9D9D9)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                             )
                         } else {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .padding(16.dp)
-                                    .align(Alignment.CenterHorizontally)
+                                    .align(Alignment.CenterHorizontally),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -176,12 +181,10 @@ fun PaymentHistoryScreen(
             }
         }
     }
-
-    // Выбор типа операции
     if (state.isTypesSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideTypesSheet() },
-            containerColor = Color(0xFFF9F9F9),
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
         ) {
             TypeBottomSheetContent(
@@ -193,11 +196,10 @@ fun PaymentHistoryScreen(
         }
     }
 
-    // Выбор счета
     if (state.isAccountsSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideAccountsSheet() },
-            containerColor = Color(0xFFF9F9F9),
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
         ) {
             LoanPaymentBottomSheetContent(
@@ -210,7 +212,6 @@ fun PaymentHistoryScreen(
         }
     }
 
-    // Календарь
     val calendarState = rememberSheetState(
         onDismissRequest = {
             viewModel.hideDatePicker()

@@ -9,12 +9,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,9 +24,11 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.navigation.NavController
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bank.R
+import com.example.h_bank.data.ThemeMode
 import com.example.h_bank.presentation.main.components.AccountsBlock
 import com.example.h_bank.presentation.main.components.AccountsBottomSheetContent
 import com.example.h_bank.presentation.main.components.ApplicationsBlock
+import com.example.h_bank.presentation.main.components.CurrenciesBottomSheetContent
 import com.example.h_bank.presentation.main.components.LoansBlock
 import com.example.h_bank.presentation.main.components.LoansBottomSheetContent
 import com.example.h_bank.presentation.main.components.TransfersBlock
@@ -87,11 +89,10 @@ fun MainScreen(
             }
         }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
@@ -108,7 +109,7 @@ fun MainScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF5C49E0)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             } else {
@@ -123,21 +124,37 @@ fun MainScreen(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 0.05.sp,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    IconButton(onClick = { viewModel.onLogoutClicked() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.logout),
-                            contentDescription = "Profile",
-                            modifier = Modifier.size(24.dp),
-                            tint = Color.Black
-                        )
+                    Row {
+                        IconButton(onClick = {
+                            viewModel.toggleTheme()
+                        }
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    if (state.themeMode == ThemeMode.LIGHT) R.drawable.moon else R.drawable.sun
+                                ),
+                                contentDescription = "Toggle theme",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        IconButton(onClick = { viewModel.onLogoutClicked() }) {
+                            Icon(
+                                painter = painterResource(R.drawable.logout),
+                                contentDescription = "Logout",
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
                 if (state.accounts.isNotEmpty()) {
                     AccountsBlock(
-                        accounts = state.accounts,
+                        accounts = state.accounts.filter { !state.hiddenAccounts.contains(it.id) },
+                        hiddenAccounts = state.hiddenAccounts,
+                        onToggleVisibility = { viewModel.toggleAccountVisibility(it) },
                         onCloseAccountClick = { viewModel.onCloseAccountClicked(it) },
                         onSeeAllClick = { viewModel.showAccountsSheet() }
                     )
@@ -160,7 +177,7 @@ fun MainScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 ApplicationsBlock(
                     onProcessLoanClick = { viewModel.onProcessLoanClicked() },
-                    onOpenAccountClick = { viewModel.onOpenAccountClicked() }
+                    onOpenAccountClick = { viewModel.showCurrenciesSheet() }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
             }
@@ -169,23 +186,24 @@ fun MainScreen(
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideAccountsSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 AccountsBottomSheetContent(
                     accounts = state.accounts,
+                    hiddenAccounts = state.hiddenAccounts,
+                    onToggleVisibility = { viewModel.toggleAccountVisibility(it) },
                     onCloseAccountClick = { account ->
                         viewModel.onCloseAccountClicked(account)
                         viewModel.hideAccountsSheet()
-                    },
-                    onOpenAccountClick = { viewModel.onOpenAccountClicked() }
+                    }
                 )
             }
         }
         if (state.isLoansSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideLoansSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             ) {
                 LoansBottomSheetContent(
@@ -194,7 +212,19 @@ fun MainScreen(
                         viewModel.onLoanClicked(it)
                         viewModel.hideLoansSheet()
                     },
-                    onProcessLoanClick = { viewModel.onProcessLoanClicked() }
+                    onProcessLoanClick = { viewModel.onProcessLoanClicked() },
+                    creditRating = state.creditRating
+                )
+            }
+        }
+        if (state.isCurrenciesSheetVisible) {
+            ModalBottomSheet(
+                onDismissRequest = { viewModel.hideCurrenciesSheet() },
+                containerColor = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
+            ) {
+                CurrenciesBottomSheetContent(
+                    onCurrencyClick = { viewModel.onCurrencyClicked(it) }
                 )
             }
         }

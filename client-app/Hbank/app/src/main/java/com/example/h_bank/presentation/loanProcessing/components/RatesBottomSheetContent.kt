@@ -56,7 +56,8 @@ fun RatesBottomSheetContent(
                         text = stringResource(R.string.all_rates),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -68,7 +69,7 @@ fun RatesBottomSheetContent(
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             thickness = 1.dp,
-                            color = Color(0xFFD9D9D9)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                         )
                     }
                 }

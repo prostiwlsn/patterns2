@@ -8,6 +8,7 @@ data class Loan(
     val amount: Double,
     val debt: Double,
     val ratePercent: Double,
+    val isExpired: Boolean,
     val issueDate: LocalDate,
     val endDate: LocalDate
 )

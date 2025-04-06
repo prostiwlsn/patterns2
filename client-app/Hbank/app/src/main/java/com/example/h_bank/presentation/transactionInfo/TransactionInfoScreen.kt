@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,21 +17,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.h_bank.R
-import com.example.h_bank.data.dto.payment.OperationTypeDto
 import com.example.h_bank.domain.entity.filter.OperationType
 import com.example.h_bank.domain.entity.filter.OperationType.Companion.getText
 import com.example.h_bank.presentation.common.SuccessIcon
 import com.example.h_bank.presentation.common.TextField
 import com.example.h_bank.presentation.successfulTransfer.components.SuccessfulTransferHeader
 import org.koin.androidx.compose.koinViewModel
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun LoadingScreen() {
@@ -38,7 +35,8 @@ fun LoadingScreen() {
         CircularProgressIndicator(
             modifier = Modifier
                 .padding(16.dp)
-                .align(Alignment.Center)
+                .align(Alignment.Center),
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -66,7 +64,7 @@ fun TransactionInfoScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -81,21 +79,21 @@ fun TransactionInfoScreen(
         Text(
             text = state.operationType?.getText().orEmpty(),
             fontSize = 32.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = state.amount.orEmpty() + " ₽",
             fontSize = 30.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = state.date.orEmpty(),
             fontSize = 16.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             fontWeight = FontWeight.Normal
         )
         Spacer(modifier = Modifier.height(80.dp))
@@ -132,7 +130,7 @@ fun TransactionInfoScreen(
                 )
             }
 
-            OperationType.LOAN_PAYMENT -> {
+            OperationType.LOAN_REPAYMENT -> {
                 TextField(
                     labelRes = R.string.payment_account,
                     value = state.senderAccount.orEmpty(),

@@ -1,6 +1,5 @@
 package com.example.h_bank.data.repository.loan
 
-import com.example.h_bank.data.Loan
 import com.example.h_bank.domain.entity.loan.LoanEntity
 import com.example.h_bank.domain.repository.loan.ILoanStorageRepository
 import kotlinx.coroutines.flow.Flow

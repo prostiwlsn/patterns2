@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -12,18 +13,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.h_bank.R
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.presentation.common.CustomDisablableButton
 import com.example.h_bank.presentation.common.IconButtonField
 import com.example.h_bank.presentation.loanProcessing.components.RatesBottomSheetContent
@@ -60,11 +65,12 @@ fun LoanProcessingScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         bottomBar = {
             Column(
                 modifier = Modifier
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.background)
                     .imePadding()
             ) {
                 CustomDisablableButton(
@@ -81,7 +87,7 @@ fun LoanProcessingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -93,7 +99,7 @@ fun LoanProcessingScreen(
                 labelRes = R.string.rate,
                 value = state.selectedRate?.name.orEmpty(),
                 icon = Icons.Default.Edit,
-                onIconClick = {viewModel.showRatesSheet() },
+                onIconClick = { viewModel.showRatesSheet() },
             )
             IconButtonField(
                 labelRes = R.string.account,
@@ -106,7 +112,7 @@ fun LoanProcessingScreen(
                 labelRes = R.string.loan_amount,
                 value = state.amount?.toString().orEmpty(),
                 error = state.fieldErrors?.amountError,
-                suffix = " ₽",
+                suffix = "$",
                 onValueChange = { viewModel.onAmountChange(it) }
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -131,13 +137,26 @@ fun LoanProcessingScreen(
                     value = "$it ₽"
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            state.errorMessage?.let { message ->
+                Text(
+                    text = message,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             Spacer(modifier = Modifier.weight(1f))
         }
         if (state.isRatesSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideRatesSheet() },
-                containerColor = Color(0xFFF9F9F9),
-                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
             ) {
                 RatesBottomSheetContent(
                     state,
@@ -149,11 +168,10 @@ fun LoanProcessingScreen(
             }
         }
 
-        // Выбор счета
         if (state.isAccountsSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { viewModel.hideAccountsSheet() },
-                containerColor = Color(0xFFF9F9F9),
+                containerColor = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
             ) {
                 LoanPaymentBottomSheetContent(

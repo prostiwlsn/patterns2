@@ -11,7 +11,6 @@ import com.example.h_bank.presentation.paymentHistory.utils.getFilteredPayments
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 data class PaymentHistoryState(
     val allPayments: List<PaymentItemEntity> = getAllPayments(),
@@ -24,4 +23,5 @@ data class PaymentHistoryState(
     val filterModel: OperationsFilterModel = OperationsFilterModel(),
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
+    val operations: List<OperationShortModel> = emptyList(),
 )

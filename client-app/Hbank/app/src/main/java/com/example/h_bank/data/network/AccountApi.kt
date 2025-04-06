@@ -1,6 +1,7 @@
 package com.example.h_bank.data.network
 
 import com.example.h_bank.data.dto.AccountDto
+import com.example.h_bank.data.dto.CurrencyDto
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -14,7 +15,9 @@ interface AccountApi {
     ): List<AccountDto>
 
     @POST("account")
-    suspend fun openAccount()
+    suspend fun openAccount(
+        @Query("currency") currency: CurrencyDto,
+    )
 
     @DELETE("account")
     suspend fun closeAccount(

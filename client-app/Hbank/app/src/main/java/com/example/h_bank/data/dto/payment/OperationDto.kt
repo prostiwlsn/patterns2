@@ -2,8 +2,9 @@ package com.example.h_bank.data.dto.payment
 
 import com.example.h_bank.data.Operation
 import kotlinx.datetime.Instant
+import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Serializable
 data class OperationDto(
@@ -15,6 +16,7 @@ data class OperationDto(
     val transactionDateTime: Instant,
     val message: String?,
     val operationType: OperationTypeDto,
+    val isPaymentExpired: Boolean?,
 )
 
 internal fun OperationDto.toDomain(): Operation =
@@ -24,7 +26,10 @@ internal fun OperationDto.toDomain(): Operation =
         recipientAccountId = recipientAccountId,
         directionToMe = directionToMe,
         amount = amount,
-        transactionDateTime = LocalDateTime.now(),
+        transactionDateTime = transactionDateTime.toJavaInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime(),
         message = message,
-        operationType = operationType
+        operationType = operationType,
+        isPaymentExpired = isPaymentExpired
     )

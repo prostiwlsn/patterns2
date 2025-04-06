@@ -5,13 +5,17 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bank.data.Account
 import com.example.h_bank.data.Loan
+import com.example.h_bank.data.ThemeMode
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.useCase.CloseAccountUseCase
+import com.example.h_bank.domain.useCase.GetCreditRatingUseCase
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
+import com.example.h_bank.domain.useCase.SettingsUseCase
 import com.example.h_bank.domain.useCase.authorization.GetMainCommandsUseCase
 import com.example.h_bank.domain.useCase.authorization.LogoutUseCase
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
@@ -21,6 +25,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -35,14 +41,13 @@ class MainViewModel(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val settingsUseCase: SettingsUseCase,
+    private val getCreditRatingUseCase: GetCreditRatingUseCase,
     getAuthorizationCommandsUseCase: GetMainCommandsUseCase,
 ) : BaseViewModel() {
 
-    init {
-        viewModelScope
-    }
     private val _state = MutableStateFlow(MainState())
-    val state: StateFlow<MainState> = _state
+    val state: StateFlow<MainState> = _state.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<MainNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
@@ -50,10 +55,17 @@ class MainViewModel(
     private val formatter = DateTimeFormatter.ofPattern("dd.MM.yy")
 
     init {
-        getAuthorizationCommandsUseCase().onEach {
-            loadCurrentUser()
-        }.launchIn(viewModelScope)
-
+        viewModelScope.launch {
+            settingsUseCase.settingsFlow.collect { settings ->
+                _state.update {
+                    it.copy(
+                        themeMode = settings.theme,
+                        hiddenAccounts = settings.hiddenAccounts
+                    )
+                }
+            }
+        }
+        getAuthorizationCommandsUseCase().onEach { loadCurrentUser() }.launchIn(viewModelScope)
         loadCurrentUser()
     }
 
@@ -73,6 +85,14 @@ class MainViewModel(
         _state.update { it.copy(isLoansSheetVisible = false) }
     }
 
+    fun showCurrenciesSheet() {
+        _state.update { it.copy(isCurrenciesSheetVisible = true) }
+    }
+
+    fun hideCurrenciesSheet() {
+        _state.update { it.copy(isCurrenciesSheetVisible = false) }
+    }
+
     private fun loadCurrentUser() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
@@ -80,6 +100,7 @@ class MainViewModel(
                 _state.update { it.copy(currentUserId = result.data.id) }
                 loadInitialLoans()
                 loadUserAccounts()
+                loadCreditRating()
             }
                 .onFailure { }
         }
@@ -133,6 +154,24 @@ class MainViewModel(
         }
     }
 
+    private fun loadCreditRating() {
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            getCreditRatingUseCase(state.value.currentUserId)
+                .onSuccess { result ->
+                    _state.update {
+                        it.copy(
+                            creditRating = result.data.creditRating,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
     fun onAccountClicked(account: Account) {
     }
 
@@ -148,6 +187,15 @@ class MainViewModel(
                     loan.debt.toString()
                 )
             )
+        }
+    }
+
+    fun onCurrencyClicked(currency: CurrencyDto) {
+        viewModelScope.launch {
+            openAccountUseCase(currency).onSuccess {
+                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
+            }
+                .onFailure { }
         }
     }
 
@@ -189,19 +237,14 @@ class MainViewModel(
         }
     }
 
-    fun onOpenAccountClicked() {
-        viewModelScope.launch {
-            openAccountUseCase().onSuccess {
-                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
-            }
-                .onFailure { }
-        }
-    }
-
     fun onCloseAccountClicked(account: Account) {
         viewModelScope.launch {
             closeAccountUseCase(account.id).onSuccess {
-                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountClosure)
+                settingsUseCase.removeAccountFromHidden(account.id)
+            }.onSuccess {
+                _navigationEvent.emit(
+                    MainNavigationEvent.NavigateToSuccessfulAccountClosure
+                )
             }
                 .onFailure { }
         }
@@ -218,6 +261,20 @@ class MainViewModel(
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }
                 }
+        }
+    }
+
+    fun toggleTheme() {
+        viewModelScope.launch {
+            val currentTheme = settingsUseCase.settingsFlow.first().theme
+            val newTheme = if (currentTheme == ThemeMode.LIGHT) ThemeMode.DARK else ThemeMode.LIGHT
+            settingsUseCase.setTheme(newTheme)
+        }
+    }
+
+    fun toggleAccountVisibility(accountId: String) {
+        viewModelScope.launch {
+            settingsUseCase.toggleAccountVisibility(accountId)
         }
     }
 }

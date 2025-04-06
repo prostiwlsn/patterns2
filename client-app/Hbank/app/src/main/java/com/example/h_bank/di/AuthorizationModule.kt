@@ -1,6 +1,9 @@
 package com.example.h_bank.di
 
+import com.example.h_bank.data.dataSource.local.AuthorizationLocalDataSource
+import com.example.h_bank.data.dataSource.remote.AuthorizationRemoteDataSource
 import com.example.h_bank.data.network.AuthorizationApi
+import com.example.h_bank.data.repository.authorization.AuthorizationLocalRepository
 import com.example.h_bank.data.repository.authorization.AuthorizationRemoteRepository
 import com.example.h_bank.domain.repository.authorization.IAuthorizationLocalRepository
 import com.example.h_bank.domain.repository.authorization.IAuthorizationRemoteRepository
@@ -8,18 +11,12 @@ import com.example.h_bank.domain.repository.authorization.ITokenStorage
 import com.example.h_bank.domain.repository.authorization.TokenLocalStorage
 import com.example.h_bank.domain.useCase.authorization.LoginUseCase
 import com.example.h_bank.domain.useCase.storage.GetCredentialsFlowUseCase
-import com.example.h_bank.domain.useCase.authorization.LoginValidationUseCase
 import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
 import com.example.h_bank.domain.useCase.authorization.RegisterUseCase
-import com.example.h_bank.domain.useCase.authorization.RegistrationValidationUseCase
 import com.example.h_bank.domain.useCase.SaveTokenUseCase
 import com.example.h_bank.domain.useCase.storage.ResetCredentialsUseCase
 import com.example.h_bank.domain.useCase.storage.UpdateCredentialsUseCase
-import com.example.h_bank.presentation.login.LoginViewModel
-import com.example.h_bank.presentation.registration.RegistrationViewModel
-import com.example.h_bank.data.repository.authorization.AuthorizationLocalStorage
 import com.example.h_bank.domain.useCase.GetUserIdUseCase
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -34,24 +31,25 @@ val authorizationModule = module {
 
     factory<SaveTokenUseCase> {
         SaveTokenUseCase(
-            tokenStorage = get()
+            tokenRepository = get()
         )
     }
 
     factory<IAuthorizationRemoteRepository> {
         AuthorizationRemoteRepository(
-            storageRepository = get(),
-            authApi = get(),
-            logoutApi = get(),
-            tokenRepository = get(),
+            remoteDataSource = get()
         )
     }
 
+    single { AuthorizationRemoteDataSource(logoutApi = get(), tokenRepository = get()) }
+
     single<IAuthorizationLocalRepository> {
-        AuthorizationLocalStorage(
-            context = get()
+        AuthorizationLocalRepository(
+            localDataSource = get()
         )
     }
+
+    single { AuthorizationLocalDataSource(context = get()) }
 
     factory<GetCredentialsFlowUseCase> {
         GetCredentialsFlowUseCase(
@@ -61,12 +59,6 @@ val authorizationModule = module {
 
     factory<UpdateCredentialsUseCase> {
         UpdateCredentialsUseCase(
-            storageRepository = get()
-        )
-    }
-
-    factory<LoginValidationUseCase> {
-        LoginValidationUseCase(
             storageRepository = get()
         )
     }
@@ -88,12 +80,6 @@ val authorizationModule = module {
         )
     }
 
-    factory<RegistrationValidationUseCase> {
-        RegistrationValidationUseCase(
-            storageRepository = get(),
-        )
-    }
-
     factory<RegisterUseCase> {
         RegisterUseCase(
             authorizationRepository = get(),
@@ -110,30 +96,6 @@ val authorizationModule = module {
     factory<GetUserIdUseCase> {
         GetUserIdUseCase(
             storageRepository = get()
-        )
-    }
-
-    viewModel {
-        LoginViewModel(
-            getCredentialsFlowUseCase = get(),
-            updateCredentialsUseCase = get(),
-            validationUseCase = get(),
-            loginUseCase = get(),
-            resetCredentialsUseCase = get(),
-            pushAuthorizationCommandUseCase = get(),
-            pushCommandUseCase = get(),
-        )
-    }
-
-    viewModel {
-        RegistrationViewModel(
-            updateCredentialsUseCase = get(),
-            getCredentialsFlowUseCase = get(),
-            resetCredentialsUseCase = get(),
-            validationUseCase = get(),
-            registerUseCase = get(),
-            pushAuthorizationCommandUseCase = get(),
-            pushCommandUseCase = get(),
         )
     }
 }

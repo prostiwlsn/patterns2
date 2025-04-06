@@ -1,9 +1,8 @@
 package com.example.h_bank.presentation.withdrawal
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.h_bank.data.Account
+import com.example.h_bank.data.dto.CurrencyDto
 import com.example.h_bank.data.utils.NetworkUtils.onFailure
 import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
@@ -98,7 +97,13 @@ class WithdrawalViewModel(
                     _navigationEvent.emit(
                         WithdrawalNavigationEvent.NavigateToSuccessfulWithdrawal(
                             accountNumber = _state.value.selectedAccount?.accountNumber ?: "",
-                            amount = _state.value.amount.toString()
+                            amount = _state.value.amount.toString(),
+                            currency = when (state.value.selectedAccount?.currency) {
+                                CurrencyDto.RUB -> " ₽"
+                                CurrencyDto.USD -> " $"
+                                CurrencyDto.AMD -> " ֏"
+                                null -> ""
+                            }
                         )
                     )
                 }

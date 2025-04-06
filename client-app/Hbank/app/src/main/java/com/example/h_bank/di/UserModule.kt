@@ -1,5 +1,6 @@
 package com.example.h_bank.di
 
+import com.example.h_bank.data.dataSource.remote.UserRemoteDataSource
 import com.example.h_bank.data.network.UserApi
 import com.example.h_bank.data.repository.UserRepository
 import com.example.h_bank.domain.repository.IUserRepository
@@ -16,16 +17,17 @@ import retrofit2.Retrofit
 val userModule = module {
     single<IUserRepository> {
         UserRepository(
-            api = get()
+            remoteDataSource = get()
         )
     }
+
+    single { UserRemoteDataSource(api = get()) }
 
     factory<GetUsersUseCase> {
         GetUsersUseCase(
             userRepository = get()
         )
     }
-
     factory<GetCurrentUserUseCase> {
         GetCurrentUserUseCase(
             userRepository = get(),

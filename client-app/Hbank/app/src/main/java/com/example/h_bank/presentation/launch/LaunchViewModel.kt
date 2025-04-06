@@ -1,6 +1,7 @@
 package com.example.h_bank.presentation.launch
 
 import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.useCase.SettingsUseCase
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
 import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class LaunchViewModel(
     override val pushCommandUseCase: PushCommandUseCase,
-    private val refreshTokenUseCase: RefreshTokenUseCase
+    private val refreshTokenUseCase: RefreshTokenUseCase,
+    private val settingsUseCase: SettingsUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(LaunchState())
     val state: StateFlow<LaunchState> = _state.asStateFlow()
@@ -32,16 +34,11 @@ class LaunchViewModel(
             _state.update { it.copy(isLoading = true) }
             when (val result = refreshTokenUseCase()) {
                 is RequestResult.Success -> {
+                    settingsUseCase.getSettings()
                     _state.update { it.copy(isLoading = false, isTokenValid = true) }
                     _navigationEvent.emit(LaunchNavigationEvent.NavigateToMain)
                 }
-
-                is RequestResult.Error -> {
-                    _state.update { it.copy(isLoading = false, isTokenValid = false) }
-                    _navigationEvent.emit(LaunchNavigationEvent.NavigateToWelcome)
-                }
-
-                is RequestResult.NoInternetConnection -> {
+                else -> {
                     _state.update { it.copy(isLoading = false, isTokenValid = false) }
                     _navigationEvent.emit(LaunchNavigationEvent.NavigateToWelcome)
                 }

@@ -1,10 +1,10 @@
 package com.example.h_bank.data.network
 
+import com.example.h_bank.data.dto.CreditRatingDto
 import com.example.h_bank.data.dto.loan.GetLoanDto
 import com.example.h_bank.data.dto.loan.LoanListResponseDto
 import com.example.h_bank.data.dto.loan.TariffListResponseDto
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -28,4 +28,9 @@ interface LoanApi {
     suspend fun getLoan(
         @Body request: GetLoanDto,
     )
+
+    @GET("loan/{userId}/creditRating")
+    suspend fun getCreditRating(
+        @Path("userId") userId: String,
+    ): CreditRatingDto
 }

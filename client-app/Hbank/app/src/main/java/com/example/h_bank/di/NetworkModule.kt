@@ -24,7 +24,7 @@ val networkModule = module {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-            .addInterceptor(AuthInterceptor(get(), get()))
+            .addInterceptor(AuthInterceptor(get()))
             .build()
     }
 
@@ -44,10 +44,18 @@ val networkModule = module {
             .build()
     }
 
+    single<Retrofit>(named("settingsApi")) {
+        Retrofit.Builder()
+            .client(get(named("authClient")))
+            .baseUrl("http://194.59.186.122:8050/")
+            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
     single<Retrofit>(named("accountApi")) {
         Retrofit.Builder()
             .client(get(named("authClient")))
-            .baseUrl("http://31.129.110.211:8080/api/")
+            .baseUrl("http://83.222.27.120:8080/api/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
