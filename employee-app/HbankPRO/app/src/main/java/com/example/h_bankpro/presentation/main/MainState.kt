@@ -1,12 +1,11 @@
 package com.example.h_bankpro.presentation.main
 
 import androidx.paging.PagingData
-import com.example.h_bankpro.data.Rate
+import com.example.h_bankpro.data.ThemeMode
 import com.example.h_bankpro.domain.model.Tariff
 import com.example.h_bankpro.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.util.UUID
 
 data class MainState(
     val initialTariffs: List<Tariff> = emptyList(),
@@ -15,5 +14,6 @@ data class MainState(
     val currentUserId: String = "",
     val isUsersSheetVisible: Boolean = false,
     val isTariffsSheetVisible: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val themeMode: ThemeMode = ThemeMode.LIGHT
 )

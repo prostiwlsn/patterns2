@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ fun ErrorIcon() {
     Box(
         modifier = Modifier
             .size(78.dp)
-            .background(Color.Red, shape = CircleShape),
+            .background(MaterialTheme.colorScheme.onError, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Icon(

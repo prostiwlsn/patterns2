@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +28,8 @@ fun FilterButton(
     Row(
         modifier = modifier
             .background(
-                color = if (isActive) Color(0xFF5C49E0) else Color(0xFFD9D9D9),
+                color = if (isActive) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(14.dp)
             )
             .clickable { onClick() }
@@ -38,12 +40,12 @@ fun FilterButton(
         Text(
             text = text,
             fontSize = 12.sp,
-            color = if (isActive) Color.White else Color.Black
+            color = if (isActive) Color.White else MaterialTheme.colorScheme.onSurface
         )
         Icon(
             imageVector = Icons.Default.ArrowDropDown,
             contentDescription = null,
-            tint = if (isActive) Color.White else Color(0xFF585858)
+            tint = if (isActive) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
         )
     }
 }

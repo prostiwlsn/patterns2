@@ -7,19 +7,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -65,10 +66,17 @@ fun AccountScreen(
         }
     }
 
+//    LaunchedEffect(state.operations.size) {
+//        if (state.operations.isNotEmpty()) {
+//            lazyListState.animateScrollToItem(0)
+//        }
+//    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(modifier = Modifier.height(46.dp))
         AccountHeader(
@@ -83,7 +91,7 @@ fun AccountScreen(
                 text = stringResource(R.string.transaction_history),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFF9B9CA1),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 modifier = Modifier
                     .align(Alignment.Center)
             )
@@ -124,7 +132,7 @@ fun AccountScreen(
         ) {
             Text(
                 text = stringResource(R.string.reset_filters),
-                color = Color(0xFF5C49E0),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -140,7 +148,7 @@ fun AccountScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
-                        color = Color(0xFF5C49E0)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -151,47 +159,51 @@ fun AccountScreen(
                         .fillMaxSize()
                         .weight(1f)
                 ) {
+                    items(state.realtimeOperations) { operation ->
+                        OperationItem(
+                            operation = operation,
+                            onClick = { viewModel.onOperationClicked(operation) },
+                            currency = state.currency
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        )
+                    }
                     items(lazyPagingItems.itemCount) { index ->
                         val operation = lazyPagingItems[index]
                         if (operation != null) {
                             OperationItem(
                                 operation = operation,
-                                onClick = { viewModel.onOperationClicked(operation) }
+                                onClick = { viewModel.onOperationClicked(operation) },
+                                currency = state.currency
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
-                                color = Color(0xFFD9D9D9)
-                            )
-                        } else {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .align(Alignment.CenterHorizontally)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                             )
                         }
                     }
-
                     when (lazyPagingItems.loadState.append) {
                         is LoadState.Loading -> {
                             item {
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .padding(16.dp)
-                                        .align(Alignment.CenterHorizontally)
+                                        .align(Alignment.CenterHorizontally),
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
-
                         is LoadState.Error -> {
                             item {
                                 Text(
                                     text = stringResource(R.string.loading_error),
-                                    color = Color.Red,
+                                    color = MaterialTheme.colorScheme.error,
                                     modifier = Modifier.padding(16.dp)
                                 )
                             }
                         }
-
                         else -> {}
                     }
                 }
@@ -202,7 +214,7 @@ fun AccountScreen(
     if (state.isTypesSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { viewModel.hideTypesSheet() },
-            containerColor = Color(0xFFF9F9F9),
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
         ) {
             TypeBottomSheetContent(

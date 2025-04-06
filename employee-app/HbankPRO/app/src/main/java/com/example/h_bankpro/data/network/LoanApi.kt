@@ -1,5 +1,6 @@
 package com.example.h_bankpro.data.network
 
+import com.example.h_bankpro.data.dto.CreditRatingDto
 import com.example.h_bankpro.data.dto.LoanListResponseDto
 import com.example.h_bankpro.data.dto.TariffDto
 import com.example.h_bankpro.data.dto.TariffListResponseDto
@@ -41,4 +42,9 @@ interface LoanApi {
         @Query("pageNumber") pageNumber: Int = 1,
         @Query("pageSize") pageSize: Int = 10
     ): LoanListResponseDto
+
+    @GET("loan/{userId}/creditRating")
+    suspend fun getCreditRating(
+        @Path("userId") userId: String,
+    ): CreditRatingDto
 }

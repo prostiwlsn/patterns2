@@ -2,6 +2,7 @@ package com.example.h_bankpro.presentation.common
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +20,7 @@ fun SuccessMessage(
         text = stringResource(textRes),
         fontSize = 30.sp,
         fontWeight = FontWeight.SemiBold,
-        color = Color(0xFF282A31),
+        color = MaterialTheme.colorScheme.onBackground,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
     )

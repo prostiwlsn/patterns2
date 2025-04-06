@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.h_bankpro.R
@@ -30,7 +29,8 @@ fun UsersBottomSheetContent(
                 text = stringResource(R.string.all_users),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -39,7 +39,7 @@ fun UsersBottomSheetContent(
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 thickness = 1.dp,
-                color = Color(0xFFD9D9D9)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
             )
         }
     }

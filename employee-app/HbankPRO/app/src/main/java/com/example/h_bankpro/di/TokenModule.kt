@@ -1,9 +1,11 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.TokenRemoteDataSource
 import com.example.h_bankpro.data.network.TokenApi
 import com.example.h_bankpro.data.repository.TokenRepository
 import com.example.h_bankpro.domain.repository.ITokenRepository
 import com.example.h_bankpro.domain.useCase.RefreshTokenUseCase
+import com.example.h_bankpro.domain.useCase.SaveTokenUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -16,10 +18,18 @@ val tokenModule = module {
         )
     }
 
+    factory<SaveTokenUseCase> {
+        SaveTokenUseCase(
+            tokenRepository = get()
+        )
+    }
+
+    single { TokenRemoteDataSource(tokenApi = get()) }
+
     single<ITokenRepository> {
         TokenRepository(
-            localRepository = get(),
-            tokenApi = get()
+            localDataSource = get(),
+            remoteDataSource = get()
         )
     }
 

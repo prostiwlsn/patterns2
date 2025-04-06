@@ -7,8 +7,6 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -17,6 +15,7 @@ import com.example.h_bankpro.domain.model.OperationShort
 import com.example.h_bankpro.domain.useCase.GetOperationsByAccountUseCase
 import com.example.h_bankpro.domain.useCase.PushCommandUseCase
 import com.example.h_bankpro.presentation.common.viewModel.BaseViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +42,7 @@ class AccountViewModel(
 
     private val accountId: String = checkNotNull(savedStateHandle["accountId"])
     private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+    private val currency: String = checkNotNull(savedStateHandle["currency"])
     private val _filters = MutableStateFlow(OperationsFilters())
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -72,28 +72,55 @@ class AccountViewModel(
     private val _navigationEvent = MutableSharedFlow<AccountNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
+    private var realTimeJob: Job? = null
+
     init {
-        _state.update { it.copy(accountId = accountId, accountNumber = accountNumber) }
+        _state.update {
+            it.copy(
+                accountId = accountId,
+                accountNumber = accountNumber,
+                currency = currency
+            )
+        }
         viewModelScope.launch {
             _filters.collectLatest { filters ->
-                val pager = Pager(
-                    config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-                    pagingSourceFactory = {
-                        OperationsPagingSource(
-                            accountId = accountId,
-                            filters = filters,
-                            getOperationsByAccountUseCase = getOperationsByAccountUseCase
-                        )
-                    }
-                ).flow.cachedIn(viewModelScope)
-                _state.update {
-                    it.copy(
-                        operations = pager,
-                        selectedOperationType = filters.operationType,
-                        selectedDateRange = filters.dateRange
-                    )
-                }
+                _state.update { it.copy(realtimeOperations = emptyList()) }
+                updatePager(filters)
+                loadRealTimeOperations(filters)
             }
+        }
+    }
+
+    private fun updatePager(filters: OperationsFilters) {
+        val pager = Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = {
+                OperationsPagingSource(
+                    accountId = accountId,
+                    filters = filters,
+                    getOperationsByAccountUseCase = getOperationsByAccountUseCase
+                )
+            }
+        ).flow.cachedIn(viewModelScope)
+        _state.update {
+            it.copy(
+                operations = pager,
+                selectedOperationType = filters.operationType,
+                selectedDateRange = filters.dateRange
+            )
+        }
+    }
+
+    private fun loadRealTimeOperations(filters: OperationsFilters) {
+        realTimeJob?.cancel()
+        realTimeJob = viewModelScope.launch {
+            getOperationsByAccountUseCase.getOperationsFlow(accountId, filters)
+                .collectLatest { operation ->
+                    _state.update { currentState ->
+                        val updatedOps = listOf(operation) + currentState.realtimeOperations
+                        currentState.copy(realtimeOperations = updatedOps)
+                    }
+                }
         }
     }
 
@@ -155,7 +182,15 @@ class AccountViewModel(
 
     fun onBackClicked() {
         viewModelScope.launch {
+            realTimeJob?.cancel()
+            getOperationsByAccountUseCase.disconnect()
             _navigationEvent.emit(AccountNavigationEvent.NavigateBack)
         }
+    }
+
+    override fun onCleared() {
+        realTimeJob?.cancel()
+        getOperationsByAccountUseCase.disconnect()
+        super.onCleared()
     }
 }

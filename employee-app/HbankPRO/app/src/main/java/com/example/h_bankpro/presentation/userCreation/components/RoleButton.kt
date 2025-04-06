@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,9 +24,9 @@ fun RoleButton(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) Color(0xFF5C49E0) else Color.White
-    val textColor = if (isSelected) Color.White else Color(0xFF5C49E0)
-    val borderColor = if (isSelected) Color.Transparent else Color(0xFF5C49E0)
+    val backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+    val textColor = if (isSelected) Color.White else MaterialTheme.colorScheme.primary
+    val borderColor = if (isSelected) Color.Transparent else MaterialTheme.colorScheme.primary
 
     Box(
         modifier = Modifier

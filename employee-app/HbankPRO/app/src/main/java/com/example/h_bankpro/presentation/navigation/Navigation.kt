@@ -12,12 +12,10 @@ import com.example.h_bankpro.presentation.account.AccountScreen
 import com.example.h_bankpro.presentation.connectionError.ConnectionErrorScreen
 import com.example.h_bankpro.presentation.launch.LaunchScreen
 import com.example.h_bankpro.presentation.loan.LoanScreen
-import com.example.h_bankpro.presentation.login.LoginScreen
 import com.example.h_bankpro.presentation.main.MainScreen
 import com.example.h_bankpro.presentation.rate.RateScreen
 import com.example.h_bankpro.presentation.rateCreation.RateCreationScreen
 import com.example.h_bankpro.presentation.rateEditing.RateEditingScreen
-import com.example.h_bankpro.presentation.registration.RegistrationScreen
 import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateCreationScreen
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingScreen
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationScreen
@@ -44,12 +42,6 @@ fun AppNavigation(
         composable("welcome") {
             WelcomeScreen(navController)
         }
-        composable("registration") {
-            RegistrationScreen(navController)
-        }
-        composable("login") {
-            LoginScreen(navController)
-        }
         composable("main") {
             MainScreen(navController)
         }
@@ -65,8 +57,10 @@ fun AppNavigation(
             RateScreen(navController)
         }
         composable(
-            route = "loan/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
+            route = "loan/{loanId}/{userId}/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
             arguments = listOf(
+                navArgument("loanId") { type = NavType.StringType },
+                navArgument("userId") { type = NavType.StringType },
                 navArgument("documentNumber") { type = NavType.StringType },
                 navArgument("amount") { type = NavType.StringType },
                 navArgument("endDate") { type = NavType.StringType },
@@ -116,10 +110,11 @@ fun AppNavigation(
             RateEditingScreen(navController)
         }
         composable(
-            route = "account/{accountId}/{accountNumber}",
+            route = "account/{accountId}/{accountNumber}/{currency}",
             arguments = listOf(
                 navArgument("accountId") { type = NavType.StringType },
                 navArgument("accountNumber") { type = NavType.StringType },
+                navArgument("currency") { type = NavType.StringType }
             )
         ) {
             AccountScreen(navController)

@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -55,11 +54,10 @@ class OperationInfoViewModel(
                             if (operation.directionToMe) "Входящий перевод"
                             else "Исходящий перевод"
                         }
-
                         else -> operation.operationType.displayName
                     }
                     val formattedAmount = "${operation.amount} ₽"
-                    val formattedDateTime = operation.transactionDateTime.toJavaLocalDateTime()
+                    val formattedDateTime = operation.transactionDateTime
                         .let { "${it.format(dateFormatter)}, ${it.format(timeFormatter)}" }
                     _state.update {
                         it.copy(
@@ -71,7 +69,7 @@ class OperationInfoViewModel(
                         )
                     }
                 }
-                .onFailure {
+                .onFailure { error ->
                     _state.update { it.copy(isLoading = false) }
                 }
         }

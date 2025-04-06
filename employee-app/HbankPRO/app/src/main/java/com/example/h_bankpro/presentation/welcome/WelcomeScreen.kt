@@ -1,7 +1,9 @@
 package com.example.h_bankpro.presentation.welcome
 
 import android.app.Activity
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,24 +28,49 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.h_bank.presentation.AuthTabIntentContract
 import org.koin.androidx.compose.koinViewModel
 import com.example.h_bankpro.R
+import com.example.h_bankpro.presentation.AuthEventBus
 
 @Composable
 fun WelcomeScreen(
     navController: NavController,
     viewModel: WelcomeViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
-    LaunchedEffect(key1 = true) {
-        viewModel.navigationEvent.collect { event ->
-            when (event) {
-                WelcomeNavigationEvent.NavigateToLogin -> navController.navigate("login")
-                WelcomeNavigationEvent.NavigateToRegister -> navController.navigate("registration")
-            }
+    val authLauncher =
+        rememberLauncherForActivityResult(contract = AuthTabIntentContract()) { _ -> }
+
+    LaunchedEffect(Unit) {
+        AuthEventBus.authEvents.collect { (accessToken, refreshToken) ->
+            viewModel.handleAuthCallback(accessToken, refreshToken)
         }
     }
 
+    LaunchedEffect(key1 = viewModel.navigationEvent) {
+        viewModel.navigationEvent.collect { event ->
+            when (event) {
+                WelcomeNavigationEvent.NavigateToLogin -> {
+                    val loginUri =
+                        Uri.parse("http://194.59.186.122:8080/login?redirect_uri=hbank://auth")
+                    authLauncher.launch(loginUri)
+                }
+
+                WelcomeNavigationEvent.NavigateToRegister -> {
+                    val registerUri =
+                        Uri.parse("http://194.59.186.122:8080/register?redirect_uri=hbank://auth")
+                    authLauncher.launch(registerUri)
+                }
+
+                WelcomeNavigationEvent.NavigateToMain -> {
+                    navController.navigate("main") {
+                        popUpTo("welcome") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
     BackHandler(enabled = true) {
         (navController.context as? Activity)?.finish()
     }

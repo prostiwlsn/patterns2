@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +48,7 @@ fun OperationInfoScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -61,7 +62,7 @@ fun OperationInfoScreen(
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp),
-                    color = Color(0xFF5C49E0)
+                    color = (MaterialTheme.colorScheme.primary)
                 )
             }
         } else {
@@ -76,14 +77,14 @@ fun OperationInfoScreen(
             Text(
                 text = state.formattedAmount,
                 fontSize = 30.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = state.formattedDateTime,
                 fontSize = 16.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 fontWeight = FontWeight.Normal
             )
             Spacer(modifier = Modifier.height(80.dp))

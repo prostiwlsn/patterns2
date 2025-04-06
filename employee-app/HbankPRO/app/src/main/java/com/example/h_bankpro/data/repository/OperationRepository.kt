@@ -1,18 +1,16 @@
 package com.example.h_bankpro.data.repository
 
+import com.example.h_bankpro.data.dataSource.remote.OperationRemoteDataSource
 import com.example.h_bankpro.data.dto.OperationDto
 import com.example.h_bankpro.data.dto.OperationShortDto
 import com.example.h_bankpro.data.dto.PageResponse
 import com.example.h_bankpro.data.dto.Pageable
-import com.example.h_bankpro.data.network.OperationApi
-import com.example.h_bankpro.data.utils.NetworkUtils.runResultCatching
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.repository.IOperationRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 
 class OperationRepository(
-    private val api: OperationApi,
+    private val remoteDataSource: OperationRemoteDataSource
 ) : IOperationRepository {
     override suspend fun getOperationsByAccount(
         accountId: String,
@@ -20,26 +18,23 @@ class OperationRepository(
         timeStart: String?,
         timeEnd: String?,
         operationType: String?
-    ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
-        return@withContext runResultCatching {
-            api.getOperationsByAccount(
-                accountId,
-                pageable.page,
-                pageable.size,
-                pageable.sort,
-                timeStart,
-                timeEnd,
-                operationType
-            )
-        }
-    }
+    ): RequestResult<PageResponse<OperationShortDto>> =
+        remoteDataSource.getOperationsByAccount(accountId, pageable, timeStart, timeEnd, operationType)
 
     override suspend fun getOperationInfo(
         accountId: String,
         operationId: String
-    ): RequestResult<OperationDto> = withContext(Dispatchers.IO) {
-        return@withContext runResultCatching {
-            api.getOperationInfo(accountId, operationId)
-        }
-    }
+    ): RequestResult<OperationDto> = remoteDataSource.getOperationInfo(accountId, operationId)
+
+    override fun getOperationsFlow(accountId: String): Flow<OperationShortDto> =
+        remoteDataSource.getOperationsFlow(accountId)
+
+    override fun disconnectWebSocket() = remoteDataSource.disconnectWebSocket()
+
+    override suspend fun getExpiredLoanPayments(
+        loanId: String,
+        userId: String,
+        pageable: Pageable
+    ): RequestResult<PageResponse<OperationShortDto>> =
+        remoteDataSource.getExpiredLoanPayments(loanId, userId, pageable)
 }

@@ -8,7 +8,8 @@ import okhttp3.Request
 import okhttp3.Response
 
 class AuthInterceptor(
-    private val tokenRepository: ITokenRepository
+    private val tokenRepository: ITokenRepository,
+//    private val pushCommandUseCase: PushCommandUseCase,
 ) : Interceptor {
     companion object {
         private const val MAX_RETRY_ATTEMPTS = 1
@@ -69,6 +70,8 @@ class AuthInterceptor(
     }
 
     private fun requiresAuth(url: String): Boolean {
-        return !url.contains("/login") && !url.contains("/register") && !url.contains("/refresh")
+        val noAuthRequired =
+            !url.contains("/login") && !url.contains("/register") && !url.contains("/refresh")
+        return noAuthRequired
     }
 }

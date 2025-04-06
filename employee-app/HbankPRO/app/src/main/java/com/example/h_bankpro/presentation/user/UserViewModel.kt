@@ -5,12 +5,14 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bankpro.data.Account
+import com.example.h_bankpro.data.dto.CurrencyDto
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.data.utils.RequestResult
 import com.example.h_bankpro.domain.entity.Command
 import com.example.h_bankpro.domain.model.Loan
 import com.example.h_bankpro.domain.useCase.BlockUserUseCase
+import com.example.h_bankpro.domain.useCase.GetCreditRatingUseCase
 import com.example.h_bankpro.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bankpro.domain.useCase.GetUserByIdUseCase
 import com.example.h_bankpro.domain.useCase.GetUserLoansUseCase
@@ -32,7 +34,8 @@ class UserViewModel(
     private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val blockUserUseCase: BlockUserUseCase,
     private val unblockUserUseCase: UnblockUserUseCase,
-    private val getUserLoansUseCase: GetUserLoansUseCase
+    private val getUserLoansUseCase: GetUserLoansUseCase,
+    private val getCreditRatingUseCase: GetCreditRatingUseCase,
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _state
@@ -46,6 +49,7 @@ class UserViewModel(
 
     init {
         loadUser()
+        loadCreditRating()
         loadInitialLoans()
         setupLoansPager()
     }
@@ -69,6 +73,24 @@ class UserViewModel(
             getUserAccountsUseCase(userId)
                 .onSuccess { result ->
                     _state.update { it.copy(accounts = result.data, isLoading = false) }
+                }
+                .onFailure {
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+    private fun loadCreditRating() {
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            getCreditRatingUseCase(userId)
+                .onSuccess { result ->
+                    _state.update {
+                        it.copy(
+                            creditRating = result.data.creditRating,
+                            isLoading = false
+                        )
+                    }
                 }
                 .onFailure {
                     _state.update { it.copy(isLoading = false) }
@@ -124,12 +146,14 @@ class UserViewModel(
         viewModelScope.launch {
             _navigationEvent.emit(
                 UserNavigationEvent.NavigateToLoan(
+                    loan.id,
+                    userId,
                     loan.documentNumber.toString(),
                     loan.amount.toString(),
                     loan.endDate.format(formatter),
                     loan.ratePercent.toString(),
-                    loan.debt.toString()
-                )
+                    loan.debt.toString(),
+                    )
             )
         }
     }
@@ -139,7 +163,12 @@ class UserViewModel(
             _navigationEvent.emit(
                 UserNavigationEvent.NavigateToAccount(
                     account.id,
-                    account.accountNumber
+                    account.accountNumber,
+                    when (account.currency) {
+                        CurrencyDto.RUB -> "₽"
+                        CurrencyDto.USD -> "$"
+                        CurrencyDto.AMD -> "֏"
+                    }
                 )
             )
         }

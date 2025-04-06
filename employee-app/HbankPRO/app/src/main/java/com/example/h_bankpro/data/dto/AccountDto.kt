@@ -11,7 +11,8 @@ import kotlinx.datetime.toLocalDateTime
 data class AccountDTO(
     val id: String,
     val accountNumber: String,
-    val balance: Float,
+    val balance: Double,
+    val currency: CurrencyDto,
     val userId: String,
     val isDeleted: Boolean,
     @Serializable(with = InstantSerializer::class)
@@ -23,6 +24,7 @@ internal fun AccountDTO.toDomain(): Account {
         id = id,
         accountNumber = accountNumber,
         balance = balance,
+        currency = currency,
         userId = userId,
         isDeleted = isDeleted,
         createDateTime = createDateTime.toLocalDateTime(TimeZone.currentSystemDefault())

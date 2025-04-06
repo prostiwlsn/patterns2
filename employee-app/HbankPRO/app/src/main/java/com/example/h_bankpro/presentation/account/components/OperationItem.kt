@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,12 +25,11 @@ import androidx.compose.ui.unit.sp
 import com.example.h_bankpro.R
 import com.example.h_bankpro.data.OperationType
 import com.example.h_bankpro.domain.model.OperationShort
-import kotlinx.datetime.toJavaLocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
+fun OperationItem(operation: OperationShort, onClick: () -> Unit, currency: String) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale("ru"))
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
     Row(
@@ -43,7 +43,7 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = Color(0xFF5C49E0),
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(8.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -65,17 +65,18 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
         Spacer(Modifier.width(16.dp))
         Column {
             Text(
-                text = "${operation.amount} ₽",
+                text = "${operation.amount} " + currency,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = "${operation.operationType.displayName} · ${
-                    operation.transactionDateTime.toJavaLocalDateTime()
+                    operation.transactionDateTime
                         .let { it.format(dateFormatter) + ", " + it.format(timeFormatter) }
                 }",
                 fontSize = 12.sp,
-                color = Color(0xFF9B9CA1)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
             )
         }
     }

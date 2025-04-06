@@ -1,6 +1,8 @@
 package com.example.h_bankpro.di
 
+import com.example.h_bankpro.data.dataSource.remote.OperationWebSocketDataSource
 import com.example.h_bankpro.data.network.AuthInterceptor
+import com.example.h_bankpro.data.network.OperationWebSocketApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -44,10 +46,18 @@ val networkModule = module {
             .build()
     }
 
+    single<Retrofit>(named("settingsApi")) {
+        Retrofit.Builder()
+            .client(get(named("authClient")))
+            .baseUrl("http://194.59.186.122:8050/")
+            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .build()
+    }
+
     single<Retrofit>(named("accountApi")) {
         Retrofit.Builder()
             .client(get(named("authClient")))
-            .baseUrl("http://31.129.110.211:8080/api/")
+            .baseUrl("http://83.222.27.120:8080/api/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
@@ -58,6 +68,13 @@ val networkModule = module {
             .baseUrl("http://194.59.186.122:8040/api/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
+    }
+
+    single<OperationWebSocketApi> {
+        OperationWebSocketDataSource(
+            client = get(named("authClient")),
+            baseWsUrl = "ws://83.222.27.120:8080/ws/operations"
+        )
     }
 
 

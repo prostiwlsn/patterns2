@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,7 +41,8 @@ fun UserHeader(
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back"
+                contentDescription = "Back",
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.weight(0.7f))
@@ -49,7 +51,7 @@ fun UserHeader(
                 text = name,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
@@ -58,7 +60,7 @@ fun UserHeader(
                 ) { it.displayName },
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF9B9CA1)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
             )
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -66,7 +68,7 @@ fun UserHeader(
             Icon(
                 painter = if (isBlocked) painterResource(id = R.drawable.check) else
                     painterResource(id = R.drawable.block),
-                tint = if (isBlocked) Color.Green else Color.Red,
+                tint = if (isBlocked) Color.Green else MaterialTheme.colorScheme.error,
                 contentDescription = ""
             )
         }
