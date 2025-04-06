@@ -1,9 +1,7 @@
 package com.example.h_bank.data.repository
 
-import com.example.h_bank.data.dto.RefreshRequestDto
 import com.example.h_bank.data.dto.TokenDto
-import com.example.h_bank.data.network.TokenApi
-import com.example.h_bank.data.utils.NetworkUtils.runResultCatching
+import com.example.h_bank.data.dataSource.remote.TokenRemoteDataSource
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.entity.authorization.TokenEntity
 import com.example.h_bank.domain.repository.authorization.IAuthorizationLocalRepository
@@ -13,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 class TokenRepository(
     private val localRepository: IAuthorizationLocalRepository,
-    private val tokenApi: TokenApi
+    private val remoteDataSource: TokenRemoteDataSource
 ) : ITokenRepository {
     override suspend fun getToken(): TokenEntity? = withContext(Dispatchers.IO) {
         return@withContext localRepository.getToken()
@@ -27,22 +25,7 @@ class TokenRepository(
         localRepository.clearToken()
     }
 
-    override suspend fun refreshToken(refreshToken: String): RequestResult<TokenDto> =
-        withContext(Dispatchers.IO) {
-            val result = runResultCatching {
-                tokenApi.refreshToken(
-                    request = RefreshRequestDto(refreshToken),
-                    accessToken = "Bearer $refreshToken"
-                )
-            }
-            return@withContext when (result) {
-                is RequestResult.Success -> {
-                    localRepository.saveToken(TokenEntity.fromTokenDto(result.data))
-                    result
-                }
-
-                is RequestResult.Error -> result
-                is RequestResult.NoInternetConnection -> result
-            }
-        }
+    override suspend fun refreshToken(refreshToken: String): RequestResult<TokenDto> {
+        return remoteDataSource.refreshToken(refreshToken)
+    }
 }

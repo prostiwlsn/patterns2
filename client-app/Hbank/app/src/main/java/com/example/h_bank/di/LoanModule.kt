@@ -1,5 +1,6 @@
 package com.example.h_bank.di
 
+import com.example.h_bank.data.dataSource.remote.LoanRemoteDataSource
 import com.example.h_bank.data.network.LoanApi
 import com.example.h_bank.data.repository.loan.LoanRemoteRepository
 import com.example.h_bank.data.repository.loan.LoanStorageRepository
@@ -57,9 +58,11 @@ val loanModule = module {
 
     factory<ILoanRemoteRepository> {
         LoanRemoteRepository(
-            loanApi = get()
+            remoteDataSource = get()
         )
     }
+
+    single { LoanRemoteDataSource(api = get()) }
 
     factory<GetCreditRatingUseCase> {
         GetCreditRatingUseCase(

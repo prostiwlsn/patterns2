@@ -1,5 +1,7 @@
 package com.example.h_bank.di
 
+import com.example.h_bank.data.dataSource.remote.OperationRemoteDataSource
+import com.example.h_bank.data.dataSource.remote.OperationWebSocketDataSource
 import com.example.h_bank.data.network.OperationApi
 import com.example.h_bank.data.network.OperationWebSocketApi
 import com.example.h_bank.data.network.OperationWebSocketClient
@@ -19,8 +21,21 @@ import retrofit2.Retrofit
 val operationModule = module {
     single<IOperationRepository> {
         OperationRepository(
+            remoteDataSource = get()
+        )
+    }
+
+    single {
+        OperationRemoteDataSource(
             api = get(),
             webSocketApi = get()
+        )
+    }
+
+    single<OperationWebSocketApi> {
+        OperationWebSocketDataSource(
+            client = get(named("authClient")),
+            baseWsUrl = "ws://83.222.27.120:8080/ws/operations"
         )
     }
 

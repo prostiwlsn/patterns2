@@ -1,17 +1,11 @@
-package com.example.h_bank.data.repository.authorization
+package com.example.h_bank.data.dataSource.local
 
-import com.example.h_bank.domain.entity.authorization.TokenEntity
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.h_bank.domain.entity.authorization.CredentialsEntity
-import com.example.h_bank.domain.repository.authorization.IAuthorizationLocalRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.h_bank.domain.entity.authorization.TokenEntity
 
-class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepository {
-    private val credentials = MutableStateFlow(CredentialsEntity())
-
+class AuthorizationLocalDataSource(context: Context) {
     private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
     private val prefs = EncryptedSharedPreferences.create(
         "auth_prefs_client",
@@ -21,15 +15,7 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    override fun updateCredentials(update: CredentialsEntity.() -> CredentialsEntity) {
-        credentials.update { credentials.value.update() }
-    }
-
-    override fun getCredentialsFlow() = credentials
-
-    override fun getCredentialsState() = credentials.value
-
-    override suspend fun getToken(): TokenEntity? {
+    suspend fun getToken(): TokenEntity? {
         val accessToken = prefs.getString("access_token", null)
         val refreshToken = prefs.getString("refresh_token", null)
         val expiresAt = prefs.getLong("expires_at", -1).takeIf { it != -1L }
@@ -38,7 +24,7 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
         } else null
     }
 
-    override suspend fun saveToken(token: TokenEntity) {
+    suspend fun saveToken(token: TokenEntity) {
         prefs.edit()
             .putString("access_token", token.accessToken)
             .putString("refresh_token", token.refreshToken)
@@ -46,19 +32,11 @@ class AuthorizationLocalStorage(context: Context) : IAuthorizationLocalRepositor
             .apply()
     }
 
-    override suspend fun clearToken() {
+    suspend fun clearToken() {
         prefs.edit()
             .remove("access_token")
             .remove("refresh_token")
             .remove("expires_at")
             .apply()
     }
-
-    override fun reset() = credentials.update { CredentialsEntity() }
-
-    override fun setUserId(userId: String) {
-        credentials.update { it.copy(userId = userId) }
-    }
-
-    override fun getUserId() = credentials.value.userId
 }

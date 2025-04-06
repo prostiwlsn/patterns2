@@ -2,10 +2,10 @@ package com.example.h_bank.domain.useCase
 
 import com.example.h_bank.data.UserSettings
 import com.example.h_bank.data.ThemeMode
-import com.example.h_bank.data.repository.settings.SettingsRepository
+import com.example.h_bank.domain.repository.settings.ISettingsRepository
 import kotlinx.coroutines.flow.Flow
 
-class SettingsUseCase(private val settingsRepository: SettingsRepository) {
+class SettingsUseCase(private val settingsRepository: ISettingsRepository) {
     val settingsFlow: Flow<UserSettings> = settingsRepository.settingsFlow
 
     suspend fun setTheme(theme: ThemeMode) {
