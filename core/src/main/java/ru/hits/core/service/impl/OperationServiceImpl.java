@@ -200,6 +200,7 @@ public class OperationServiceImpl implements OperationService {
         var operation = OperationEntity.builder()
                 .id(UUID.randomUUID())
                 .senderAccountId(operationRequestBody.getSenderAccountId())
+                .recipientAccountId(operationRequestBody.getRecipientAccountId())
                 .amount(operationRequestBody.getAmount())
                 .transactionDateTime(Instant.now())
                 .message(operationRequestBody.getMessage())
