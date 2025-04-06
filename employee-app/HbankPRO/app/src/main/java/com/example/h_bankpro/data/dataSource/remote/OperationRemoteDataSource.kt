@@ -45,11 +45,13 @@ class OperationRemoteDataSource(
 
     suspend fun getExpiredLoanPayments(
         loanId: String,
+        userId: String,
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>> = withContext(Dispatchers.IO) {
         runResultCatching {
             api.expiredLoanPayment(
                 loanId = loanId,
+                userId = userId,
                 size = pageable.size,
                 page = pageable.page,
                 sort = emptyList()

@@ -27,6 +27,7 @@ class LoanViewModel(
     val navigationEvent: SharedFlow<LoanNavigationEvent> = _navigationEvent
 
     private val loanId: String = checkNotNull(savedStateHandle["loanId"])
+    private val userId: String = checkNotNull(savedStateHandle["userId"])
     private val documentNumber: String = checkNotNull(savedStateHandle["documentNumber"])
     private val amount: String = checkNotNull(savedStateHandle["amount"])
     private val endDate: String = checkNotNull(savedStateHandle["endDate"])
@@ -40,7 +41,7 @@ class LoanViewModel(
                 amount = amount,
                 endDate = endDate,
                 ratePercent = ratePercent,
-                debt = debt,
+                debt = debt
             )
         }
         viewModelScope.launch {
@@ -49,6 +50,7 @@ class LoanViewModel(
                 pagingSourceFactory = {
                     ExpiredLoanPaymentsPagingSource(
                         loanId = loanId,
+                        userId = userId,
                         getExpiredLoanPaymentsUseCase = getExpiredLoanPaymentsUseCase
                     )
                 }

@@ -33,7 +33,8 @@ class OperationRepository(
 
     override suspend fun getExpiredLoanPayments(
         loanId: String,
+        userId: String,
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>> =
-        remoteDataSource.getExpiredLoanPayments(loanId, pageable)
+        remoteDataSource.getExpiredLoanPayments(loanId, userId, pageable)
 }

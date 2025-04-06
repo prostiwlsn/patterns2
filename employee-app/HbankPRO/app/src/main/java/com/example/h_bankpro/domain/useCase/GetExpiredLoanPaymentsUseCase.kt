@@ -14,10 +14,12 @@ class GetExpiredLoanPaymentsUseCase(
 ) {
     suspend operator fun invoke(
         loanId: String,
+        userId: String,
         pageable: Pageable = Pageable()
     ): RequestResult<PageResponse<OperationShort>> {
         return operationRepository.getExpiredLoanPayments(
             loanId,
+            userId,
             pageable
         ).mapSuccess { pageResponse: PageResponse<OperationShortDto> ->
             PageResponse(

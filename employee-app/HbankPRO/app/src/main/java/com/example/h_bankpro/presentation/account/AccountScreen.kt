@@ -162,7 +162,8 @@ fun AccountScreen(
                     items(state.realtimeOperations) { operation ->
                         OperationItem(
                             operation = operation,
-                            onClick = { viewModel.onOperationClicked(operation) }
+                            onClick = { viewModel.onOperationClicked(operation) },
+                            currency = state.currency
                         )
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
@@ -174,7 +175,8 @@ fun AccountScreen(
                         if (operation != null) {
                             OperationItem(
                                 operation = operation,
-                                onClick = { viewModel.onOperationClicked(operation) }
+                                onClick = { viewModel.onOperationClicked(operation) },
+                                currency = state.currency
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),

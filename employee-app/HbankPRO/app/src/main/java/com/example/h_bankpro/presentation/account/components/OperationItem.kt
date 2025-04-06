@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
+fun OperationItem(operation: OperationShort, onClick: () -> Unit, currency: String) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale("ru"))
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
     Row(
@@ -65,7 +65,7 @@ fun OperationItem(operation: OperationShort, onClick: () -> Unit) {
         Spacer(Modifier.width(16.dp))
         Column {
             Text(
-                text = "${operation.amount} ₽",
+                text = "${operation.amount} " + currency,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground

@@ -9,6 +9,7 @@ import com.example.h_bankpro.domain.useCase.GetExpiredLoanPaymentsUseCase
 
 class ExpiredLoanPaymentsPagingSource(
     private val loanId: String,
+    private val userId: String,
     private val getExpiredLoanPaymentsUseCase: GetExpiredLoanPaymentsUseCase
 ) : PagingSource<Int, OperationShort>() {
 
@@ -16,7 +17,7 @@ class ExpiredLoanPaymentsPagingSource(
         val page = params.key ?: 0
         val pageable = Pageable(page = page, size = params.loadSize)
 
-        return when (val result = getExpiredLoanPaymentsUseCase(loanId, pageable)) {
+        return when (val result = getExpiredLoanPaymentsUseCase(loanId, userId, pageable)) {
             is RequestResult.Success -> {
                 val operations = result.data.content
                 LoadResult.Page(

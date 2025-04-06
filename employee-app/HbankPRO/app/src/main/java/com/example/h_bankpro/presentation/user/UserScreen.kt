@@ -44,16 +44,21 @@ fun UserScreen(
                     navController.navigate(
                         "loan" +
                                 "/${event.loanId}" +
+                                "/${event.userId}" +
                                 "/${event.documentNumber}" +
                                 "/${event.amount}" +
                                 "/${event.endDate}" +
                                 "/${event.ratePercent}" +
                                 "/${event.debt}"
+
                     )
 
                 is UserNavigationEvent.NavigateToAccount ->
                     navController.navigate(
-                        "account/${event.accountId}/${event.accountNumber}"
+                        "account" +
+                                "/${event.accountId}" +
+                                "/${event.accountNumber}" +
+                                "/${event.currency}"
                     )
 
                 UserNavigationEvent.NavigateBack ->

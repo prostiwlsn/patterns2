@@ -42,6 +42,7 @@ class AccountViewModel(
 
     private val accountId: String = checkNotNull(savedStateHandle["accountId"])
     private val accountNumber: String = checkNotNull(savedStateHandle["accountNumber"])
+    private val currency: String = checkNotNull(savedStateHandle["currency"])
     private val _filters = MutableStateFlow(OperationsFilters())
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +75,13 @@ class AccountViewModel(
     private var realTimeJob: Job? = null
 
     init {
-        _state.update { it.copy(accountId = accountId, accountNumber = accountNumber) }
+        _state.update {
+            it.copy(
+                accountId = accountId,
+                accountNumber = accountNumber,
+                currency = currency
+            )
+        }
         viewModelScope.launch {
             _filters.collectLatest { filters ->
                 _state.update { it.copy(realtimeOperations = emptyList()) }
@@ -107,12 +114,13 @@ class AccountViewModel(
     private fun loadRealTimeOperations(filters: OperationsFilters) {
         realTimeJob?.cancel()
         realTimeJob = viewModelScope.launch {
-            getOperationsByAccountUseCase.getOperationsFlow(accountId, filters).collectLatest { operation ->
-                _state.update { currentState ->
-                    val updatedOps = listOf(operation) + currentState.realtimeOperations
-                    currentState.copy(realtimeOperations = updatedOps)
+            getOperationsByAccountUseCase.getOperationsFlow(accountId, filters)
+                .collectLatest { operation ->
+                    _state.update { currentState ->
+                        val updatedOps = listOf(operation) + currentState.realtimeOperations
+                        currentState.copy(realtimeOperations = updatedOps)
+                    }
                 }
-            }
         }
     }
 

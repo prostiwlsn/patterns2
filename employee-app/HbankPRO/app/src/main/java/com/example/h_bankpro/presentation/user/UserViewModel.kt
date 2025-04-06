@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bankpro.data.Account
+import com.example.h_bankpro.data.dto.CurrencyDto
 import com.example.h_bankpro.data.utils.NetworkUtils.onFailure
 import com.example.h_bankpro.data.utils.NetworkUtils.onSuccess
 import com.example.h_bankpro.data.utils.RequestResult
@@ -146,12 +147,13 @@ class UserViewModel(
             _navigationEvent.emit(
                 UserNavigationEvent.NavigateToLoan(
                     loan.id,
+                    userId,
                     loan.documentNumber.toString(),
                     loan.amount.toString(),
                     loan.endDate.format(formatter),
                     loan.ratePercent.toString(),
-                    loan.debt.toString()
-                )
+                    loan.debt.toString(),
+                    )
             )
         }
     }
@@ -161,7 +163,12 @@ class UserViewModel(
             _navigationEvent.emit(
                 UserNavigationEvent.NavigateToAccount(
                     account.id,
-                    account.accountNumber
+                    account.accountNumber,
+                    when (account.currency) {
+                        CurrencyDto.RUB -> "₽"
+                        CurrencyDto.USD -> "$"
+                        CurrencyDto.AMD -> "֏"
+                    }
                 )
             )
         }

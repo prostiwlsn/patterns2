@@ -57,9 +57,10 @@ fun AppNavigation(
             RateScreen(navController)
         }
         composable(
-            route = "loan/{loanId}/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
+            route = "loan/{loanId}/{userId}/{documentNumber}/{amount}/{endDate}/{ratePercent}/{debt}",
             arguments = listOf(
                 navArgument("loanId") { type = NavType.StringType },
+                navArgument("userId") { type = NavType.StringType },
                 navArgument("documentNumber") { type = NavType.StringType },
                 navArgument("amount") { type = NavType.StringType },
                 navArgument("endDate") { type = NavType.StringType },
@@ -109,10 +110,11 @@ fun AppNavigation(
             RateEditingScreen(navController)
         }
         composable(
-            route = "account/{accountId}/{accountNumber}",
+            route = "account/{accountId}/{accountNumber}/{currency}",
             arguments = listOf(
                 navArgument("accountId") { type = NavType.StringType },
                 navArgument("accountNumber") { type = NavType.StringType },
+                navArgument("currency") { type = NavType.StringType }
             )
         ) {
             AccountScreen(navController)

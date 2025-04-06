@@ -14,6 +14,7 @@ data class AccountState(
     val isLoading: Boolean = false,
     val accountId: String = "",
     val accountNumber: String = "",
+    val currency: String = "",
     val selectedDateRange: Pair<LocalDate?, LocalDate?> = null to null,
     val isTypesSheetVisible: Boolean = false,
     val isDatePickerVisible: Boolean = false

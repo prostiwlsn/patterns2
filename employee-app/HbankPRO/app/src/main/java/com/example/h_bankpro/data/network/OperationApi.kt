@@ -28,6 +28,7 @@ interface OperationApi {
     @GET("operation/expiredLoanPayment")
     suspend fun expiredLoanPayment(
         @Query("loanAccountId") loanId: String,
+        @Query("userId") userId: String,
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("sort") sort: List<String>
