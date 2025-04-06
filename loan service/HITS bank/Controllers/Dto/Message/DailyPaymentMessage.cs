@@ -5,5 +5,7 @@ public class DailyPaymentMessage
 {
     public Guid AccountId { get; set; }
     
+    public Guid LoanId { get; set; }
+    
     public double Amount { get; set; }
 }
