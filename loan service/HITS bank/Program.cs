@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 using HITS_bank.Data;
 using HITS_bank.Mappers;
@@ -31,20 +32,6 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<ExceptionsMiddleware>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = AuthenticationOptions.GetSymmetricSecurityKey(),
-            ValidIssuer = AuthenticationOptions.ISSUER,
-            ValidAudience = AuthenticationOptions.AUDIENCE
-        };
-    });
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -74,6 +61,25 @@ builder.Services.AddSwaggerGen(c =>
     
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
 });
 
 // Слушатели RabbitMq

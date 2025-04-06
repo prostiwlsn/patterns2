@@ -27,9 +27,6 @@ public class LoanEntity
     
     public double RatePercent { get; set; }
     
-    [DefaultValue(CurrencyEnum.Usd)]
-    public CurrencyEnum Currency { get; set; }
-    
     public DateTime IssueDate { get; init; }
     
     public DateTime EndDate { get; init; }

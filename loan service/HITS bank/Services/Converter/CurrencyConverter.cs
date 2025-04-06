@@ -21,16 +21,16 @@ public class CurrencyConverter : ICurrencyConverter
     private string GetCurrencyString(CurrencyEnum currency)
     {
         if (currency == CurrencyEnum.Usd)
-            return "Доллар США";
+            return "USD";
         else if (currency == CurrencyEnum.Rub)
-            return "Рубль";
+            return "RUB";
         else
-            return "Армянский драм";
+            return "AMD";
     }
     
     private async Task<ExchangeRateApiDto?> GetExchangeRateApiDto(string currency)
     {
-        var url = $"https://api.exchangerate-api.com/v4/latest/USD/{currency}";
+        var url = $"https://api.exchangerate-api.com/v4/latest/{currency}";
         var client = new HttpClient();
 
         var response = await client.GetStringAsync(url);

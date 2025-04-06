@@ -115,6 +115,14 @@ public class LoanService : ILoanService
         if (selectedTariff == null)
             return new Error(StatusCodes.Status404NotFound, "Tariff not found");
 
+        var amountInUsd =
+            await _currencyConverter.Convert(createLoanRequest.Currency, CurrencyEnum.Usd, createLoanRequest.Amount);
+        
+        if (amountInUsd == null)
+            return new Error(StatusCodes.Status500InternalServerError, "Something went wrong");
+        
+        createLoanRequest.Amount = (int)amountInUsd;
+        
         // Проверка мастер счета
         var masterAccount = await GetMasterAccountResponse();
 
@@ -291,6 +299,7 @@ public class LoanService : ILoanService
                 {
                     SenderAccountId = loanPayment.SenderAccountId,
                     ReturnedAmount = loanPayment.Amount,
+                    IsPaymentExpired = loan.EndDate < DateTime.Now,
                 },
                 ErrorMessage = "Loan not found",
                 ErrorStatusCode = StatusCodes.Status404NotFound,

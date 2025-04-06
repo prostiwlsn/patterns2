@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Services;
 using HITS_bank.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IResult = HITS_bank.Utils.IResult;
 
@@ -29,6 +31,7 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpPost]
     [Route("tariff")]
+    [Authorize]
     public async Task<IActionResult> CreateLoanTariff(CreateTariffRequestDto createTariffRequest)
     {
         await _loanService.CreateTariff(createTariffRequest);
@@ -41,6 +44,7 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("tariff")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TariffsListResponseDto))]
     public async Task<IActionResult> GetLoanTariffsList([Required]int pageNumber = 1, [Required]int pageSize = 10) 
     {
@@ -54,6 +58,7 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpDelete]
     [Route("tariff")]
+    [Authorize]
     public async Task<IActionResult> DeleteLoanTariff([Required]Guid tariffId)
     {
         var deletionResult = await _loanService.DeleteTariff(tariffId);
@@ -66,6 +71,7 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpPut]
     [Route("tariff")]
+    [Authorize]
     public async Task<IActionResult> UpdateLoanTariff(UpdateTariffRequestDto updatedTariff, [Required]Guid tariffId)
     {
         var response = await _loanService.UpdateTariff(updatedTariff, tariffId);
@@ -77,8 +83,14 @@ public class LoanController : ControllerBase
     /// Взятие кредита
     /// </summary>
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateLoan(CreateLoanRequestDto loanRequest)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (userId == null || Guid.Parse(userId) != loanRequest.UserId) 
+            return StatusCode(StatusCodes.Status403Forbidden, "Operation forbidden");
+        
         var response = await _loanService.CreateLoan(loanRequest);
         
         return GetResponseResult<CreateLoanRequestDto>(response);
@@ -89,9 +101,15 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("{userId}/list")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoansListResponseDto))]
     public async Task<IActionResult> GetUsersLoansList(Guid userId, int pageNumber = 1, int pageSize = 10)
     {
+        var authUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (authUserId == null || Guid.Parse(authUserId) != userId) 
+            return StatusCode(StatusCodes.Status403Forbidden, "Operation forbidden");
+        
         var response = await _loanService.GetUserLoansList(userId, pageNumber, pageSize);
         
         return GetResponseResult<LoansListResponseDto>(response);
@@ -102,9 +120,15 @@ public class LoanController : ControllerBase
     /// </summary>
     [HttpGet]
     [Route("{userId}/creditRating")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreditRatingDto))]
     public async Task<IActionResult> GetUserCreditRating(Guid userId)
     {
+        var authUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (authUserId == null || Guid.Parse(authUserId) != userId) 
+            return StatusCode(StatusCodes.Status403Forbidden, "Operation forbidden");
+        
         var response = await _loanService.GetCreditRating(userId);
 
         return Ok(response);
