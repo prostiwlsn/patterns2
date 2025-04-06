@@ -3,9 +3,12 @@ package ru.hits.core.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.hits.core.domain.dto.currency.CurrencyEnum;
 import ru.hits.core.domain.dto.loan.LoanRequest;
 import ru.hits.core.domain.dto.operation.OperationRequestBody;
 import ru.hits.core.domain.enums.OperationTypeEnum;
+import ru.hits.core.service.AccountService;
+import ru.hits.core.service.CurrencyService;
 import ru.hits.core.service.OperationService;
 
 import java.util.LinkedHashMap;
@@ -19,6 +22,8 @@ import java.util.UUID;
 public class RabbitMQListener {
 
     private final OperationService operationService;
+    private final CurrencyService currencyService;
+    private final AccountService accountService;
 
     public void receiveMessage(LinkedHashMap<String, Object> messageMap) {
         System.out.println("Получено сообщение из RabbitMQ:");
@@ -30,12 +35,14 @@ public class RabbitMQListener {
                     .amount(getFloat(messageMap, "Amount"))
                     .build();
 
+            var account = accountService.getRawAccount(request.getAccountId());
+
             operationService.createOperation(
                     null,
                     new OperationRequestBody(
                             null,
                             request.getAccountId(),
-                            request.getAmount(),
+                            request.getAmount() * currencyService.getCurrencyValue(CurrencyEnum.USD, account.getCurrency()),
                             null,
                             OperationTypeEnum.REPLENISHMENT
                     )
