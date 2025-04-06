@@ -8,6 +8,7 @@ using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
+using HITS_bank.Services.Converter;
 using HITS_bank.Utils;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -27,11 +28,13 @@ public class LoanService : ILoanService
     private readonly IMapper _mapper;
     private readonly string _amqpConnectionString;
     private readonly string _getLoanExchange;
+    private readonly ICurrencyConverter _currencyConverter;
     
-    public LoanService(ILoanRepository loanRepository, IMapper mapper)
+    public LoanService(ILoanRepository loanRepository, IMapper mapper, ICurrencyConverter currencyConverter)
     {
         _loanRepository = loanRepository;
         _mapper = mapper;
+        _currencyConverter = currencyConverter;
         
         IConfigurationRoot configurationRoot = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
@@ -113,10 +116,16 @@ public class LoanService : ILoanService
             return new Error(StatusCodes.Status404NotFound, "Tariff not found");
 
         // Проверка мастер счета
-        /*var masterAccount = await GetMasterAccountResponse();
+        var masterAccount = await GetMasterAccountResponse();
+
+        if (masterAccount == null)
+            return new Error(StatusCodes.Status404NotFound, "Master account not found");
         
-        if (masterAccount != null && masterAccount.Balance < createLoanRequest.Amount)
-            return new Error(StatusCodes.Status403Forbidden, "Bank cannot have more loans");*/
+        if (!masterAccount.Success)
+            return new Error(StatusCodes.Status400BadRequest, masterAccount.ErrorMessage);
+        
+        if (masterAccount.Data.Balance < createLoanRequest.Amount)
+            return new Error(StatusCodes.Status403Forbidden, "Bank cannot have more loans");
         
         // Проверка кредитного рейтинга
         var creditRating = await GetCreditRating(createLoanRequest.UserId);
@@ -146,31 +155,34 @@ public class LoanService : ILoanService
     /// <summary>
     /// Получение мастер счета
     /// </summary>
-    private async Task<AccountDto?> GetMasterAccountResponse()
+    private async Task<MasterAccountResponseWrapper?> GetMasterAccountResponse()
     {
-        var correlationId = Guid.NewGuid().ToString();
-        var replyTo = $"temp.{correlationId}";
-        
-        // Отправка сообщения для получения мастер счета
-        SendGetMasterAccountMessage(replyTo, correlationId);
-        
-        // Получение ответа на отправленное сообщение
-        var taskCompletionSource = new TaskCompletionSource<AccountDto?>();
         var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
         var connection = factory.CreateConnection();
         var channel = connection.CreateModel();
+        
+        var correlationId = Guid.NewGuid().ToString();
+        var queueName = channel.QueueDeclare(queue: "",
+            durable: false,
+            exclusive: true,
+            autoDelete: true,
+            arguments: null).QueueName;
+        
+        // Отправка сообщения для получения мастер счета
+        SendGetMasterAccountMessage(channel, queueName, correlationId);
+        
+        // Получение ответа на отправленное сообщение
+        var taskCompletionSource = new TaskCompletionSource<MasterAccountResponseWrapper?>();
         var consumer = new EventingBasicConsumer(channel);
         
         consumer.Received += (model, eventArgs) =>
         {
             var content = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-            channel.BasicAck(eventArgs.DeliveryTag, false);
-
-            var result = JsonSerializer.Deserialize<AccountDto?>(content);
+            var result = JsonSerializer.Deserialize<MasterAccountResponseWrapper?>(content);
             taskCompletionSource.SetResult(result);
         };
 
-        channel.BasicConsume(replyTo, false, consumer);
+        channel.BasicConsume(queueName, true, consumer);
 
         return await taskCompletionSource.Task;
     }
@@ -178,24 +190,23 @@ public class LoanService : ILoanService
     /// <summary>
     /// Отправка сообщения для получнеия мастер счета
     /// </summary>
-    private void SendGetMasterAccountMessage(string replyTo, string correlationId)
+    private void SendGetMasterAccountMessage(IModel channel, string replyTo, string correlationId)
     {
-        var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
+        var properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+        properties.ReplyTo = replyTo;
+        properties.CorrelationId = correlationId;
         
-        using (var connection = factory.CreateConnection())
-        using (var channel = connection.CreateModel())
-        {
-            channel.QueueDeclare(queue: replyTo, durable: true, exclusive: false, autoDelete: false);
-            
-            var properties = channel.CreateBasicProperties();
-            properties.Persistent = true;
-            properties.ReplyTo = replyTo;
-            properties.CorrelationId = correlationId;
-            
-            channel.BasicPublish(exchange: "",
-                routingKey: "masterAccount",
-                basicProperties: properties);
-        }
+        channel.QueueDeclare(queue: "masterAccount",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+        
+        channel.BasicPublish(exchange: "",
+            routingKey: "masterAccount",
+            basicProperties: properties,
+            body: Array.Empty<byte>());
     }
     
     /// <summary>
@@ -303,6 +314,7 @@ public class LoanService : ILoanService
                 {
                     SenderAccountId = loanPayment.SenderAccountId,
                     ReturnedAmount = returnAmount,
+                    IsPaymentExpired = loan.EndDate < DateTime.Now,
                 },
             };
         }

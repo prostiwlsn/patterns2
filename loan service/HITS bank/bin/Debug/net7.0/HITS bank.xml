@@ -179,6 +179,16 @@
             Обновление кредита
             </summary>
         </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.GetLoansList">
+            <summary>
+            Получение списка кредитов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.ILoanRepository.IncreaseDebt">
+            <summary>
+            Повышение долга кредита
+            </summary>
+        </member>
         <member name="M:HITS_bank.Repositories.LoanRepository.AddTariff(HITS_bank.Data.Entities.TariffEntity)">
             <summary>
             Добавление тарифа кредита
@@ -227,6 +237,16 @@
         <member name="M:HITS_bank.Repositories.LoanRepository.UpdateLoan(HITS_bank.Data.Entities.LoanEntity)">
             <summary>
             Обновление кредита
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.GetLoansList">
+            <summary>
+            Получение списка кредитов
+            </summary>
+        </member>
+        <member name="M:HITS_bank.Repositories.LoanRepository.IncreaseDebt">
+            <summary>
+            Повышение долга
             </summary>
         </member>
         <member name="T:HITS_bank.Services.ILoanService">
@@ -304,7 +324,7 @@
             Получение мастер счета
             </summary>
         </member>
-        <member name="M:HITS_bank.Services.LoanService.SendGetMasterAccountMessage(System.String,System.String)">
+        <member name="M:HITS_bank.Services.LoanService.SendGetMasterAccountMessage(RabbitMQ.Client.IModel,System.String,System.String)">
             <summary>
             Отправка сообщения для получнеия мастер счета
             </summary>

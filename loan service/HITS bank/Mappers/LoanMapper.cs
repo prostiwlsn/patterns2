@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HITS_bank.Controllers.Dto;
 using HITS_bank.Controllers.Dto.Common;
+using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;

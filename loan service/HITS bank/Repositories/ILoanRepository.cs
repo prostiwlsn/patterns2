@@ -56,4 +56,14 @@ public interface ILoanRepository
     /// Обновление кредита
     /// </summary>
     Task<Utils.IResult> UpdateLoan(LoanEntity updatedLoanEntity);
+    
+    /// <summary>
+    /// Получение списка кредитов
+    /// </summary>
+    Task<List<LoanEntity>> GetLoansList();
+
+    /// <summary>
+    /// Повышение долга кредита
+    /// </summary>
+    Task IncreaseDebt();
 }
