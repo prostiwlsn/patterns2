@@ -73,11 +73,12 @@ public class OperationController {
     private Page<OperationShortDTO> getExpiredOperations(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam("loanAccountId") UUID loanAccountId,
+            @RequestParam("userId") UUID userId,
             @PageableDefault(size = 10, page = 0, sort = "transactionDateTime", direction = Sort.Direction.DESC)
             Pageable pageable
     ) throws JsonProcessingException {
         return operationService.getExpiredOperations(
-                jwtService.getUserId(authHeader),
+                userId,
                 loanAccountId,
                 pageable,
                 authHeader.substring(7)

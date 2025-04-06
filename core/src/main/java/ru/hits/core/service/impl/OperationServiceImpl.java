@@ -345,10 +345,7 @@ public class OperationServiceImpl implements OperationService {
             UUID loanAccountId,
             Pageable pageable,
             String token
-    ) throws JsonProcessingException {
-        var user = userInfoService.getUserInfo(
-                new UserInfoRequest(userId, token)
-        );
+    ) {
         var accounts = accountService.getMyAccountIds(userId);
 
         return getOperations(
