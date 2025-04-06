@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using patterns2_infoauth.Interfaces;
@@ -17,6 +18,7 @@ namespace patterns2_infoauth.Controllers
             _roleService = roleService;
         }
 
+        [Authorize(Policy = "IsModerator")]
         [HttpPost("/role/{userId}/{role}")]
         public async Task<IActionResult> AddRole(Guid userId, RoleType role)
         {
@@ -34,6 +36,7 @@ namespace patterns2_infoauth.Controllers
                 return BadRequest("This role already exists");
             }
         }
+        [Authorize(Policy = "IsModerator")]
         [HttpDelete("/role/{userId}/{role}")]
         public async Task<IActionResult> RemoveRole(Guid userId, RoleType role)
         {

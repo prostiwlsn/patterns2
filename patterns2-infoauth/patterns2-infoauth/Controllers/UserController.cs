@@ -19,6 +19,7 @@ namespace patterns2_infoauth.Controllers
             _userService = userService;
         }
 
+        [Authorize(Policy = "IsModerator")]
         [HttpGet("/users/{id}")]
         public async Task<IActionResult> GetUser(Guid id)
         {
@@ -33,6 +34,7 @@ namespace patterns2_infoauth.Controllers
             }
         }
 
+        [Authorize(Policy = "IsModerator")]
         [HttpGet("/users")]
         public async Task<IActionResult> GetUsers([FromQuery] string name = "", [FromQuery] string phone = "")
         {
@@ -47,6 +49,7 @@ namespace patterns2_infoauth.Controllers
             }
         }
 
+        [Authorize(Policy = "IsModerator")]
         [HttpPost("/users")]
         public async Task<IActionResult> CreateUser(UserCreationDto model)
         {
@@ -54,6 +57,7 @@ namespace patterns2_infoauth.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "IsModerator")]
         [HttpPut("/users/{id}")]
         public async Task<IActionResult> EditUser(Guid id,UserEditDto model)
         {
@@ -68,6 +72,7 @@ namespace patterns2_infoauth.Controllers
             }
         }
 
+        [Authorize(Policy = "IsModerator")]
         [HttpPost("/users/{id}/block")]
         public async Task<IActionResult> BlockUser(Guid id)
         {
@@ -81,6 +86,8 @@ namespace patterns2_infoauth.Controllers
                 return NotFound();
             }
         }
+
+        [Authorize(Policy = "IsModerator")]
         [HttpPost("/users/{id}/unblock")]
         public async Task<IActionResult> UnblockUser(Guid id)
         {
