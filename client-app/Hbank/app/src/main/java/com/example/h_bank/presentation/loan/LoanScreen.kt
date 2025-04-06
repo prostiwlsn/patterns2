@@ -63,17 +63,16 @@ fun LoanScreen(
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
         LoanHeader(
             onBackClick = { viewModel.onBackClicked() },
             documentNumber = state.documentNumber
         )
-        Spacer(modifier = Modifier.height(37.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         TextField(
             labelRes = R.string.loan_amount,
-            value = state.amount + " ₽",
+            value = "${state.amount} ₽",
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
@@ -83,14 +82,14 @@ fun LoanScreen(
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.interest_rate,
-            value = state.ratePercent + " %",
+            value = "${state.ratePercent} %"
         )
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             labelRes = R.string.debt,
-            value = state.debt + " ₽",
+            value = "${state.debt} ₽"
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.expired_loan_payments),
             fontSize = 24.sp,
@@ -99,11 +98,12 @@ fun LoanScreen(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface
         )
+
         when (lazyPagingItems.loadState.refresh) {
             is LoadState.Loading -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
@@ -117,7 +117,7 @@ fun LoanScreen(
                 if (lazyPagingItems.itemCount == 0) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
                             .weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
@@ -132,8 +132,9 @@ fun LoanScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(lazyPagingItems.itemCount) { index ->
                             val operation = lazyPagingItems[index]
@@ -170,10 +171,5 @@ fun LoanScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-        CustomButton(
-            onClick = viewModel::onPayClicked,
-            textRes = R.string.pay
-        )
     }
 }
