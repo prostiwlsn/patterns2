@@ -6,10 +6,13 @@ using HITS_bank.Middlewares;
 using HITS_bank.Repositories;
 using HITS_bank.Services;
 using HITS_bank.Services.BackgroundServices;
+using HITS_bank.Services.Converter;
+using HITS_bank.Services.Scheduler;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -83,11 +86,34 @@ builder.Services.AddSingleton<LoanPaymentConsumer>(sp =>
 
 builder.Services.AddHostedService(sp => sp.GetRequiredService<LoanPaymentConsumer>());
 
+// Планировщик задач
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory();
+
+    var jobKey = new JobKey("dailyPaymentJob");
+
+    q.AddJob<PaymentSchedulerJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("dailyPaymentTrigger")
+        .StartNow()
+        .WithSimpleSchedule(x => x.WithIntervalInHours(24).RepeatForever())
+    );
+});
+builder.Services.AddQuartzHostedService();
+
+builder.Services.AddScoped<PaymentSchedulerJob>();
+builder.Services.AddScoped<ISchedulerService, SchedulerService>();
+
 // Мапперы
 builder.Services.AddAutoMapper(typeof(LoanMapper));
 
 // Сервисы
 builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<ICurrencyConverter, CurrencyConverter>();
+builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 
 // Репозитории
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();

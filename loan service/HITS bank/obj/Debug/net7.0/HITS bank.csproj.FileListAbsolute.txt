@@ -119,3 +119,6 @@ C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\RabbitMQ.Client.dll
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Npgsql.dll
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Quartz.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Quartz.Extensions.DependencyInjection.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Quartz.Extensions.Hosting.dll

@@ -59,7 +59,7 @@ public class LoanRepository : ILoanRepository
 
         if (tariff == null)
             return new Error(StatusCodes.Status404NotFound, "Tariff not found");
-
+        
         _context.Entry(tariff).CurrentValues.SetValues(updateTariffRequest);
         await _context.SaveChangesAsync();
 
@@ -126,5 +126,21 @@ public class LoanRepository : ILoanRepository
         await _context.SaveChangesAsync();
 
         return new Success();
+    }
+
+    /// <summary>
+    /// Получение списка кредитов
+    /// </summary>
+    public async Task<List<LoanEntity>> GetLoansList()
+    {
+        return await _context.Loans.ToListAsync();
+    }
+
+    /// <summary>
+    /// Повышение долга
+    /// </summary>
+    public async Task IncreaseDebt()
+    {
+        await _context.Loans.ForEachAsync(x => x.Debt = x.Debt * x.RatePercent);
     }
 }

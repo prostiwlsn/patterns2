@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
+using HITS_bank.Controllers.Dto.Message.AccountDto;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace HITS_bank.Data.Entities;
@@ -19,7 +22,13 @@ public class LoanEntity
     
     public double Debt { get; set; }
     
+    [DefaultValue(null)]
+    public Guid? AccountId { get; set; }
+    
     public double RatePercent { get; set; }
+    
+    [DefaultValue(CurrencyEnum.Usd)]
+    public CurrencyEnum Currency { get; set; }
     
     public DateTime IssueDate { get; init; }
     

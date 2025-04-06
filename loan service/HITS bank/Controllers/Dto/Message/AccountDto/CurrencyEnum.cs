@@ -3,7 +3,7 @@
 
 public enum CurrencyEnum
 {
-    USD,
-    RUB,
-    AMD
+    Usd,
+    Rub,
+    Amd,
 }

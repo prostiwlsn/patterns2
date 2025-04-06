@@ -5,6 +5,7 @@ using HITS_bank.Controllers.Dto.Message;
 using HITS_bank.Data;
 using HITS_bank.Mappers;
 using HITS_bank.Repositories;
+using HITS_bank.Services.Converter;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -15,7 +16,6 @@ public class LoanPaymentConsumer : BackgroundService
 {
     private readonly IModel _channel;
     private readonly string _queueName;
-    private readonly string _loanPaymentResultExchange;
     private readonly string _amqpConnectionString;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private string? _correlationId;
@@ -29,7 +29,6 @@ public class LoanPaymentConsumer : BackgroundService
             .Build();
         
         var loanPaymentExchange = configurationRoot.GetSection("Exchanges")["LoanPayment"] ?? throw new InvalidOperationException();
-        _loanPaymentResultExchange = configurationRoot.GetSection("Exchanges")["LoanPaymentResponse"] ?? throw new InvalidOperationException();
         _amqpConnectionString = configurationRoot.GetSection("ConnectionStrings")["BusConnection"] ?? throw new InvalidOperationException();
 
         // Создание очереди сообщений
@@ -87,10 +86,12 @@ public class LoanPaymentConsumer : BackgroundService
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var currencyConverter = new CurrencyConverter();
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
             var loanService = new LoanService(
                 new LoanRepository(context),
-                mapper);
+                mapper,
+                currencyConverter);
             
             answer = await loanService.PayForLoan(loanPayment);
         }

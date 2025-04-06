@@ -8,6 +8,7 @@ using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
+using HITS_bank.Services.Converter;
 using HITS_bank.Utils;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -27,11 +28,13 @@ public class LoanService : ILoanService
     private readonly IMapper _mapper;
     private readonly string _amqpConnectionString;
     private readonly string _getLoanExchange;
+    private readonly ICurrencyConverter _currencyConverter;
     
-    public LoanService(ILoanRepository loanRepository, IMapper mapper)
+    public LoanService(ILoanRepository loanRepository, IMapper mapper, ICurrencyConverter currencyConverter)
     {
         _loanRepository = loanRepository;
         _mapper = mapper;
+        _currencyConverter = currencyConverter;
         
         IConfigurationRoot configurationRoot = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
@@ -311,6 +314,7 @@ public class LoanService : ILoanService
                 {
                     SenderAccountId = loanPayment.SenderAccountId,
                     ReturnedAmount = returnAmount,
+                    IsPaymentExpired = loan.EndDate < DateTime.Now,
                 },
             };
         }
