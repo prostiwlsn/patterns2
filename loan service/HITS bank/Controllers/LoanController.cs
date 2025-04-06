@@ -105,11 +105,6 @@ public class LoanController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoansListResponseDto))]
     public async Task<IActionResult> GetUsersLoansList(Guid userId, int pageNumber = 1, int pageSize = 10)
     {
-        var authUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (authUserId == null || Guid.Parse(authUserId) != userId) 
-            return StatusCode(StatusCodes.Status403Forbidden, "Operation forbidden");
-        
         var response = await _loanService.GetUserLoansList(userId, pageNumber, pageSize);
         
         return GetResponseResult<LoansListResponseDto>(response);
@@ -124,11 +119,6 @@ public class LoanController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreditRatingDto))]
     public async Task<IActionResult> GetUserCreditRating(Guid userId)
     {
-        var authUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (authUserId == null || Guid.Parse(authUserId) != userId) 
-            return StatusCode(StatusCodes.Status403Forbidden, "Operation forbidden");
-        
         var response = await _loanService.GetCreditRating(userId);
 
         return Ok(response);
