@@ -15,7 +15,7 @@ public class AccountDto
     public float Balance { get; set; }
     
     [JsonPropertyName("currency")]
-    public CurrencyEnum Currency { get; set; }
+    public string Currency { get; set; }
     
     [JsonPropertyName("userId")]
     public Guid UserId { get; set; }
@@ -23,6 +23,6 @@ public class AccountDto
     [JsonPropertyName("isDeleted")]
     public bool IsDeleted { get; set; }
     
-    [JsonPropertyName("createdDateTime")]
-    public DateTime CreateDateTime { get; set; }
+    [JsonPropertyName("createDateTime")]
+    public double CreateDateTime { get; set; }
 }

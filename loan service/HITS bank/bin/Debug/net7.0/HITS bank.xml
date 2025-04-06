@@ -304,7 +304,7 @@
             Получение мастер счета
             </summary>
         </member>
-        <member name="M:HITS_bank.Services.LoanService.SendGetMasterAccountMessage(System.String,System.String)">
+        <member name="M:HITS_bank.Services.LoanService.SendGetMasterAccountMessage(RabbitMQ.Client.IModel,System.String,System.String)">
             <summary>
             Отправка сообщения для получнеия мастер счета
             </summary>
