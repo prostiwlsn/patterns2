@@ -7,9 +7,9 @@ import retrofit2.http.GET
 import retrofit2.http.PUT
 
 interface SettingsApi {
-    @GET("/api/Settings/bank/settings")
+    @GET("/api/Settings/admin/settings")
     suspend fun getSettings(): SettingsResponse
 
-    @PUT("/api/Settings/bank/settings")
+    @PUT("/api/Settings/admin/settings")
     suspend fun saveSettings(@Body settings: SettingsRequest)
 }
