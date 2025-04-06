@@ -33,6 +33,7 @@ public class SchedulerService : ISchedulerService
                 paymentMessages.Add(new DailyPaymentMessage
                 {
                     AccountId = loanEntity.AccountId ?? Guid.Empty,
+                    LoanId = loanEntity.Id,
                     Amount = paymentAmount,
                 });
             }
