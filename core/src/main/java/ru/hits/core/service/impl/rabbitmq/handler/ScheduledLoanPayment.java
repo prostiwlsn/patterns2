@@ -28,7 +28,7 @@ public class ScheduledLoanPayment {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows
-    @RabbitListener(queues = "paymentJob")
+//    @RabbitListener(queues = "paymentJob")
     public void receiveMessage(String message) {
         log.info("Получено сообщение: " + message);
         objectMapper.registerModule(new JavaTimeModule());
