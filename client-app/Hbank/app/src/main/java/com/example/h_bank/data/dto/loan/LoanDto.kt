@@ -14,23 +14,29 @@ data class LoanDto(
     val debt: Double,
     val ratePercent: Double,
     val isExpired: Boolean,
-    val issueDate: Instant,
-    val endDate: Instant,
+    val issueDate: String,
+    val endDate: String,
 )
 
 internal fun LoanDto.toDomain(): Loan {
-    return Loan(
-        id = id,
-        documentNumber = documentNumber,
-        amount = amount,
-        debt = debt,
-        ratePercent = ratePercent,
-        isExpired = isExpired,
-        issueDate = issueDate.toJavaInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate(),
-        endDate = endDate.toJavaInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
-    )
+    return try {
+        val issueInstant = Instant.parse("${issueDate}Z")
+        val endInstant = Instant.parse("${endDate}Z")
+        Loan(
+            id = id,
+            documentNumber = documentNumber,
+            amount = amount,
+            debt = debt,
+            ratePercent = ratePercent,
+            isExpired = isExpired,
+            issueDate = issueInstant.toJavaInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate(),
+            endDate = endInstant.toJavaInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+        )
+    } catch (e: Exception) {
+        throw e
+    }
 }

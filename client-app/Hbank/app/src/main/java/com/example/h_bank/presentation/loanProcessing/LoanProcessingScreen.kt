@@ -112,12 +112,7 @@ fun LoanProcessingScreen(
                 labelRes = R.string.loan_amount,
                 value = state.amount?.toString().orEmpty(),
                 error = state.fieldErrors?.amountError,
-                suffix = when (state.selectedAccount?.currency) {
-                    CurrencyDto.RUB -> "₽"
-                    CurrencyDto.USD -> "$"
-                    CurrencyDto.AMD -> "֏"
-                    null -> ""
-                },
+                suffix = "$",
                 onValueChange = { viewModel.onAmountChange(it) }
             )
             Spacer(modifier = Modifier.height(6.dp))
