@@ -3,12 +3,14 @@ using System.Text.Json;
 using AutoMapper;
 using HITS_bank.Controllers.Dto.Common;
 using HITS_bank.Controllers.Dto.Message;
+using HITS_bank.Controllers.Dto.Message.AccountDto;
 using HITS_bank.Controllers.Dto.Request;
 using HITS_bank.Controllers.Dto.Response;
 using HITS_bank.Data.Entities;
 using HITS_bank.Repositories;
 using HITS_bank.Utils;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using Constants = HITS_bank.Utils.Constants;
 using IResult = HITS_bank.Utils.IResult;
 // ReSharper disable PossibleLossOfFraction
@@ -110,6 +112,12 @@ public class LoanService : ILoanService
         if (selectedTariff == null)
             return new Error(StatusCodes.Status404NotFound, "Tariff not found");
 
+        // Проверка мастер счета
+        /*var masterAccount = await GetMasterAccountResponse();
+        
+        if (masterAccount != null && masterAccount.Balance < createLoanRequest.Amount)
+            return new Error(StatusCodes.Status403Forbidden, "Bank cannot have more loans");*/
+        
         // Проверка кредитного рейтинга
         var creditRating = await GetCreditRating(createLoanRequest.UserId);
 
@@ -135,6 +143,61 @@ public class LoanService : ILoanService
         return new Success();
     }
 
+    /// <summary>
+    /// Получение мастер счета
+    /// </summary>
+    private async Task<AccountDto?> GetMasterAccountResponse()
+    {
+        var correlationId = Guid.NewGuid().ToString();
+        var replyTo = $"temp.{correlationId}";
+        
+        // Отправка сообщения для получения мастер счета
+        SendGetMasterAccountMessage(replyTo, correlationId);
+        
+        // Получение ответа на отправленное сообщение
+        var taskCompletionSource = new TaskCompletionSource<AccountDto?>();
+        var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
+        var connection = factory.CreateConnection();
+        var channel = connection.CreateModel();
+        var consumer = new EventingBasicConsumer(channel);
+        
+        consumer.Received += (model, eventArgs) =>
+        {
+            var content = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+            channel.BasicAck(eventArgs.DeliveryTag, false);
+
+            var result = JsonSerializer.Deserialize<AccountDto?>(content);
+            taskCompletionSource.SetResult(result);
+        };
+
+        channel.BasicConsume(replyTo, false, consumer);
+
+        return await taskCompletionSource.Task;
+    }
+
+    /// <summary>
+    /// Отправка сообщения для получнеия мастер счета
+    /// </summary>
+    private void SendGetMasterAccountMessage(string replyTo, string correlationId)
+    {
+        var factory = new ConnectionFactory{ HostName = _amqpConnectionString };
+        
+        using (var connection = factory.CreateConnection())
+        using (var channel = connection.CreateModel())
+        {
+            channel.QueueDeclare(queue: replyTo, durable: true, exclusive: false, autoDelete: false);
+            
+            var properties = channel.CreateBasicProperties();
+            properties.Persistent = true;
+            properties.ReplyTo = replyTo;
+            properties.CorrelationId = correlationId;
+            
+            channel.BasicPublish(exchange: "",
+                routingKey: "masterAccount",
+                basicProperties: properties);
+        }
+    }
+    
     /// <summary>
     /// Отправка суммы кредита на счет
     /// </summary>
@@ -284,10 +347,12 @@ public class LoanService : ILoanService
         double currentLoansCount = loansHistory.Count(x => x.Debt > 0);
         double currentDebt = loansHistory.Sum(x => x.Debt);
 
-        double rating = Constants.MaxRating * 
-                     ((Constants.MaxLoanAmount - currentDebt) / Constants.MaxLoanAmount) *
-                     ((Constants.MaxLoansCount - currentLoansCount) / Constants.MaxLoansCount) *
-                     ((totalLoansCount - expiredCount) / totalLoansCount);
+        double rating = Constants.MaxRating *
+                        ((Constants.MaxLoanAmount - currentDebt) / Constants.MaxLoanAmount) *
+                        ((Constants.MaxLoansCount - currentLoansCount) / Constants.MaxLoansCount);
+        
+        if (totalLoansCount > 0)
+            rating *= (totalLoansCount - expiredCount / 2) / totalLoansCount;
 
         rating = Math.Max(rating, Constants.MinRating);
         
@@ -307,20 +372,6 @@ public class LoanService : ILoanService
 
         if (pageSize < 0)
             return new Error(StatusCodes.Status400BadRequest, "Page size cannot be less than 0");
-
-        return null;
-    }
-
-    /// <summary>
-    /// Валидация номера счета
-    /// </summary>
-    private static IResult? ValidateAccountNumber(string accountNumber)
-    {
-        if (accountNumber.Length != 20)
-            return new Error(StatusCodes.Status400BadRequest, "Account number must be 20 characters long");
-
-        if (accountNumber.Any(x => !char.IsDigit(x)))
-            return new Error(StatusCodes.Status400BadRequest, "Account number must contain only digits");
 
         return null;
     }
