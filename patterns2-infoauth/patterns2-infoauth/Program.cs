@@ -17,10 +17,24 @@ using System.Text.Json.Serialization;
 using Quartz;
 using patterns2_infoauth.CronJobs;
 using System.Net;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var levelSwitch = new Serilog.Core.LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.ControlledBy(levelSwitch)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .WriteTo.Console()
+    .WriteTo.GrafanaLoki("http://194.59.186.122:3100")
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddControllersWithViews().AddJsonOptions(opts =>
 {
