@@ -19,6 +19,7 @@ using patterns2_infoauth.CronJobs;
 using System.Net;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,7 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithEnvironmentName()
     .WriteTo.Console()
-    .WriteTo.GrafanaLoki("http://194.59.186.122:3100")
+    .WriteTo.GrafanaLoki("http://194.59.186.122:3100", new List<LokiLabel> () { new LokiLabel { Key="app", Value="Auth"} })
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -148,7 +149,24 @@ using (var serviceScope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.Use(async (context, next) =>
+{
+    var sw = Stopwatch.StartNew();
+    try
+    {
+        await next();
+    }
+    finally
+    {
+        sw.Stop();
+        Log.ForContext("ResponseTimeMs", sw.ElapsedMilliseconds)
+           .ForContext("RequestPath", context.Request.Path)
+           .Information("Request completed");
+    }
+});
 
 app.UseHttpsRedirection();
 
