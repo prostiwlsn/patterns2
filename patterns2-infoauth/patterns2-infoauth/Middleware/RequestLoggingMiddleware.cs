@@ -13,7 +13,6 @@
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // 1. Начало обработки: трассировка
             Log.ForContext("RequestPath", context.Request.Path)
                .ForContext("RequestMethod", context.Request.Method)
                .Verbose("Started processing HTTP {RequestMethod} {RequestPath}",
@@ -23,10 +22,8 @@
 
             try
             {
-                // 2. Передать дальше
                 await _next(context);
 
-                // 3. Успешное завершение: лог уровня Information с временем
                 stopwatch.Stop();
                 Log.ForContext("RequestPath", context.Request.Path)
                    .ForContext("RequestMethod", context.Request.Method)
@@ -38,14 +35,13 @@
             }
             catch (Exception ex)
             {
-                // 4. Лог ошибки с трассировкой стека и временем до ошибки
                 stopwatch.Stop();
                 Log.ForContext("RequestPath", context.Request.Path)
                    .ForContext("RequestMethod", context.Request.Method)
                    .ForContext("ResponseTimeMs", stopwatch.ElapsedMilliseconds)
                    .Error(ex, "Error processing HTTP {RequestMethod} {RequestPath} after {ResponseTimeMs} ms",
                           context.Request.Method, context.Request.Path, stopwatch.ElapsedMilliseconds);
-                throw; // обязательно пробросить, чтобы остальные middleware/фреймворк тоже обработали ошибку
+                throw;
             }
         }
     }

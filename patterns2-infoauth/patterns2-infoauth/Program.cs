@@ -149,24 +149,25 @@ using (var serviceScope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<UnstableMiddleware>();
 
-app.Use(async (context, next) =>
-{
-    var sw = Stopwatch.StartNew();
-    try
-    {
-        await next();
-    }
-    finally
-    {
-        sw.Stop();
-        Log.ForContext("ResponseTimeMs", sw.ElapsedMilliseconds)
-           .ForContext("RequestPath", context.Request.Path)
-           .Information("Request completed");
-    }
-});
+//app.Use(async (context, next) =>
+//{
+//    var sw = Stopwatch.StartNew();
+//    try
+//    {
+//        await next();
+//    }
+//    finally
+//    {
+//        sw.Stop();
+//        Log.ForContext("ResponseTimeMs", sw.ElapsedMilliseconds)
+//           .ForContext("RequestPath", context.Request.Path)
+//           .Information("Request completed");
+//    }
+//});
 
 app.UseHttpsRedirection();
 
