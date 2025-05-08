@@ -149,10 +149,10 @@ using (var serviceScope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseMiddleware<IdempotencyMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<UnstableMiddleware>();
+app.UseMiddleware<IdempotencyMiddleware>();
 
 //app.Use(async (context, next) =>
 //{

@@ -19,21 +19,31 @@ namespace patterns2_infoauth.Middleware
 
             if (!string.IsNullOrEmpty(idempotencyKey))
             {
-                if (_cache.TryGetValue(idempotencyKey, out var cachedResponse))
+                if (_cache.TryGetValue(idempotencyKey, out string cachedResponse))
                 {
-                    await context.Response.WriteAsync(cachedResponse.ToString());
+                    context.Response.ContentType = "application/json";
+                    context.Response.Headers["X-SNEED"] = "SNEED";
+                    await context.Response.WriteAsync(cachedResponse);
                     return;
                 }
 
                 var originalBodyStream = context.Response.Body;
+
                 using var responseBody = new MemoryStream();
+                context.Response.Body = responseBody;
+                context.Response.Headers["X-SNEED"] = "CHUCK";
 
                 await _next(context);
 
-                context.Response.Body = responseBody;
-                _cache.Set(idempotencyKey, await new StreamReader(responseBody).ReadToEndAsync());
+                responseBody.Seek(0, SeekOrigin.Begin);
+                var responseText = await new StreamReader(responseBody).ReadToEndAsync();
 
+                _cache.Set(idempotencyKey, responseText, TimeSpan.FromMinutes(5));
+
+                responseBody.Seek(0, SeekOrigin.Begin);
                 await responseBody.CopyToAsync(originalBodyStream);
+
+                context.Response.Body = originalBodyStream;
             }
             else
             {
@@ -41,5 +51,6 @@ namespace patterns2_infoauth.Middleware
             }
         }
     }
+
 
 }
