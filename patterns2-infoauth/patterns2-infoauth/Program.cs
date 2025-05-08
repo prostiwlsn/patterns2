@@ -149,6 +149,7 @@ using (var serviceScope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseMiddleware<IdempotencyMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<UnstableMiddleware>();
