@@ -129,9 +129,6 @@ public class LoanController : ControllerBase
     /// </summary>
     private IActionResult GetResponseResult<T>(IResult result)
     {
-        if (IsInternalError())
-            return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
-        
         if (result is Success<T> response)
             return Ok(response.Data);
 
@@ -142,27 +139,5 @@ public class LoanController : ControllerBase
             return StatusCode(error.StatusCode, error.Message);
 
         return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
-    }
-
-    /// <summary>
-    /// Симуляция ошибок
-    /// </summary>
-    private bool IsInternalError()
-    {
-        var random = new Random().Next(1, int.MaxValue);
-        var currentMinute = DateTime.Now.Minute;
-
-        if (currentMinute % 2 == 0)
-        {
-            if (random % 100 <= 90) 
-                return true;
-        }
-        else
-        {
-            if (random % 2 == 0)
-                return true;
-        }
-
-        return false;
     }
 }

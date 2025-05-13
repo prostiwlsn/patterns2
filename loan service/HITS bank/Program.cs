@@ -14,11 +14,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Quartz;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+var levelSwitch = new Serilog.Core.LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.ControlledBy(levelSwitch)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .WriteTo.Console()
+    .WriteTo.GrafanaLoki("http://194.59.186.122:3100", new List<LokiLabel> () { new LokiLabel { Key="app", Value="Loan"} })
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connection));
@@ -124,6 +138,9 @@ builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 // Репозитории
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
+// Кэширование
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 // Обновление базы данных
@@ -147,6 +164,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ExceptionsMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<UnstableMiddleware>();
+app.UseMiddleware<IdempotencyMiddleware>();
 
 app.MapControllers();
 

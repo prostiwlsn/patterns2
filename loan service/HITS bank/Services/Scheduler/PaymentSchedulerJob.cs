@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Quartz;
 using RabbitMQ.Client;
+using Serilog;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace HITS_bank.Services.Scheduler;
@@ -25,23 +26,31 @@ public class PaymentSchedulerJob : IJob
     
     public async Task Execute(IJobExecutionContext context)
     {
-        var factory = new ConnectionFactory() { HostName = _amqpConnectionString };
+        try
+        {
+            var factory = new ConnectionFactory() { HostName = _amqpConnectionString };
 
-        using var connection = factory.CreateConnection();
-        using var channel = connection.CreateModel();
-        
-        channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: true);
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
 
-        var dailyPayments = await _schedulerService.GetDailyPaymentMessages();
-        var message = JsonSerializer.Serialize(dailyPayments);
-        var body = Encoding.UTF8.GetBytes(message);
+            channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: true);
 
-        channel.BasicPublish(
-            exchange: "",
-            routingKey: _queueName,
-            basicProperties: null,
-            body: body);
+            var dailyPayments = await _schedulerService.GetDailyPaymentMessages();
+            var message = JsonSerializer.Serialize(dailyPayments);
+            var body = Encoding.UTF8.GetBytes(message);
 
-        await Task.CompletedTask;
+            channel.BasicPublish(
+                exchange: "",
+                routingKey: _queueName,
+                basicProperties: null,
+                body: body);
+
+            await Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            Log.ForContext("TraceId", Guid.NewGuid().ToString())
+                .Error(ex, ex.Message);
+        }
     }
 }

@@ -12,6 +12,7 @@
       }
     ],
     "configProperties": {
+      "Serilog.Capturing.IsStructureValueSupported": false,
       "System.GC.Server": true,
       "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": false
     }

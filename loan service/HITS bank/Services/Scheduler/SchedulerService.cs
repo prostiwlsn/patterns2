@@ -35,6 +35,7 @@ public class SchedulerService : ISchedulerService
                     AccountId = loanEntity.AccountId ?? Guid.Empty,
                     LoanId = loanEntity.Id,
                     Amount = paymentAmount,
+                    TraceId = Guid.NewGuid().ToString(),
                 });
             }
         }

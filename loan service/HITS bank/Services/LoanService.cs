@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using AutoMapper;
 using HITS_bank.Controllers.Dto.Common;
@@ -155,6 +156,7 @@ public class LoanService : ILoanService
         {
             Amount = loanEntity.Amount,
             AccountId = createLoanRequest.AccountId,
+            TractId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString()
         });
         
         return new Success();
@@ -288,6 +290,8 @@ public class LoanService : ILoanService
     /// </summary>
     public async Task<LoanPaymentResultMessage> PayForLoan(LoanPaymentDto loanPayment)
     {
+        var traceId = Guid.NewGuid().ToString();
+        
         // Получение кредита
         LoanEntity? loan = await _loanRepository.GetLoan(loanPayment.RecipientAccountId);
 
@@ -301,6 +305,7 @@ public class LoanService : ILoanService
                     ReturnedAmount = loanPayment.Amount,
                     IsPaymentExpired = loan.EndDate < DateTime.Now,
                 },
+                TraceId = traceId,
                 ErrorMessage = "Loan not found",
                 ErrorStatusCode = StatusCodes.Status404NotFound,
             };
@@ -325,6 +330,7 @@ public class LoanService : ILoanService
                     ReturnedAmount = returnAmount,
                     IsPaymentExpired = loan.EndDate < DateTime.Now,
                 },
+                TraceId = traceId,
             };
         }
         if (result is Error error)
@@ -337,6 +343,7 @@ public class LoanService : ILoanService
                     SenderAccountId = loanPayment.SenderAccountId,
                     ReturnedAmount = loanPayment.Amount,
                 },
+                TraceId = traceId,
                 ErrorMessage = error.Message,
                 ErrorStatusCode = error.StatusCode,
             };
@@ -351,6 +358,7 @@ public class LoanService : ILoanService
                 ReturnedAmount = loanPayment.Amount,
                 IsPaymentExpired = loan.EndDate < DateTime.Now,
             },
+            TraceId = traceId,
             ErrorMessage = "Что-то пошло не так",
             ErrorStatusCode = StatusCodes.Status500InternalServerError,
         };
