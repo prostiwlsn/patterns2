@@ -119,6 +119,11 @@
             Формирование ответа
             </summary>
         </member>
+        <member name="M:HITS_bank.Controllers.LoanController.IsInternalError">
+            <summary>
+            Симуляция ошибок
+            </summary>
+        </member>
         <member name="T:HITS_bank.Data.Entities.LoanEntity">
             <summary>
             Сущность кредита
