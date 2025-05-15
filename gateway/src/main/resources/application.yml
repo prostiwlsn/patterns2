@@ -10,7 +10,7 @@ spring:
         - id: core-service
           uri: http://31.129.99.69:8080
           predicates:
-            - Path=/api/operation/**,/api/account/**,/api/currency/**
+            - Path=/api/operation/**,/api/account/**,/api/currency/**, /api/fcm/**
           filters:
             - name: Retry
               args:
