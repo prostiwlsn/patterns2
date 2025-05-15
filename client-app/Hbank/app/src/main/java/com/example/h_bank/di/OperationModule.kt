@@ -11,6 +11,7 @@ import com.example.h_bank.domain.useCase.GetOperationInfoUseCase
 import com.example.h_bank.domain.useCase.GetOperationsByAccountUseCase
 import com.example.h_bank.domain.useCase.RepayLoanUseCase
 import com.example.h_bank.domain.useCase.ReplenishUseCase
+import com.example.h_bank.domain.useCase.SendFcmTokenUseCase
 import com.example.h_bank.domain.useCase.TransferUseCase
 import com.example.h_bank.domain.useCase.WithdrawUseCase
 import com.example.h_bank.domain.useCase.payment.GetExpiredLoanPaymentsUseCase
@@ -90,4 +91,6 @@ val operationModule = module {
     single<OperationWebSocketApi> {
         OperationWebSocketClient(client = get(named("authClient")))
     }
+
+    factory { SendFcmTokenUseCase(get()) }
 }

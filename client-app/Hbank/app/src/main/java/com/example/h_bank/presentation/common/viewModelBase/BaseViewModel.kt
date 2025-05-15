@@ -15,9 +15,17 @@ abstract class BaseViewModel : ViewModel() {
     private val emptyHandler = CoroutineExceptionHandler { _, _ -> }
 
     private val handler = CoroutineExceptionHandler { _, exception ->
-        if (exception is NoInternetConnectionException) {
-            CoroutineScope(SupervisorJob()).launch(emptyHandler) {
-                pushCommandUseCase(Command.NavigateToNoConnection)
+        when (exception) {
+            is NoInternetConnectionException -> {
+                CoroutineScope(SupervisorJob()).launch(emptyHandler) {
+                    pushCommandUseCase(Command.NavigateToNoConnection)
+                }
+            }
+
+            is ServerErrorException -> {
+                CoroutineScope(SupervisorJob()).launch(emptyHandler) {
+                    pushCommandUseCase(Command.NavigateToServerError)
+                }
             }
         }
     }
@@ -27,3 +35,4 @@ abstract class BaseViewModel : ViewModel() {
 }
 
 class NoInternetConnectionException : Exception()
+class ServerErrorException : Exception()

@@ -111,4 +111,6 @@
     <string name="incoming_transfer">Входящий перевод</string>
     <string name="outgoing_transfer">Исходящий перевод</string>
     <string name="manager">Менеджер</string>
+    <string name="server_error_message">Произошла ошибка на сервере. Пожалуйста, попробуйте снова.</string>
+    <string name="retry">Повторить</string>
 </resources>

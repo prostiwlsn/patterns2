@@ -1,5 +1,6 @@
 package com.example.h_bank.data.repository.payment
 
+import com.example.h_bank.data.FcmTokenRequest
 import com.example.h_bank.data.dto.OperationRequestBody
 import com.example.h_bank.data.dto.PageResponse
 import com.example.h_bank.data.dto.Pageable
@@ -51,5 +52,13 @@ class OperationRepository(
 
     override fun disconnectWebSocket() {
         remoteDataSource.disconnectWebSocket()
+    }
+
+    override suspend fun sendFcmToken(
+        userId: String,
+        isManager: Boolean,
+        fcmToken: String
+    ): RequestResult<Unit> {
+        return remoteDataSource.sendFcmToken(FcmTokenRequest(userId, isManager, fcmToken))
     }
 }

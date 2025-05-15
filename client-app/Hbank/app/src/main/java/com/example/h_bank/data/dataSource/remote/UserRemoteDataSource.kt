@@ -1,5 +1,6 @@
 package com.example.h_bank.data.dataSource.remote
 
+import com.example.h_bank.data.FcmTokenRequest
 import com.example.h_bank.data.dto.UserCreationDto
 import com.example.h_bank.data.dto.UserDto
 import com.example.h_bank.data.network.UserApi
@@ -16,7 +17,7 @@ class UserRemoteDataSource(
     }
 
     suspend fun getCurrentUser(): RequestResult<UserDto> = withContext(Dispatchers.IO) {
-        return@withContext runResultCatching { api.getCurrentUser() }
+        return@withContext runResultCatching(infiniteRetry = true) { api.getCurrentUser() }
     }
 
     suspend fun getUserById(userId: String): RequestResult<UserDto> = withContext(Dispatchers.IO) {
@@ -31,7 +32,8 @@ class UserRemoteDataSource(
         return@withContext runResultCatching { api.unblockUser(userId) }
     }
 
-    suspend fun createUser(request: UserCreationDto): RequestResult<Unit> = withContext(Dispatchers.IO) {
-        return@withContext runResultCatching { api.createUser(request) }
-    }
+    suspend fun createUser(request: UserCreationDto): RequestResult<Unit> =
+        withContext(Dispatchers.IO) {
+            return@withContext runResultCatching { api.createUser(request) }
+        }
 }

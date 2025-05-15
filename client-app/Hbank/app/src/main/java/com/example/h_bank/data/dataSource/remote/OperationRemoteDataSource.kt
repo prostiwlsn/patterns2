@@ -1,5 +1,6 @@
 package com.example.h_bank.data.dataSource.remote
 
+import com.example.h_bank.data.FcmTokenRequest
 import com.example.h_bank.data.dto.OperationRequestBody
 import com.example.h_bank.data.dto.PageResponse
 import com.example.h_bank.data.dto.Pageable
@@ -86,6 +87,10 @@ class OperationRemoteDataSource(
                 api.createOperation(request)
             }
         }
+
+    suspend fun sendFcmToken(request: FcmTokenRequest) = withContext(Dispatchers.IO) {
+        runResultCatching { api.sendFcmToken(request) }
+    }
 
     fun disconnectWebSocket() {
         webSocketApi.disconnect()

@@ -17,6 +17,7 @@ import com.example.h_bank.presentation.loanProcessing.LoanProcessingScreen
 import com.example.h_bank.presentation.main.MainScreen
 import com.example.h_bank.presentation.paymentHistory.PaymentHistoryScreen
 import com.example.h_bank.presentation.replenishment.ReplenishmentScreen
+import com.example.h_bank.presentation.serverErrorScreen.ServerErrorScreen
 import com.example.h_bank.presentation.successfulAccountClosure.SuccessfulAccountClosureScreen
 import com.example.h_bank.presentation.successfulAccountOpening.SuccessfulAccountOpeningScreen
 import com.example.h_bank.presentation.successfulLoanPayment.SuccessfulLoanPaymentScreen
@@ -155,6 +156,11 @@ fun AppNavigation(
         ) {
             ConnectionErrorScreen(navController)
         }
+        composable(
+            route = "serverError"
+        ) {
+            ServerErrorScreen(navController)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -163,6 +169,11 @@ fun AppNavigation(
                 NavigationEvent.NavigateToNoConnection ->
                     if (navController.currentDestination?.route != "connectionError") {
                         navController.navigate("connectionError")
+                    }
+
+                NavigationEvent.NavigateToServerError ->
+                    if (navController.currentDestination?.route != "serverError") {
+                        navController.navigate("serverError")
                     }
             }
         }

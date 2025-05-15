@@ -1,6 +1,7 @@
 package com.example.h_bank.presentation.launch
 
 import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.useCase.SettingsUseCase
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.authorization.RefreshTokenUseCase
@@ -32,16 +33,30 @@ class LaunchViewModel(
     private fun checkAndRefreshToken() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            when (val result = refreshTokenUseCase()) {
-                is RequestResult.Success -> {
-                    settingsUseCase.getSettings()
-                    _state.update { it.copy(isLoading = false, isTokenValid = true) }
-                    _navigationEvent.emit(LaunchNavigationEvent.NavigateToMain)
+            try {
+                when (val result = refreshTokenUseCase()) {
+                    is RequestResult.Success -> {
+                        settingsUseCase.getSettings()
+                        _state.update { it.copy(isLoading = false, isTokenValid = true) }
+                        _navigationEvent.emit(LaunchNavigationEvent.NavigateToMain)
+                    }
+
+                    is RequestResult.Error -> {
+                        println("Refresh token error: ${result.code}, ${result.message}")
+                        _state.update { it.copy(isLoading = false, isTokenValid = false) }
+                        _navigationEvent.emit(LaunchNavigationEvent.NavigateToWelcome)
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        println("No internet connection during refresh token")
+                        _state.update { it.copy(isLoading = false, isTokenValid = false) }
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
                 }
-                else -> {
-                    _state.update { it.copy(isLoading = false, isTokenValid = false) }
-                    _navigationEvent.emit(LaunchNavigationEvent.NavigateToWelcome)
-                }
+            } catch (e: Exception) {
+                println("Unexpected error during refresh token: ${e.message}")
+                _state.update { it.copy(isLoading = false, isTokenValid = false) }
+                throw e // Перебрасываем в CoroutineExceptionHandler
             }
         }
     }

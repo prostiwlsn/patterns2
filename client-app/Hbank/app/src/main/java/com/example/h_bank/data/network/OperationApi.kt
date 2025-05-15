@@ -1,5 +1,6 @@
 package com.example.h_bank.data.network
 
+import com.example.h_bank.data.FcmTokenRequest
 import com.example.h_bank.data.dto.OperationRequestBody
 import com.example.h_bank.data.dto.PageResponse
 import com.example.h_bank.data.dto.payment.OperationDetailsDto
@@ -47,4 +48,7 @@ interface OperationApi {
     suspend fun createOperation(
         @Body request: OperationRequestBody
     )
+
+    @POST("/api/fcm")
+    suspend fun sendFcmToken(@Body request: FcmTokenRequest)
 }

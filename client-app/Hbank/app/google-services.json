@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "693272512414",
+    "project_id": "patterns3",
+    "storage_bucket": "patterns3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:693272512414:android:03418d4d3510df9775388f",
+        "android_client_info": {
+          "package_name": "com.example.h_bank"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0PDjpt3eIB13LuaimkXCoscKI1LJXoKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,16 +4,17 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.h_bank.data.Account
+import com.example.h_bank.data.FirebasePushManager
 import com.example.h_bank.data.Loan
 import com.example.h_bank.data.ThemeMode
 import com.example.h_bank.data.dto.CurrencyDto
-import com.example.h_bank.data.utils.NetworkUtils.onFailure
-import com.example.h_bank.data.utils.NetworkUtils.onSuccess
 import com.example.h_bank.data.utils.RequestResult
+import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.useCase.CloseAccountUseCase
 import com.example.h_bank.domain.useCase.GetCreditRatingUseCase
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
 import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
+import com.example.h_bank.domain.useCase.GetUserIdUseCase
 import com.example.h_bank.domain.useCase.OpenAccountUseCase
 import com.example.h_bank.domain.useCase.SettingsUseCase
 import com.example.h_bank.domain.useCase.authorization.GetMainCommandsUseCase
@@ -21,6 +22,7 @@ import com.example.h_bank.domain.useCase.authorization.LogoutUseCase
 import com.example.h_bank.domain.useCase.authorization.PushCommandUseCase
 import com.example.h_bank.domain.useCase.loan.GetUserLoansUseCase
 import com.example.h_bank.presentation.common.viewModelBase.BaseViewModel
+import com.example.h_bank.presentation.common.viewModelBase.ServerErrorException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +45,8 @@ class MainViewModel(
     private val logoutUseCase: LogoutUseCase,
     private val settingsUseCase: SettingsUseCase,
     private val getCreditRatingUseCase: GetCreditRatingUseCase,
+    private val getUserIdUseCase: GetUserIdUseCase,
+    private val firebasePushManager: FirebasePushManager,
     getAuthorizationCommandsUseCase: GetMainCommandsUseCase,
 ) : BaseViewModel() {
 
@@ -96,33 +100,61 @@ class MainViewModel(
     private fun loadCurrentUser() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            getCurrentUserUseCase().onSuccess { result ->
-                _state.update { it.copy(currentUserId = result.data.id) }
-                loadInitialLoans()
-                loadUserAccounts()
-                loadCreditRating()
+            try {
+                when (val result = getCurrentUserUseCase()) {
+                    is RequestResult.Success -> {
+                        _state.update { it.copy(currentUserId = result.data.id) }
+                        loadInitialLoans()
+                        loadUserAccounts()
+                        loadCreditRating()
+                    }
+
+                    is RequestResult.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        throw ServerErrorException()
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        _state.update { it.copy(isLoading = false) }
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
+                throw e
             }
-                .onFailure { }
         }
     }
 
     private fun loadInitialLoans() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            when (val result =
-                getUserLoansUseCase(state.value.currentUserId, pageNumber = 1, pageSize = 3)) {
-                is RequestResult.Success -> {
-                    _state.update { it.copy(isLoading = false, initialLoans = result.data.items) }
-                    setupLoansPager()
-                }
+            try {
+                when (val result =
+                    getUserLoansUseCase(state.value.currentUserId, pageNumber = 1, pageSize = 3)) {
+                    is RequestResult.Success -> {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                initialLoans = result.data.items
+                            )
+                        }
+                        setupLoansPager()
+                    }
 
-                is RequestResult.Error -> {
-                    _state.update { it.copy(isLoading = false) }
-                }
+                    is RequestResult.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        throw ServerErrorException()
+                    }
 
-                is RequestResult.NoInternetConnection -> {
-                    _state.update { it.copy(isLoading = false) }
+                    is RequestResult.NoInternetConnection -> {
+                        _state.update { it.copy(isLoading = false) }
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
                 }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
+                throw e
             }
         }
     }
@@ -144,31 +176,57 @@ class MainViewModel(
     private fun loadUserAccounts() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            getUserAccountsUseCase(state.value.currentUserId)
-                .onSuccess { result ->
-                    _state.update { it.copy(accounts = result.data, isLoading = false) }
+            try {
+                when (val result = getUserAccountsUseCase(state.value.currentUserId)) {
+                    is RequestResult.Success -> {
+                        _state.update { it.copy(accounts = result.data, isLoading = false) }
+                    }
+
+                    is RequestResult.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        throw ServerErrorException()
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        _state.update { it.copy(isLoading = false) }
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
                 }
-                .onFailure {
-                    _state.update { it.copy(isLoading = false) }
-                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
+                throw e
+            }
         }
     }
 
     private fun loadCreditRating() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            getCreditRatingUseCase(state.value.currentUserId)
-                .onSuccess { result ->
-                    _state.update {
-                        it.copy(
-                            creditRating = result.data.creditRating,
-                            isLoading = false
-                        )
+            try {
+                when (val result = getCreditRatingUseCase(state.value.currentUserId)) {
+                    is RequestResult.Success -> {
+                        _state.update {
+                            it.copy(
+                                creditRating = result.data.creditRating,
+                                isLoading = false
+                            )
+                        }
+                    }
+
+                    is RequestResult.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        throw ServerErrorException()
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        _state.update { it.copy(isLoading = false) }
+                        pushCommandUseCase(Command.NavigateToNoConnection)
                     }
                 }
-                .onFailure {
-                    _state.update { it.copy(isLoading = false) }
-                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
+                throw e
+            }
         }
     }
 
@@ -192,10 +250,23 @@ class MainViewModel(
 
     fun onCurrencyClicked(currency: CurrencyDto) {
         viewModelScope.launch {
-            openAccountUseCase(currency).onSuccess {
-                _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
+            try {
+                when (val result = openAccountUseCase(currency)) {
+                    is RequestResult.Success -> {
+                        _navigationEvent.emit(MainNavigationEvent.NavigateToSuccessfulAccountOpening)
+                    }
+
+                    is RequestResult.Error -> {
+                        throw ServerErrorException()
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
+                }
+            } catch (e: Exception) {
+                throw e
             }
-                .onFailure { }
         }
     }
 
@@ -239,28 +310,58 @@ class MainViewModel(
 
     fun onCloseAccountClicked(account: Account) {
         viewModelScope.launch {
-            closeAccountUseCase(account.id).onSuccess {
-                settingsUseCase.removeAccountFromHidden(account.id)
-            }.onSuccess {
-                _navigationEvent.emit(
-                    MainNavigationEvent.NavigateToSuccessfulAccountClosure
-                )
+            try {
+                when (val result = closeAccountUseCase(account.id)) {
+                    is RequestResult.Success -> {
+                        settingsUseCase.removeAccountFromHidden(account.id)
+                        _navigationEvent.emit(
+                            MainNavigationEvent.NavigateToSuccessfulAccountClosure
+                        )
+                    }
+
+                    is RequestResult.Error -> {
+                        throw ServerErrorException()
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
+                }
+            } catch (e: Exception) {
+                throw e
             }
-                .onFailure { }
         }
     }
 
     fun onLogoutClicked() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            logoutUseCase()
-                .onSuccess {
+            try {
+                val userId = getUserIdUseCase() ?: run {
                     _state.update { it.copy(isLoading = false) }
                     _navigationEvent.emit(MainNavigationEvent.NavigateToWelcome)
+                    return@launch
                 }
-                .onFailure {
-                    _state.update { it.copy(isLoading = false) }
+                when (val result = logoutUseCase()) {
+                    is RequestResult.Success -> {
+                        _state.update { it.copy(isLoading = false) }
+                        _navigationEvent.emit(MainNavigationEvent.NavigateToWelcome)
+                    }
+
+                    is RequestResult.Error -> {
+                        _state.update { it.copy(isLoading = false) }
+                        throw ServerErrorException()
+                    }
+
+                    is RequestResult.NoInternetConnection -> {
+                        _state.update { it.copy(isLoading = false) }
+                        pushCommandUseCase(Command.NavigateToNoConnection)
+                    }
                 }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
+                throw e
+            }
         }
     }
 
