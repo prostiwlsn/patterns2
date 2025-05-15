@@ -22,7 +22,7 @@ public class FirebaseConfig {
                 .setCredentials(googleCredentials)
                 .build();
         
-        FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions, "my-app");
+        FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions, "patterns2");
         return FirebaseMessaging.getInstance(app);
     }
 }
