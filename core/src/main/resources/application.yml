@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${JDBC_URL:jdbc:postgresql://localhost:5432/patterns}
-    username: ${JDBC_USER:postgres}
-    password: ${JDBC_PASSWORD:postgres}
+    url: ${JDBC_URL:jdbc:postgresql://31.129.99.69:5430/patterns}
+    username: ${JDBC_USER:postgresss}
+    password: ${JDBC_PASSWORD:postgresss}
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
@@ -24,3 +24,6 @@ spring:
 security:
   jwt:
     secret: "somejwttokenlmaosomejwttokenlmaosomejwttokenlmaosomejwttokenlmao"
+firebase:
+  credentials:
+    path: classpath:patterns3-firebase-adminsdk-fbsvc-8e13021175.json
