@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1-4" author="admin">
+        <createTable tableName="fcm">
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" primaryKey="true"></constraints>
+            </column>
+            <column name="is_manager" type="boolean">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="fcm" type="text">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

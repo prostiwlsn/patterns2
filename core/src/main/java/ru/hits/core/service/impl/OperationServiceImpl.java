@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hits.core.domain.dto.currency.CurrencyEnum;
+import ru.hits.core.service.FCMService;
 import ru.hits.core.domain.dto.operation.*;
 import ru.hits.core.domain.enums.RoleEnum;
 import ru.hits.core.domain.dto.user.UserInfoRequest;
@@ -45,6 +46,7 @@ public class OperationServiceImpl implements OperationService {
     private final OperationMapper operationMapper;
     private final OperationsWebSocketHandler operationsWebSocketHandler;
     private final RabbitMQMessageSender rabbitMQMessageSender;
+    private final NotificationService notificationService;
 
     private final UserInfoService userInfoService;
     private final LoanPaymentService loanPaymentService;
@@ -154,6 +156,8 @@ public class OperationServiceImpl implements OperationService {
                 ).toString()
         );
 
+        notificationService.sendNotifications(operationRequestBody.getOperationType(), senderAccount, recipientAccount, operation.getAmount());
+
         return operationDto;
     }
 
@@ -220,6 +224,8 @@ public class OperationServiceImpl implements OperationService {
 
         operationsWebSocketHandler.sendUpdate(senderAccount.getId().toString(), operationDto.toString());
 
+        notificationService.sendNotifications(operationRequestBody.getOperationType(), senderAccount, null, operation.getAmount());
+
         return operationDto;
     }
 
@@ -260,6 +266,8 @@ public class OperationServiceImpl implements OperationService {
 
         operationsWebSocketHandler.sendUpdate(recipientAccount.getId().toString(), operationDto.toString());
 
+        notificationService.sendNotifications(operationRequestBody.getOperationType(), null, recipientAccount, operation.getAmount());
+
         return operationDto;
     }
 
@@ -299,6 +307,8 @@ public class OperationServiceImpl implements OperationService {
         );
 
         operationsWebSocketHandler.sendUpdate(senderAccount.getId().toString(), operationDto.toString());
+
+        notificationService.sendNotifications(operationRequestBody.getOperationType(), senderAccount, null, operation.getAmount());
 
         return operationDto;
     }
