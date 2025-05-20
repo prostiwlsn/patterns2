@@ -1,5 +1,6 @@
 package com.example.h_bankpro.data.dataSource.remote
 
+import com.example.h_bankpro.data.FcmTokenRequest
 import com.example.h_bankpro.data.dto.OperationDto
 import com.example.h_bankpro.data.dto.OperationShortDto
 import com.example.h_bankpro.data.dto.PageResponse
@@ -62,6 +63,10 @@ class OperationRemoteDataSource(
     fun getOperationsFlow(accountId: String): Flow<OperationShortDto> {
         webSocketApi.disconnect()
         return webSocketApi.connect(accountId)
+    }
+
+    suspend fun sendFcmToken(request: FcmTokenRequest) = withContext(Dispatchers.IO) {
+        runResultCatching { api.sendFcmToken(request) }
     }
 
     fun disconnectWebSocket() {

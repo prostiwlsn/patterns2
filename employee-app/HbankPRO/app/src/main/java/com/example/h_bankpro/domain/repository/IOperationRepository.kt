@@ -30,4 +30,11 @@ interface IOperationRepository {
         userId: String,
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>>
+
+    suspend fun sendFcmToken(
+        userId: String,
+        isManager: Boolean,
+        fcmToken: String
+    ): RequestResult<Unit>
+
 }
