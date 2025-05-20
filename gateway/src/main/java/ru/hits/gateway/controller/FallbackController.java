@@ -11,21 +11,21 @@ public class FallbackController {
     @GetMapping("/fallback/user")
     public ResponseEntity<String> userFallback() {
         return ResponseEntity
-            .status(HttpStatus.SERVICE_UNAVAILABLE)
+            .status(503)
             .body("User Service временно недоступен. Попробуйте позже.");
     }
 
     @GetMapping("/fallback/core")
     public ResponseEntity<String> coreFallback() {
         return ResponseEntity
-            .status(HttpStatus.SERVICE_UNAVAILABLE)
+            .status(503)
             .body("Core Service временно недоступен. Попробуйте позже.");
     }
 
     @GetMapping("/fallback/loan")
     public ResponseEntity<String> loanFallback() {
         return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .status(503)
                 .body("Loan Service временно недоступен. Попробуйте позже.");
     }
 }
