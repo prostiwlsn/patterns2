@@ -26,4 +26,4 @@ security:
     secret: "somejwttokenlmaosomejwttokenlmaosomejwttokenlmaosomejwttokenlmao"
 firebase:
   credentials:
-    path: classpath:patterns3-firebase-adminsdk-fbsvc-8e13021175.json
+    path: classpath:patterns3-firebase-adminsdk-fbsvc-1dc3cc4950.json
