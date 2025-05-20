@@ -50,11 +50,15 @@ public class NotificationService {
             return;
         }
 
+        log.info("Производится отправка сообщения следующему токену {}", token);
+
         sendNotification(token.getFcm(), title, body);
     }
 
     public void sendToEmployees(String title, String body) {
         List<String> employeeFcmTokens = fcmService.getEmployeeTokens();
+
+        log.info("Производится отправка сообщения следующим токенам {}", employeeFcmTokens);
 
         employeeFcmTokens.forEach(token -> sendNotification(token, title, body));
     }
@@ -70,6 +74,7 @@ public class NotificationService {
 
         try {
             firebaseMessaging.send(message);
+            log.info("Отправлено сообщение {}", message);
         } catch (FirebaseMessagingException e) {
             log.error("Не удалось отправить уведомление", e);
         }

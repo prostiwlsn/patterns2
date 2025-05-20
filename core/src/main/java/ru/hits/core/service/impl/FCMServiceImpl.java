@@ -1,6 +1,7 @@
 package ru.hits.core.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.hits.core.domain.entity.FCMEntity;
 import ru.hits.core.repository.FCMRepository;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FCMServiceImpl implements FCMService {
 
     private final FCMRepository fcmRepository;
@@ -23,10 +25,12 @@ public class FCMServiceImpl implements FCMService {
         if (fcmToken != null) {
             fcmToken.setFcm(FCMToken);
             fcmRepository.save(fcmToken);
+            log.info("Сохранение токена {}", fcmToken);
             return;
         }
 
         fcmRepository.save(new FCMEntity(userId, isManager, FCMToken));
+        log.info("Сохранение токена {}", FCMToken);
     }
 
     @Override
