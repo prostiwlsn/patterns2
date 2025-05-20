@@ -74,7 +74,7 @@ public class NotificationService {
 
         try {
             firebaseMessaging.send(message);
-            log.info("Отправлено сообщение {}", message);
+            log.info("Отправлено сообщение токен: {}, тайтл: {}, сообщение: {}", token, title, body);
         } catch (FirebaseMessagingException e) {
             log.error("Не удалось отправить уведомление", e);
         }
