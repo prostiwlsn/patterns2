@@ -24,6 +24,7 @@ public class FCMServiceImpl implements FCMService {
 
         if (fcmToken != null) {
             fcmToken.setFcm(FCMToken);
+            fcmToken.setIsManager(isManager);
             fcmRepository.save(fcmToken);
             log.info("Сохранение токена {}", fcmToken);
             return;
