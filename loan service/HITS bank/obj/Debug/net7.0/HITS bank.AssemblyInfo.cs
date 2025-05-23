@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HITS bank")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abfafd83cebe66f986fe2cfc5eaa45e33150bcf9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2762ae8595aa67bf56ca9d41c1b16030713e8e86")]
 [assembly: System.Reflection.AssemblyProductAttribute("HITS bank")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HITS bank")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -125,7 +125,12 @@ public class LoanService : ILoanService
         createLoanRequest.Amount = (int)amountInUsd;
         
         // Проверка мастер счета
-        var masterAccount = await GetMasterAccountResponse();
+        MasterAccountResponseWrapper? masterAccount;
+
+        do
+        {
+            masterAccount = await GetMasterAccountResponse();
+        } while ((masterAccount == null || !masterAccount.Success) && UnstableUtils.CanRetry());
 
         if (masterAccount == null)
             return new Error(StatusCodes.Status404NotFound, "Master account not found");
@@ -190,6 +195,7 @@ public class LoanService : ILoanService
             var content = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
             var result = JsonSerializer.Deserialize<MasterAccountResponseWrapper?>(content);
             taskCompletionSource.SetResult(result);
+            UnstableUtils.CountResult(result != null && result.Success);
         };
 
         channel.BasicConsume(queueName, true, consumer);
