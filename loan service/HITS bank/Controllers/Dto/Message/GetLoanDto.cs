@@ -9,4 +9,6 @@ public class GetLoanDto
     public Guid AccountId { get; set; }
     
     public double Amount { get; set; }
+    
+    public string TractId { get; set; }
 }

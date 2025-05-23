@@ -109,7 +109,6 @@ C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\staticwebassets.build.json
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\staticwebassets.development.json
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\scopedcss\bundle\HITS bank.styles.css
-C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.csproj.CopyComplete
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.dll
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\refint\HITS bank.dll
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.xml
@@ -122,3 +121,33 @@ C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Quartz.dll
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Quartz.Extensions.DependencyInjection.dll
 C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Quartz.Extensions.Hosting.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.sourcelink.json
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\obj\Debug\net7.0\HITS bank.csproj.Up2Date
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Logging.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Options.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Microsoft.Extensions.Primitives.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.AspNetCore.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Enrichers.Environment.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Extensions.Hosting.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Extensions.Logging.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Formatting.Compact.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Settings.Configuration.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Sinks.Console.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Sinks.Debug.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Sinks.File.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\Serilog.Sinks.Grafana.Loki.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\System.Diagnostics.DiagnosticSource.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\System.IO.Pipelines.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\System.Text.Encodings.Web.dll
+C:\Users\Aleksei\RiderProjects\patterns2\loan service\HITS bank\bin\Debug\net7.0\System.Text.Json.dll

@@ -8,6 +8,8 @@ using HITS_bank.Repositories;
 using HITS_bank.Services.Converter;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Serilog;
+using Serilog.Context;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace HITS_bank.Services.BackgroundServices;
@@ -61,15 +63,27 @@ public class LoanPaymentConsumer : BackgroundService
     // Получение сообщения
     private void Consume(object? ch, BasicDeliverEventArgs eventArgs)
     {
-        var content = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-        var replyTo = eventArgs.BasicProperties.ReplyTo;
-        _correlationId = eventArgs.BasicProperties.CorrelationId;
-        _channel.BasicAck(eventArgs.DeliveryTag, false);
-
-        Task.Run(async () =>
+        try
         {
-            await ReturnAnswer(content, replyTo);
-        }).GetAwaiter().GetResult();
+            var content = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+            var replyTo = eventArgs.BasicProperties.ReplyTo;
+            _correlationId = eventArgs.BasicProperties.CorrelationId;
+            _channel.BasicAck(eventArgs.DeliveryTag, false);
+
+            Task.Run(async () => { await ReturnAnswer(content, replyTo); }).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            string? traceId = null;
+            
+            if (eventArgs.BasicProperties.Headers?.TryGetValue("TraceId", out var traceIdBytes) == true)
+            {
+                traceId = Encoding.UTF8.GetString((byte[])traceIdBytes);
+            }
+            
+            Log.ForContext("TraceId", traceId)
+                .Error(ex, ex.Message);
+        }
     }
     
     // Возврат ответа на сообщение

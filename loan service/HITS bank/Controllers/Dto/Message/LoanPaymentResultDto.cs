@@ -29,6 +29,7 @@ public class LoanPaymentResultMessage
     public bool Success { get; set; }
     public LoanPaymentResultData? Data { get; set; } = null;
     public string? ErrorMessage { get; set; }
+    public string TraceId { get; set; }
 
     public int? ErrorStatusCode { get; set; }
 }

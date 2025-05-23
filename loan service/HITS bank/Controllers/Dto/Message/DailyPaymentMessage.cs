@@ -8,4 +8,6 @@ public class DailyPaymentMessage
     public Guid LoanId { get; set; }
     
     public double Amount { get; set; }
+    
+    public string TraceId { get; set; }
 }
