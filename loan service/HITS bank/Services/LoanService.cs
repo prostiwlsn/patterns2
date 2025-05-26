@@ -357,7 +357,7 @@ public class LoanService : ILoanService
         
         return new LoanPaymentResultMessage
         {
-            Success = false,
+            Success = UnstableUtils.IsRandomError(),
             Data = new LoanPaymentResultData
             {
                 SenderAccountId = loanPayment.SenderAccountId,

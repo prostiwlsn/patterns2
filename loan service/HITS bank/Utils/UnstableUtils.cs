@@ -19,4 +19,23 @@ public class UnstableUtils
     {
         return _successfulCount / (_failedCount + _successfulCount) <= 0.7f;
     }
+
+    public static bool IsRandomError()
+    {
+        var random = new Random().Next(1, int.MaxValue);
+        var currentMinute = DateTime.Now.Minute;
+
+        if (currentMinute % 2 == 0)
+        {
+            if (random % 100 <= 90)
+                return true;
+        }
+        else
+        {
+            if (random % 2 == 0)
+                return true;
+        }
+
+        return false;
+    }
 }
