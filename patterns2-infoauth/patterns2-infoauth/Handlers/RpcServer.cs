@@ -107,13 +107,13 @@ namespace patterns2_infoauth.Handlers
                     body: responseBytes);
 
                 stopwatch.Stop();
-                _logger.LogInformation("Completed AMQP HandleGetUserInfo after " + stopwatch.ElapsedMilliseconds + " ms");
+                _logger.LogInformation("Completed AMQP HandleGetUserInfo after {ResponseTimeMs} ms", stopwatch.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error publishing GetUser response: " + ex.Message);
                 stopwatch.Stop();
-                _logger.LogError("Error processing AMQP HandleGetUserInfo after " + stopwatch.ElapsedMilliseconds + " ms");
+                _logger.LogError("Error processing AMQP HandleGetUserInfo after {ResponseTimeMs} ms", stopwatch.ElapsedMilliseconds);
             }
 
             try
