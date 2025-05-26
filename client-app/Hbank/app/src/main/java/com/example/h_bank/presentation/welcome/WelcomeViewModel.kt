@@ -4,7 +4,6 @@ import com.example.h_bank.data.FirebasePushManager
 import com.example.h_bank.data.utils.RequestResult
 import com.example.h_bank.domain.entity.authorization.Command
 import com.example.h_bank.domain.useCase.GetCurrentUserUseCase
-import com.example.h_bank.domain.useCase.GetUserAccountsUseCase
 import com.example.h_bank.domain.useCase.GetUserIdUseCase
 import com.example.h_bank.domain.useCase.SaveTokenUseCase
 import com.example.h_bank.domain.useCase.SendFcmTokenUseCase
@@ -23,7 +22,6 @@ class WelcomeViewModel(
     override val pushCommandUseCase: PushCommandUseCase,
     private val saveTokenUseCase: SaveTokenUseCase,
     private val settingsUseCase: SettingsUseCase,
-    private val getUserAccountsUseCase: GetUserAccountsUseCase,
     private val getUserIdUseCase: GetUserIdUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val firebasePushManager: FirebasePushManager,
@@ -80,36 +78,25 @@ class WelcomeViewModel(
                             }
                         }
                     }
-                    when (val accountsResult = getUserAccountsUseCase(userId)) {
-                        is RequestResult.Success -> {
-                            if (isRegistration) {
-                                val fcmToken = firebasePushManager.getFcmToken()
-                                if (fcmToken != null) {
-                                    when (val tokenResult =
-                                        sendFcmTokenUseCase(userId, isManager = false, fcmToken)) {
-                                        is RequestResult.Success<Unit> -> {
-                                        }
+                    if (isRegistration && userId != null) {
+                        val fcmToken = firebasePushManager.getFcmToken()
+                        if (fcmToken != null) {
+                            when (val tokenResult =
+                                sendFcmTokenUseCase(userId, isManager = false, fcmToken)) {
+                                is RequestResult.Success<Unit> -> {
+                                }
 
-                                        is RequestResult.Error -> {
-                                        }
+                                is RequestResult.Error -> {
+                                }
 
-                                        is RequestResult.NoInternetConnection -> {
-                                        }
-                                    }
+                                is RequestResult.NoInternetConnection -> {
                                 }
                             }
-                            _state.update { it.copy(isLoading = false) }
-                            _navigationEvent.emit(WelcomeNavigationEvent.NavigateToMain)
-                        }
-
-                        is RequestResult.Error -> {
-                        }
-
-                        is RequestResult.NoInternetConnection -> {
-                            _state.update { it.copy(isLoading = false) }
-                            pushCommandUseCase(Command.NavigateToNoConnection)
+                        } else {
                         }
                     }
+                    _state.update { it.copy(isLoading = false) }
+                    _navigationEvent.emit(WelcomeNavigationEvent.NavigateToMain)
                 } else {
                     _state.update { it.copy(isLoading = false) }
                     pushCommandUseCase(Command.NavigateToServerError)

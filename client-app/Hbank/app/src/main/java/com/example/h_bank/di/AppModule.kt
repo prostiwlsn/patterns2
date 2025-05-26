@@ -34,7 +34,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 val appModule = module {
     single<DataStore<Preferences>> { androidContext().dataStore }
-    viewModel { WelcomeViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { WelcomeViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { LaunchViewModel(get(), get(), get()) }
     viewModel {
         MainViewModel(
