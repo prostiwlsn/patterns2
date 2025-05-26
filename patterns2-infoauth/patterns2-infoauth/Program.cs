@@ -58,7 +58,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<AuthMessageHandler>();
 
 var rabbitMqConnectionString = builder.Configuration.GetConnectionString("BusConnection");
-builder.Services.AddSingleton(new RpcServer(builder.Services.BuildServiceProvider(), rabbitMqConnectionString));
+builder.Services.AddSingleton<RpcServer>();
 
 builder.Services.AddSwaggerGen(option =>
 {

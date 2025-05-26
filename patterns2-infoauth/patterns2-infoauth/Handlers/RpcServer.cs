@@ -3,6 +3,8 @@ using RabbitMQ.Client;
 using patterns2_infoauth.Model;
 using System.Text;
 using System.Text.Json;
+using Serilog;
+using System.Diagnostics;
 
 namespace patterns2_infoauth.Handlers
 {
@@ -11,13 +13,15 @@ namespace patterns2_infoauth.Handlers
         private readonly IServiceProvider _serviceProvider;
         private readonly IConnection _connection;
         private readonly IModel _channel;
+        private readonly ILogger<RpcServer> _logger;
 
         private const string _userInfoQueueName = "userinfo";
         private const string _sessionStatusQueueName = "sessionstatus";
 
-        public RpcServer(IServiceProvider serviceProvider, string rabbitMqConnectionString)
+        public RpcServer(IServiceProvider serviceProvider, ILogger<RpcServer> logger)
         {
             _serviceProvider = serviceProvider;
+            _logger = logger;
 
             var factory = new ConnectionFactory() { Uri = new Uri(rabbitMqConnectionString) };
             _connection = factory.CreateConnection();
@@ -62,10 +66,13 @@ namespace patterns2_infoauth.Handlers
             var props = ea.BasicProperties;
             var replyProps = _channel.CreateBasicProperties();
             replyProps.CorrelationId = props.CorrelationId;
+            var stopwatch = Stopwatch.StartNew();
 
             GetUserResponse response;
             try
             {
+                _logger.LogInformation("Started processing AMQP HandleGetUserInfo");
+
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(message);
@@ -83,6 +90,14 @@ namespace patterns2_infoauth.Handlers
 
             try
             {
+                Random rnd = new Random();
+                int result = rnd.Next(1, 100);
+
+                if (result > 50)
+                {
+                    throw new Exception();
+                }
+
                 Console.WriteLine(JsonSerializer.Serialize(response));
                 var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
                 _channel.BasicPublish(
@@ -90,10 +105,15 @@ namespace patterns2_infoauth.Handlers
                     routingKey: props.ReplyTo,
                     basicProperties: replyProps,
                     body: responseBytes);
+
+                stopwatch.Stop();
+                _logger.LogInformation("Completed AMQP HandleGetUserInfo after " + stopwatch.ElapsedMilliseconds + " ms");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error publishing GetUser response: " + ex.Message);
+                stopwatch.Stop();
+                _logger.LogError("Error processing AMQP HandleGetUserInfo after " + stopwatch.ElapsedMilliseconds + " ms");
             }
 
             try
@@ -152,6 +172,8 @@ namespace patterns2_infoauth.Handlers
                 Console.WriteLine("Error acknowledging GetSessionStatus message: " + ex.Message);
             }
         }
+
+        private string rabbitMqConnectionString = "amqp://guest:guest@194.59.186.122:5672/";
 
         public void Dispose()
         {
