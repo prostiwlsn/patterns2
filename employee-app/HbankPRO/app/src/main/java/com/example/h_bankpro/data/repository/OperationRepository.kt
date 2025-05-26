@@ -1,5 +1,6 @@
 package com.example.h_bankpro.data.repository
 
+import com.example.h_bankpro.data.FcmTokenRequest
 import com.example.h_bankpro.data.dataSource.remote.OperationRemoteDataSource
 import com.example.h_bankpro.data.dto.OperationDto
 import com.example.h_bankpro.data.dto.OperationShortDto
@@ -37,4 +38,12 @@ class OperationRepository(
         pageable: Pageable
     ): RequestResult<PageResponse<OperationShortDto>> =
         remoteDataSource.getExpiredLoanPayments(loanId, userId, pageable)
+
+    override suspend fun sendFcmToken(
+        userId: String,
+        isManager: Boolean,
+        fcmToken: String
+    ): RequestResult<Unit> {
+        return remoteDataSource.sendFcmToken(FcmTokenRequest(userId, isManager, fcmToken))
+    }
 }

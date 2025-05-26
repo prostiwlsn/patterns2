@@ -1,8 +1,11 @@
 package com.example.h_bankpro.presentation
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,7 +13,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.h_bankpro.data.ThemeMode
 import com.example.h_bankpro.data.UserSettings
 import com.example.h_bankpro.di.accountModule
@@ -26,7 +32,6 @@ import com.example.h_bankpro.di.userModule
 import com.example.h_bankpro.domain.useCase.SettingsUseCase
 import com.example.h_bankpro.presentation.navigation.AppNavigation
 import com.example.h_bankpro.ui.theme.HbankPROTheme
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -39,19 +44,26 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("NewApi", "UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission()
+        }
+
         startKoin {
             androidLogger()
             androidContext(this@MainActivity)
-            modules(settingsModule)
-            modules(networkModule)
-            modules(tokenModule)
-            modules(logoutModule)
-            modules(authorizationModule)
-            modules(appModule)
-            modules(loanModule)
-            modules(userModule)
-            modules(accountModule)
-            modules(operationModule)
+            modules(
+                settingsModule,
+                networkModule,
+                tokenModule,
+                logoutModule,
+                authorizationModule,
+                appModule,
+                loanModule,
+                userModule,
+                accountModule,
+                operationModule
+            )
         }
         handleIntent(intent)
         enableEdgeToEdge()
@@ -66,7 +78,6 @@ class MainActivity : ComponentActivity() {
                 .isAppearanceLightStatusBars = false
             HbankPROTheme(themeMode = settings.theme) {
                 Scaffold { AppNavigation() }
-
             }
         }
     }
@@ -84,13 +95,28 @@ class MainActivity : ComponentActivity() {
                 if (segments.size >= 2) {
                     val accessToken = segments[0]
                     val refreshToken = segments[1]
-                    GlobalScope.launch {
+                    lifecycleScope.launch {
                         AuthEventBus.emitTokens(accessToken, refreshToken)
                     }
                 } else {
                 }
             } else {
             }
-        } ?: { }
+        } ?: {}
+    }
+
+    private fun requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1001
+            )
+        } else {
+        }
     }
 }

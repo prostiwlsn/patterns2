@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 class NavigationViewModel(
     override val pushCommandUseCase: PushCommandUseCase,
     getAuthorizationCommandsUseCase: GetCommandUseCase,
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
@@ -22,6 +22,9 @@ class NavigationViewModel(
             when (command) {
                 is Command.NavigateToNoConnection ->
                     _navigationEvent.emit(NavigationEvent.NavigateToNoConnection)
+
+                is Command.NavigateToServerError ->
+                    _navigationEvent.emit(NavigationEvent.NavigateToServerError)
 
                 else -> Unit
             }

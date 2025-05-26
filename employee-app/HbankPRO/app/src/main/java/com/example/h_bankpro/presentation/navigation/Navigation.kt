@@ -20,6 +20,7 @@ import com.example.h_bankpro.presentation.successfulRateCreation.SuccessfulRateC
 import com.example.h_bankpro.presentation.successfulRateEditing.SuccessfulRateEditingScreen
 import com.example.h_bankpro.presentation.successfulUserCreation.SuccessfulUserCreationScreen
 import com.example.h_bankpro.presentation.operationInfo.OperationInfoScreen
+import com.example.h_bankpro.presentation.serverError.ServerErrorScreen
 import com.example.h_bankpro.presentation.successfulRateDeletion.SuccessfulRateDeletionScreen
 import com.example.h_bankpro.presentation.user.UserScreen
 import com.example.h_bankpro.presentation.userCreation.UserCreationScreen
@@ -133,6 +134,11 @@ fun AppNavigation(
         ) {
             ConnectionErrorScreen(navController)
         }
+        composable(
+            route = "serverError"
+        ) {
+            ServerErrorScreen(navController)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -141,6 +147,11 @@ fun AppNavigation(
                 NavigationEvent.NavigateToNoConnection ->
                     if (navController.currentDestination?.route != "connectionError") {
                         navController.navigate("connectionError")
+                    }
+
+                NavigationEvent.NavigateToServerError ->
+                    if (navController.currentDestination?.route != "serverError") {
+                        navController.navigate("serverError")
                     }
             }
         }

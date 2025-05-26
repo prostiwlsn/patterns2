@@ -4,10 +4,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 object AuthEventBus {
-    private val _authEvents = MutableSharedFlow<Pair<String, String>>(replay = 0)
+    private val _authEvents = MutableSharedFlow<Pair<String?, String?>>()
     val authEvents = _authEvents.asSharedFlow()
 
-    suspend fun emitTokens(accessToken: String, refreshToken: String) {
-        _authEvents.emit(accessToken to refreshToken)
+    var isRegistration: Boolean = false
+
+    suspend fun emitTokens(accessToken: String?, refreshToken: String?) {
+        _authEvents.emit(Pair(accessToken, refreshToken))
     }
 }

@@ -16,7 +16,7 @@ class UserRemoteDataSource(
     }
 
     suspend fun getCurrentUser(): RequestResult<UserDto> = withContext(Dispatchers.IO) {
-        runResultCatching { api.getCurrentUser() }
+        return@withContext runResultCatching(infiniteRetry = true) { api.getCurrentUser() }
     }
 
     suspend fun getUserById(userId: String): RequestResult<UserDto> = withContext(Dispatchers.IO) {

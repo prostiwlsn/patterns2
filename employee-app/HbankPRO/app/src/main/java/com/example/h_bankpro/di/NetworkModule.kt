@@ -2,6 +2,8 @@ package com.example.h_bankpro.di
 
 import com.example.h_bankpro.data.dataSource.remote.OperationWebSocketDataSource
 import com.example.h_bankpro.data.network.AuthInterceptor
+import com.example.h_bankpro.data.network.IdempotencyInterceptor
+import com.example.h_bankpro.data.network.IdempotencyKeyManager
 import com.example.h_bankpro.data.network.OperationWebSocketApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -13,11 +15,14 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val networkModule = module {
+    single { IdempotencyKeyManager(get()) }
+
     single(named("baseClient")) {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            .addInterceptor(IdempotencyInterceptor(get()))
             .build()
     }
 
@@ -27,6 +32,7 @@ val networkModule = module {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .addInterceptor(AuthInterceptor(get()))
+            .addInterceptor(IdempotencyInterceptor(get()))
             .build()
     }
 
@@ -57,7 +63,7 @@ val networkModule = module {
     single<Retrofit>(named("accountApi")) {
         Retrofit.Builder()
             .client(get(named("authClient")))
-            .baseUrl("http://83.222.27.120:8080/api/")
+            .baseUrl("http://31.129.99.69:8081/api/")
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
