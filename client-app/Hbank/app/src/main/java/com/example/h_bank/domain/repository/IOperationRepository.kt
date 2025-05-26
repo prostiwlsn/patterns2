@@ -32,5 +32,11 @@ interface IOperationRepository {
 
     suspend fun createOperation(request: OperationRequestBody): RequestResult<Unit>
 
+    suspend fun sendFcmToken(
+        userId: String,
+        isManager: Boolean,
+        fcmToken: String
+    ): RequestResult<Unit>
+
     fun disconnectWebSocket()
 }

@@ -11,17 +11,19 @@ import kotlinx.coroutines.withContext
 class AccountRemoteDataSource(
     private val api: AccountApi
 ) {
-    suspend fun getUserAccounts(userId: String): RequestResult<List<AccountDto>> = withContext(Dispatchers.IO) {
-        runResultCatching {
-            api.getUserAccounts(userId)
+    suspend fun getUserAccounts(userId: String): RequestResult<List<AccountDto>> =
+        withContext(Dispatchers.IO) {
+            runResultCatching(infiniteRetry = true) {
+                api.getUserAccounts(userId)
+            }
         }
-    }
 
-    suspend fun openAccount(currency: CurrencyDto): RequestResult<Unit> = withContext(Dispatchers.IO) {
-        runResultCatching {
-            api.openAccount(currency)
+    suspend fun openAccount(currency: CurrencyDto): RequestResult<Unit> =
+        withContext(Dispatchers.IO) {
+            runResultCatching {
+                api.openAccount(currency)
+            }
         }
-    }
 
     suspend fun closeAccount(accountId: String): RequestResult<Unit> = withContext(Dispatchers.IO) {
         runResultCatching {
@@ -29,9 +31,10 @@ class AccountRemoteDataSource(
         }
     }
 
-    suspend fun getAccountIdByNumber(accountNumber: String): RequestResult<String> = withContext(Dispatchers.IO) {
-        runResultCatching {
-            api.getAccountIdByNumber(accountNumber)
+    suspend fun getAccountIdByNumber(accountNumber: String): RequestResult<String> =
+        withContext(Dispatchers.IO) {
+            runResultCatching {
+                api.getAccountIdByNumber(accountNumber)
+            }
         }
-    }
 }
