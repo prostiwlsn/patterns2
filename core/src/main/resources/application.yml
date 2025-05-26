@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: Core
   datasource:
     url: ${JDBC_URL:jdbc:postgresql://31.129.99.69:5430/patterns}
     username: ${JDBC_USER:postgresss}
@@ -27,3 +29,12 @@ security:
 firebase:
   credentials:
     path: classpath:patterns3-firebase-adminsdk-fbsvc-1dc3cc4950.json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+    httpexchanges:
+      enabled: true
+

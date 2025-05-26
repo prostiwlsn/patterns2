@@ -1,0 +1,31 @@
+<configuration>
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="UNKNOWN"/>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://194.59.186.122:3100/loki/api/v1/push</url>
+            <connectionTimeoutMs>5000</connectionTimeoutMs>
+            <requestTimeoutMs>10000</requestTimeoutMs>
+        </http>
+        <format>
+            <label>
+                <pattern>app=${appName},service_name=${appName}</pattern>
+            </label>
+            <message>
+                <pattern>{
+                    "Message": "%msg",
+                    "TraceId": "%X{traceId}",
+                    "RequestPath": "%X{requestPath}",
+                    "RequestMethod": "%X{requestMethod}",
+                    "StatusCode": %X{statusCode},
+                    "ResponseTimeMs": %X{responseTimeMs},
+                    "level": "%level"
+                    }</pattern>
+            </message>
+        </format>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="LOKI"/>
+    </root>
+</configuration>
