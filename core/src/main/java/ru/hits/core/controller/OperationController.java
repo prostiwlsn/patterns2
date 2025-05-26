@@ -27,17 +27,41 @@ public class OperationController {
 
     private final OperationService operationService;
     private final JwtService jwtService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Operation(
             summary = "Создание операции",
             description = "Позволяет пользователю перевести деньги, пополнить счет, вывести деньги"
     )
     @PostMapping
-    private OperationDTO createOperation(
+    public OperationDTO createOperation(
             @RequestHeader("Authorization") String authHeader,
-            @RequestBody(required = true) OperationRequestBody operationRequestBody
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestBody OperationRequestBody operationRequestBody
     ) throws JsonProcessingException {
-        return operationService.sendCreateOperationMessage(authHeader, jwtService.getUserId(authHeader), operationRequestBody);
+        if (idempotencyKey == null || idempotencyKey.isEmpty()) {
+            return operationService.sendCreateOperationMessage(
+                    authHeader,
+                    jwtService.getUserId(authHeader),
+                    operationRequestBody
+            );
+        }
+
+        String cacheKey = "operation:create:" + idempotencyKey;
+        OperationDTO cachedResult = (OperationDTO) redisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedResult != null) {
+            return cachedResult;
+        }
+
+        OperationDTO result = operationService.sendCreateOperationMessage(
+                authHeader,
+                jwtService.getUserId(authHeader),
+                operationRequestBody
+        );
+
+        redisTemplate.opsForValue().set(cacheKey, result, Duration.ofHours(24));
+        return result;
     }
 
     @Operation(
@@ -45,7 +69,7 @@ public class OperationController {
             description = "Позволяет пользователю посмотреть историю операций по счету"
     )
     @GetMapping("/byAccount/{accountId}")
-    private Page<OperationShortDTO> getOperations(
+    public Page<OperationShortDTO> getOperations(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("accountId") UUID accountId,
             @RequestParam(required = false) Instant timeStart,
@@ -70,7 +94,7 @@ public class OperationController {
             description = "Позволяет пользователю посмотреть историю операций по счету"
     )
     @GetMapping("/expiredLoanPayment")
-    private Page<OperationShortDTO> getExpiredOperations(
+    public Page<OperationShortDTO> getExpiredOperations(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam("loanAccountId") UUID loanAccountId,
             @RequestParam(value = "userId", required = false) UUID userId,
@@ -91,15 +115,16 @@ public class OperationController {
             description = "Позволяет пользователю посмотреть полную операцию по счету"
     )
     @GetMapping("/{accountId}/{operationId}")
-    private OperationDTO getOperation(
+    public OperationDTO getOperation(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("accountId") UUID accountId,
             @PathVariable("operationId") UUID operationId
     ) throws JsonProcessingException {
-        return operationService
-                .getOperation(
-                        jwtService.getUserId(authHeader), accountId, operationId, authHeader.substring(7)
-                );
+        return operationService.getOperation(
+                jwtService.getUserId(authHeader),
+                accountId,
+                operationId,
+                authHeader.substring(7)
+        );
     }
-
 }
