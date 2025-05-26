@@ -2,6 +2,8 @@ package com.example.h_bankpro.di
 
 import com.example.h_bankpro.data.dataSource.remote.OperationWebSocketDataSource
 import com.example.h_bankpro.data.network.AuthInterceptor
+import com.example.h_bankpro.data.network.IdempotencyInterceptor
+import com.example.h_bankpro.data.network.IdempotencyKeyManager
 import com.example.h_bankpro.data.network.OperationWebSocketApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -13,11 +15,14 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val networkModule = module {
+    single { IdempotencyKeyManager(get()) }
+
     single(named("baseClient")) {
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            .addInterceptor(IdempotencyInterceptor(get()))
             .build()
     }
 
@@ -27,6 +32,7 @@ val networkModule = module {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .addInterceptor(AuthInterceptor(get()))
+            .addInterceptor(IdempotencyInterceptor(get()))
             .build()
     }
 
